@@ -1,0 +1,5 @@
+node_modules
+*.log
+.markov/*.markov
+.env
+assets/upload_cache.json

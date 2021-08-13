@@ -1,0 +1,28 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model PkgDuck_PatCount {
+  userId String @id
+  pats   Int    @default(0)
+}
+
+model PkgCt_Score {
+  userId String @id
+
+  pointsThisCycle Int @default(0)
+  pointsLastCycle Int @default(0)
+}
+
+model PkgPets_Pet {
+  id      Int     @id @default(autoincrement())
+  guildId String
+  userId  String
+  active  Boolean @default(true)
+  url     String
+}

@@ -1,0 +1,156 @@
+{
+    "dev_server": "746219046374080532",
+    "guilds": {
+        "pokecom": "157983957902819328",
+        "pokecomstaf": "193103073210662914",
+        "duck": "322199235825238017",
+        "dev": "746219046374080532"
+    },
+    "assets": {
+        "upload_dump": {
+            "guild": {
+                "dev": "746219046374080532",
+                "prod": "322199235825238017"
+            },
+            "channel": {
+                "dev": "866433149764370503",
+                "prod": "866445374378344468"
+            }
+        }
+    },
+    "help_desc": "You can see a pop-up list of commands by pressing `/`. If you have any other questions or suggestions, please direct them to my creator!",
+    "pkg": {
+        "duck": {
+            "8ball": {
+                "lines": [
+                    "As I see it, yes.",
+                    "Ask again later.",
+                    "Better not tell you now.",
+                    "Cannot predict now.",
+                    "Concentrate and ask again.",
+                    "Don’t count on it.",
+                    "It is certain.",
+                    "It is decidedly so.",
+                    "Most likely.",
+                    "My reply is no.",
+                    "My sources say no.",
+                    "Outlook not so good.",
+                    "Outlook good.",
+                    "Reply hazy, try again.",
+                    "Signs point to yes.",
+                    "Very doubtful.",
+                    "Without a doubt.",
+                    "Yes.",
+                    "Yes – definitely.",
+                    "You may rely on it."
+                ]
+            },
+            "inky": {
+                "lines": [
+                    "🥺",
+                    "<:femmeduck:773701798292095008>",
+                    "haven't you people heard of closing the goddamn door",
+                    "omg",
+                    "wow Pb why u so old?",
+                    "When I was a young boy, my father took me into the city, to see a marching band. He said, \"Son, when you grow up, would you be the savior of the broken, the beaten, and the damned?\" He said, \"Will you defeat them, your demons, and all the non-believers? The plans that they have made? Because one day, I'll leave you, a phantom to lead you in the summer... To join the black parade.\"",
+                    "pleading is the most fun an inky can have without taking his clothes off",
+                    "periodt",
+                    "PB is my bwestest fwend uwu"
+                ]
+            },
+            "nudge": {
+                "disasters": [
+                    "Buildings crumble",
+                    "Earthquakes makin their way downtown ziggin fast",
+                    "Cookies crumble",
+                    "Groudon: Emerges",
+                    "A Porytude 7 earthquake!",
+                    "Just imagine Discord shaking",
+                    "Cars tumble down the roads",
+                    "Earthquakes are uncomf",
+                    "Hundreds of books drop from the shelves",
+                    "All the chairs roll away",
+                    "Vases fall and shatter",
+                    "A glass of water spills",
+                    "A plant falls over leaving dirt everywhere",
+                    "Random ceiling tiles fall down",
+                    "The floor shakes and cracks"
+                ]
+            },
+            "vibe": {
+                "negative_traits": [
+                    "straight",
+                    "ugly",
+                    "a cursed user",
+                    "from texas",
+                    "from england",
+                    "from australia",
+                    "into feet",
+                    "too gay to function",
+                    "addicted to pleads",
+                    "a nerd",
+                    "a clown",
+                    "a weeb",
+                    "a boomer",
+                    "a homestuck",
+                    "an owen",
+                    "a backstabber",
+                    "a hikikomori",
+                    "an SAO stan",
+                    "a Mineta stan",
+                    "a PC boomer",
+                    "uncomf",
+                    "a member of gumbo gang",
+                    "high on potenuse",
+                    "mewthree w/ armor",
+                    "quite conservative",
+                    "quite problematic",
+                    "long overdue for cancellation",
+                    "on their ninth day without sleep",
+                    "a player of the expanded free trial of our critically acclaimed MMORPG #FFXIV? you can play through the entirety of a realm reborn and the award-winning heavensward expansion up to level 60 for FREE with no restrictions on playtime"
+                ],
+                "positive_traits": [
+                    "being gay",
+                    "being stannable",
+                    "being the big gay",
+                    "being a hottie",
+                    "being a slut for /headpat",
+                    "using /vibecheck",
+                    "getting shoved in a locker",
+                    "being illegally cute",
+                    "being too cute for #burd-selfies",
+                    "observing Inky Appreciation Hour",
+                    "joining the Warrior Cats Club",
+                    "being numerous bees",
+                    "vaping florida to create a hurricane",
+                    "being the world's biggest yorkshire pudding",
+                    "being comf",
+                    "vibing",
+                    "being Doctor Lala's assistant",
+                    "being a Bakushima shipper",
+                    "stanning Dakota",
+                    "stanning Angie",
+                    "stanning Inky",
+                    "stanning Haley",
+                    "stanning Chura",
+                    "stanning Mag",
+                    "stanning Mylah"
+                ]
+            }
+        },
+        "pokecom": {
+            "role_list_url": "https://pokecommunity.com/about/discordroles",
+            "logging": {
+                "log_channel": {
+                    "prod": "423905036859604993",
+                    "dev": "775630195578503189"
+                },
+                "warning_channel": {
+                    "prod": "613756774234718209",
+                    "dev": "775630201060720640"
+                }
+            },
+            "shim_legacy_commands": true
+        }
+    }
+}
