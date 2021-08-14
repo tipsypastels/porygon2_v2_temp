@@ -2,17 +2,12 @@ import { GuildMember, MessageEmbed, User } from 'discord.js';
 import { AssetGroupKey } from './asset';
 import { PORY_ASSETS } from './assets';
 
-export type IntoEmbedFn<C extends any[] = []> = (embed: Embed, ...args: C) => void;
-export type IntoEmbed<C extends any[] = []> =
-  | IntoEmbedFn<C>
-  | { intoEmbed: IntoEmbedFn<C> };
+export type IntoEmbedFn = (embed: Embed) => void;
+export type IntoEmbed = IntoEmbedFn | { intoEmbed: IntoEmbedFn };
 
 export class Embed extends MessageEmbed {
-  merge<C extends any[] = []>(into: IntoEmbed<C> | undefined, ...args: C) {
-    if (into) {
-      typeof into === 'function' ? into(this, ...args) : into.intoEmbed(this, ...args);
-    }
-
+  merge(into: IntoEmbed | undefined) {
+    if (into) typeof into === 'function' ? into(this) : into.intoEmbed(this);
     return this;
   }
 

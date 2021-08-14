@@ -31,7 +31,7 @@ describe(zip, () => {
 
   it('yields nothing for an empty array', () => {
     const a1 = [1, 2, 3];
-    const a2: never[] = [];
+    const a2: any[] = [];
 
     expect(Array.from(zip(a1, a2))).toEqual([]);
   });

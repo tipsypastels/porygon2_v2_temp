@@ -1,44 +1,46 @@
 import { BaseCommandInteraction } from 'discord.js';
 import { Embed } from 'porygon/embed';
 import { isEmbeddedError } from 'porygon/error';
-import { filterErrorMessage } from 'support/error_filter';
+import { createLang } from 'porygon/lang';
 import { codeBlock } from 'support/string';
 import { intrLogger } from './logger';
-
-enum After {
-  Ignore,
-  Log,
-}
 
 // Using a tuple here so it's less messy to call in a promise chain.
 type Args = [unknown, BaseCommandInteraction, Embed, () => void];
 
 export function catchIntrError(...[error, intr, embed, log]: Args) {
-  const after = respond(error, embed);
+  let logAfter = true;
+  let ephemeral = false;
 
-  intr.reply({ embeds: [embed] });
-  after === After.Log && log();
-}
-
-function respond(error: unknown, embed: Embed) {
   if (isEmbeddedError(error)) {
     embed.merge(error);
-    return After.Ignore;
-  }
 
-  if (error instanceof Error) {
+    logAfter = false;
+    ephemeral = error.ephemeral;
+  } else if (error instanceof Error) {
     embed
       .poryColor('error')
       .poryThumb('error')
-      .setTitle("Whoops, that's an error.")
-      .setDescription(codeBlock(filterErrorMessage(error.message)));
+      .setTitle(lang('err'))
+      .setDescription(codeBlock(clean(error.message)));
 
     intrLogger.error(error);
-    return After.Log;
+  } else {
+    embed.poryColor('error').poryThumb('error').setTitle('unk');
+    intrLogger.error(error as any); // better than nothing
   }
 
-  embed.poryColor('error').poryThumb('error').setTitle('An unknown error occurred.');
-  intrLogger.error(error as any); // better than nothing /shrug
-
-  return After.Log;
+  intr.reply({ embeds: [embed], ephemeral });
+  logAfter && log();
 }
+
+export function clean(message: string) {
+  return message
+    .replace(process.env.TOKEN!, '<filtered>')
+    .replace(process.env.DATABASE_URL!, '<filtered>');
+}
+
+const lang = createLang(<const>{
+  err: "Whoops, that's an error.",
+  unk: 'An unknown error occurred.',
+});
