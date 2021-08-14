@@ -1,30 +1,11 @@
 {
-  "name": "@tipsypastels/porygon2",
-  "author": "tipsypastels",
-  "license": "MIT",
-  "version": "0.1.0",
-  "private": false,
-  "main": "dist/main.js",
-  "files": [
-    "assets/",
-    "bin/",
-    "dist/",
-    "prisma/"
-  ],
-  "bin": {
-    "porygon2": "bin/porygon2"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "test": "jest",
     "build": "tsc",
     "build:ext": "wasm-pack build --target nodejs ext/ai",
     "start": "NODE_ENV=production NODE_PATH=./dist node ./dist/main.js",
     "watch": "NODE_ENV=development NODE_PATH=./src nodemon",
-    "migrate": "prisma db push --preview-feature",
-    "prepare": "yarn build"
+    "migrate": "prisma db push --preview-feature"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
