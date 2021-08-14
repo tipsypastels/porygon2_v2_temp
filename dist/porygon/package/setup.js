@@ -39,7 +39,7 @@ async function importPackages(client) {
             if (await exists(eventDir)) {
                 const eventFiles = await dir_1.createDynamicDirectoryList(`${eventDir}/<eachFile>`);
                 const eventImporter = importer_1.createImporter(eventFiles);
-                await eventImporter(async ({ load }) => events_1.setupPackageEventHandler(client, kind, await load()));
+                await eventImporter(async ({ load }) => events_1.setupEventFactory(client, kind, await load()));
             }
         }
         await Promise.all([setupCommands(), setupEvents()]);

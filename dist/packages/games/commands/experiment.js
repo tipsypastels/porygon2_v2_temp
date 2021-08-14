@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const assets_1 = require("porygon/assets");
+const interaction_1 = require("porygon/interaction");
 const lang_1 = require("porygon/lang");
-const row_1 = require("porygon/row");
 const array_1 = require("support/array");
 const time_1 = require("support/time");
 const experiment = (args) => {
@@ -25,7 +25,7 @@ const counter = async ({ intr, embed, channel }) => {
         embed.poryThumb('angry').setDescription(lang('counter.done'));
         intr.editReply({ embeds: [embed], components: [] });
     };
-    const row = new row_1.Row().addButton((button, setHandler) => {
+    const row = new interaction_1.Row().addButton((button, setHandler) => {
         button.setStyle('PRIMARY').setLabel('Click me!');
         setHandler(onClick);
     });
@@ -57,7 +57,7 @@ const potenuse = async ({ intr, embed, channel, author }) => {
             .clearImage();
         intr.editReply({ embeds: [embed], components: [] });
     };
-    const row = new row_1.Row().addSelect((select, setHandler) => {
+    const row = new interaction_1.Row().addSelect((select, setHandler) => {
         select.addOptions([
             { label: 'Adoring', value: 'adoring' },
             { label: 'Humble', value: 'humble' },

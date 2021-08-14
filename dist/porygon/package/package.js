@@ -24,7 +24,7 @@ class Package {
         const data = this.unsavedCommands.map((c) => c.data);
         const apis = await this.kind.upload(data, this.client);
         for (const [command, api] of array_1.zip(this.unsavedCommands, apis)) {
-            const ref = new interaction_1.CommandReference(this, api, command);
+            const ref = new interaction_1.Cell(this, api, command);
             Package.SAVED_COMMANDS.set(ref.id, ref);
         }
         this.unsavedCommands = [];

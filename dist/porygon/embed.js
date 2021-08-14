@@ -4,9 +4,10 @@ exports.fromMember = exports.fromUser = exports.Embed = void 0;
 const discord_js_1 = require("discord.js");
 const assets_1 = require("./assets");
 class Embed extends discord_js_1.MessageEmbed {
-    merge(into) {
-        if (into)
-            typeof into === 'function' ? into(this) : into.intoEmbed(this);
+    merge(into, ...args) {
+        if (into) {
+            typeof into === 'function' ? into(this, ...args) : into.intoEmbed(this, ...args);
+        }
         return this;
     }
     poryThumb(thumb) {

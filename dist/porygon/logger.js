@@ -42,5 +42,5 @@ const COLORS = {
     debug: colors_1.default.bgMagenta,
 };
 // shared loggers
-exports.bugLogger = createLogger('bug', colors_1.default.bgYellow);
+exports.bugLogger = createLogger('bug', colors_1.default.bgRed);
 exports.setupLogger = createLogger('setup', colors_1.default.green);

@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setupPackageEventHandler = void 0;
+exports.setupEventFactory = void 0;
 const discord_js_1 = require("discord.js");
 function proxy(client, kind) {
     function wrap(occ, key, cb) {
-        client[occ](key, (...args) => {
+        return client[occ](key, (...args) => {
             const guild = toGuild(args[0]);
             if (kind.matches(guild?.id)) {
                 cb(...args);
@@ -18,10 +18,10 @@ function proxy(client, kind) {
         return wrap('once', key, cb);
     }
     function globalOn(key, cb) {
-        client.on(key, cb);
+        return client.on(key, cb);
     }
     function globalOnce(key, cb) {
-        client.once(key, cb);
+        return client.once(key, cb);
     }
     return { on, once, globalOn, globalOnce };
 }
@@ -33,7 +33,7 @@ function toGuild(obj) {
         return obj.guild;
     }
 }
-function setupPackageEventHandler(client, kind, handler) {
-    handler({ client, kind, events: proxy(client, kind) });
+function setupEventFactory(client, kind, factory) {
+    factory({ client, kind, events: proxy(client, kind) });
 }
-exports.setupPackageEventHandler = setupPackageEventHandler;
+exports.setupEventFactory = setupEventFactory;

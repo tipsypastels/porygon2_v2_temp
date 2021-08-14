@@ -30,8 +30,8 @@ exports.isEmbeddedError = isEmbeddedError;
  *
  * This function can be used for completely custom error embeds if needed.
  */
-function embeddedError(fn) {
-    return { [TAG]: true, intoEmbed: fn };
+function embeddedError(fn, { ephemeral = false } = {}) {
+    return { [TAG]: true, intoEmbed: fn, ephemeral };
 }
 exports.embeddedError = embeddedError;
 /**
@@ -42,7 +42,13 @@ exports.embeddedError = embeddedError;
  *     - Nothing to do
  */
 embeddedError.warn = function (fn) {
-    return embeddedError((e) => e.poryThumb('warning').poryColor('warning').merge(fn));
+    return embeddedError((e) => e.merge(WARN).merge(fn));
+};
+/**
+ * @see embeddedError.warn
+ */
+embeddedError.warnEph = function (fn) {
+    return embeddedError((e) => e.merge(WARN).merge(fn), { ephemeral: true });
 };
 /**
  * Danger should be used for non-critical errors where the user is probably
@@ -52,7 +58,13 @@ embeddedError.warn = function (fn) {
  *     - Can't request the moderoid role
  */
 embeddedError.danger = function (fn) {
-    return embeddedError((e) => e.poryThumb('danger').poryColor('danger').merge(fn));
+    return embeddedError((e) => e.merge(DANGER).merge(fn));
+};
+/**
+ * @see embeddedError.danger
+ */
+embeddedError.dangerEph = function (fn) {
+    return embeddedError((e) => e.merge(DANGER).merge(fn), { ephemeral: true });
 };
 /**
  * Error should be used for critical errors, whether user-caused or not. Critical errors
@@ -63,5 +75,14 @@ embeddedError.danger = function (fn) {
  *     - Service unavailable
  */
 embeddedError.error = function (fn) {
-    return embeddedError((e) => e.poryThumb('error').poryColor('error').merge(fn));
+    return embeddedError((e) => e.merge(ERROR).merge(fn));
 };
+/**
+ * @see embeddedError.error
+ */
+embeddedError.errorEph = function (fn) {
+    return embeddedError((e) => e.merge(ERROR).merge(fn), { ephemeral: true });
+};
+const WARN = (e) => e.poryThumb('warning').poryColor('warning');
+const DANGER = (e) => e.poryThumb('danger').poryColor('danger');
+const ERROR = (e) => e.poryThumb('error').poryColor('error');

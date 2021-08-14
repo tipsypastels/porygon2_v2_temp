@@ -8,9 +8,9 @@ const package_1 = require("porygon/package");
 const dev_1 = require("porygon/dev");
 const eval_ = async (args) => {
     owner_1.assertOwner(args.author);
-    const { intr, author, guild, embed, client, opts, commandRef } = args;
+    const { intr, author, guild, embed, client, opts, cell } = args;
     const code = opts.get('code');
-    const { pkg } = commandRef;
+    const { pkg } = cell;
     const db = core_1.db;
     const Package = package_1.Package;
     const result = eval(code);
