@@ -5,9 +5,22 @@ import { PORY_ASSETS } from './assets';
 export type IntoEmbedFn = (embed: Embed) => void;
 export type IntoEmbed = IntoEmbedFn | { intoEmbed: IntoEmbedFn };
 
+export type IntoEmbedFnWith<C extends any[]> = (embed: Embed, ...args: C) => void;
+export type IntoEmbedWith<C extends any[]> =
+  | IntoEmbedFnWith<C>
+  | { intoEmbedWith: IntoEmbedFnWith<C> };
+
 export class Embed extends MessageEmbed {
   merge(into: IntoEmbed | undefined) {
     if (into) typeof into === 'function' ? into(this) : into.intoEmbed(this);
+    return this;
+  }
+
+  mergeWith<C extends any[]>(into: IntoEmbedWith<C> | undefined, ...args: C) {
+    if (into)
+      typeof into === 'function'
+        ? into(this, ...args)
+        : into.intoEmbedWith(this, ...args);
     return this;
   }
 

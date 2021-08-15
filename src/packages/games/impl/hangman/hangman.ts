@@ -51,12 +51,11 @@ export class Hangman {
   }
 
   private render = async (game: BaseHangman) => {
-    const embed = new Embed();
     const stateRenderer = stateRenderers[game.state];
-
-    wordRenderer(embed, game);
-    nooseRenderer(embed, game);
-    stateRenderer(embed, game);
+    const embed = new Embed()
+      .mergeWith(wordRenderer, game)
+      .mergeWith(nooseRenderer, game)
+      .mergeWith(stateRenderer, game);
 
     await this.reply(embed);
   };
