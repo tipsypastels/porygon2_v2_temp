@@ -23,7 +23,7 @@ export class Markov {
   private possibilities: Record<string, string[]> = {};
   private stream: WriteStream;
 
-  constructor({ name, fallback, order = 3 }: MarkovOpts) {
+  constructor({ name, fallback, order = 4 }: MarkovOpts) {
     this.file = `.markov/${name}.markov`;
     this.order = order;
     this.fallback = fallback;
