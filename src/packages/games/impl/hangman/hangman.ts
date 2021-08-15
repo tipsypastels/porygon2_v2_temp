@@ -7,6 +7,8 @@ import { random } from 'support/array';
 import { codeBlock } from 'support/string';
 import { BaseHangman, State } from './base';
 
+type Renderer = (embed: Embed, game: BaseHangman) => void;
+
 interface Opts {
   intr: CommandInteraction;
   channel: CommandChannel;
@@ -79,8 +81,7 @@ function getRandomWord() {
   return random(WORDS.value);
 }
 
-type StateRenderer = (embed: Embed, game: BaseHangman) => void;
-const stateRenderers: Record<State, StateRenderer> = {
+const stateRenderers: Record<State, Renderer> = {
   [State.Ongoing](embed, game) {
     embed
       .setTitle('Hangman')
@@ -101,10 +102,10 @@ const stateRenderers: Record<State, StateRenderer> = {
   },
 };
 
-const nooseRenderer: StateRenderer = (embed, game) => {
+const nooseRenderer: Renderer = (embed, game) => {
   embed.setThumbnail(HANGMAN_ASSETS.get(game.invalidGuesses).url);
 };
 
-const wordRenderer: StateRenderer = (embed, game) => {
+const wordRenderer: Renderer = (embed, game) => {
   embed.setDescription(codeBlock(game.toPrintedWord()));
 };
