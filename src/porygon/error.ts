@@ -41,6 +41,10 @@ export function embeddedError(fn: IntoEmbedFn, { ephemeral = false } = {}) {
   return { [TAG]: true, intoEmbed: fn, ephemeral };
 }
 
+const WARN: IntoEmbedFn = (e) => e.poryThumb('warning').poryColor('warning');
+const DANGER: IntoEmbedFn = (e) => e.poryThumb('danger').poryColor('danger');
+const ERROR: IntoEmbedFn = (e) => e.poryThumb('error').poryColor('error');
+
 /**
  * Warnings should be used for non-malicious and non-critical errors. Examples:
  *
@@ -48,16 +52,13 @@ export function embeddedError(fn: IntoEmbedFn, { ephemeral = false } = {}) {
  *     - No such item
  *     - Nothing to do
  */
-embeddedError.warn = function (fn?: IntoEmbedFn) {
-  return embeddedError((e) => e.merge(WARN).merge(fn));
-};
+embeddedError.warn = create(WARN);
 
 /**
+ * Same as `embeddedError.warn`, but sends as an ephemeral embed once caught.
  * @see embeddedError.warn
  */
-embeddedError.warnEph = function (fn?: IntoEmbedFn) {
-  return embeddedError((e) => e.merge(WARN).merge(fn), { ephemeral: true });
-};
+embeddedError.warnEph = create(WARN, { ephemeral: true });
 
 /**
  * Danger should be used for non-critical errors where the user is probably
@@ -66,17 +67,13 @@ embeddedError.warnEph = function (fn?: IntoEmbedFn) {
  *     - Can't remove another user's pets
  *     - Can't request the moderoid role
  */
-embeddedError.danger = function (fn?: IntoEmbedFn) {
-  return embeddedError((e) => e.merge(DANGER).merge(fn));
-};
+embeddedError.danger = create(DANGER);
 
 /**
+ * Same as `embeddedError.danger`, but sends as an ephemeral embed once caught.
  * @see embeddedError.danger
  */
-embeddedError.dangerEph = function (fn?: IntoEmbedFn) {
-  return embeddedError((e) => e.merge(DANGER).merge(fn), { ephemeral: true });
-};
-
+embeddedError.dangerEph = create(DANGER, { ephemeral: true });
 /**
  * Error should be used for critical errors, whether user-caused or not. Critical errors
  * are those where it is probably not possible to give the user an explanation of what
@@ -85,17 +82,15 @@ embeddedError.dangerEph = function (fn?: IntoEmbedFn) {
  *     - Command handler threw
  *     - Service unavailable
  */
-embeddedError.error = function (fn?: IntoEmbedFn) {
-  return embeddedError((e) => e.merge(ERROR).merge(fn));
-};
+embeddedError.error = create(ERROR);
 
 /**
+ * Same as `embeddedError.error`, but sends as an ephemeral embed once caught.
  * @see embeddedError.error
  */
-embeddedError.errorEph = function (fn?: IntoEmbedFn) {
-  return embeddedError((e) => e.merge(ERROR).merge(fn), { ephemeral: true });
-};
+embeddedError.errorEph = create(ERROR, { ephemeral: true });
 
-const WARN: IntoEmbedFn = (e) => e.poryThumb('warning').poryColor('warning');
-const DANGER: IntoEmbedFn = (e) => e.poryThumb('danger').poryColor('danger');
-const ERROR: IntoEmbedFn = (e) => e.poryThumb('error').poryColor('error');
+function create(base: IntoEmbedFn, { ephemeral = false } = {}) {
+  return (fn?: IntoEmbedFn) =>
+    embeddedError((e) => e.merge(base).merge(fn), { ephemeral });
+}
