@@ -1,36 +1,24 @@
-import { ApplicationCommand as Api, Collection, Snowflake } from 'discord.js';
-import { basename } from 'path';
+import { ApplicationCommand, Collection, Snowflake } from 'discord.js';
 import { Porygon } from 'porygon/core';
-import { BaseCommand, Cell } from 'porygon/interaction';
+import { Cell, BaseCommand } from 'porygon/interaction';
 import { zip } from 'support/array';
 import { PluginKind } from './kind';
-import { PluginCommandUploader } from './upload';
-
-type Cache = Record<string, Api>;
-const CACHE_FILE = '$command_cache.json';
 
 export class Plugin {
   static ALL = new Collection<PluginKind, Plugin>();
   static SAVED_COMMANDS = new Collection<Snowflake, Cell>();
 
+  private unsavedCommands: BaseCommand[] = [];
+
   static uploadAllCommands() {
     return Promise.all(this.ALL.map((p) => p.uploadCommands()));
   }
 
-  static init(kind: PluginKind, location: string, client: Porygon) {
-    return this.ALL.get(kind) || new this(kind, location, client);
+  static init(kind: PluginKind, client: Porygon) {
+    return this.ALL.get(kind) || new this(kind, client);
   }
 
-  readonly name: string;
-  private unsavedCommands: BaseCommand[] = [];
-
-  private constructor(
-    private kind: PluginKind,
-    readonly location: string,
-    readonly client: Porygon,
-  ) {
-    this.name = basename(location);
-
+  private constructor(private kind: PluginKind, readonly client: Porygon) {
     Plugin.ALL.set(kind, this);
   }
 
@@ -39,12 +27,14 @@ export class Plugin {
   }
 
   private async uploadCommands() {
-    const uploader = new PluginCommandUploader(this, this.kind, this.unsavedCommands);
-    const apis = await uploader.upload();
+    const data = this.unsavedCommands.map((c) => c.data);
+    const apis = await this.kind.upload(data, this.client);
+    const cache: Record<string, ApplicationCommand> = {};
 
     for (const [command, api] of zip(this.unsavedCommands, apis)) {
       const ref = new Cell(this, api, command);
       Plugin.SAVED_COMMANDS.set(ref.id, ref);
+      cache[command.data.name] = api;
     }
 
     this.unsavedCommands = [];

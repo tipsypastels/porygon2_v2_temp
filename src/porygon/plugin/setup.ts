@@ -29,7 +29,7 @@ async function importPlugins(client: Porygon) {
 
     const prodKind = await load();
     const kind = DEV ? PluginDev.init() : prodKind;
-    const plugin = Plugin.init(kind, dir, client);
+    const plugin = Plugin.init(kind, client);
 
     async function setupCommands() {
       const commandDir = `${dir}/commands`;
