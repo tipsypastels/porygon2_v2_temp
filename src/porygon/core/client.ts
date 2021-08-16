@@ -2,7 +2,7 @@ import './ascii';
 import { Client } from 'discord.js';
 import { createLogger, colors } from 'porygon/logger';
 import { intents } from './intents';
-import { setupPackages } from 'porygon/package/setup';
+import { setupPlugins } from 'porygon/plugin/setup';
 import { handleInteraction } from 'porygon/interaction';
 import { setupAssets } from 'porygon/asset/setup';
 import { uptime } from 'porygon/stats';
@@ -26,7 +26,7 @@ export class Porygon extends Client {
 
   private setup() {
     return Promise.all([
-      setupPackages(this),
+      setupPlugins(this),
       setupAssets(this),
       setupActivityMessages(this),
     ]).catch((e) => {

@@ -1,11 +1,11 @@
-import { Package } from 'porygon/package';
+import { Plugin } from 'porygon/plugin';
 import { BaseCommand } from './base';
 import { ApplicationCommand as Api, BaseCommandInteraction } from 'discord.js';
 import { ContextMenu, callContextMenu } from './context_menu/context_menu';
 import { Command, callCommand } from './chat';
 
 export class Cell {
-  constructor(readonly pkg: Package, private api: Api, private cmd: BaseCommand<any>) {}
+  constructor(readonly plugin: Plugin, private api: Api, private cmd: BaseCommand) {}
 
   get id() {
     return this.api.id;
@@ -16,7 +16,7 @@ export class Cell {
   }
 
   get client() {
-    return this.pkg.client;
+    return this.plugin.client;
   }
 
   call(intr: BaseCommandInteraction): void {
