@@ -49,16 +49,13 @@ export class PluginCommandUploader {
   private findChanged(cache: Cache) {
     return this.commands.reduce((list: BaseCommand[], command) => {
       const entry = cache[command.data.name];
-      const changed = !entry || !areSharedPropertiesEqual(entry, command.data, isEqual);
+      const changed = !entry || !sharedDeepEqual(entry, command.data);
       return changed ? list.concat(command) : list;
     }, []);
   }
 
   private getCache(): Promise<Cache | null> {
-    return import(`../../../${this.cacheFile}`).catch((e) => {
-      console.log(e);
-      return null;
-    });
+    return import(`../../../${this.cacheFile}`).catch((e) => null);
   }
 
   private async setCache(apis: Api[]) {
@@ -93,4 +90,8 @@ export class PluginCommandUploader {
     setupLogger.info(`Keeping all commands for ${this.tag}.`);
     return Object.values(cache);
   }
+}
+
+function sharedDeepEqual(a: any, b: any) {
+  return areSharedPropertiesEqual(a, b, isEqual);
 }
