@@ -2,6 +2,7 @@ import { BaseCommandInteraction as Intr } from 'discord.js';
 import { Embed } from 'porygon/embed';
 import { isEmbeddedError } from 'porygon/error';
 import { createLang } from 'porygon/lang';
+import { codeBlock } from 'support/string';
 import { intrLogger } from './logger';
 
 export function catchIntrError(error: unknown, intr: Intr, log: () => void) {
@@ -21,8 +22,11 @@ export function catchIntrError(error: unknown, intr: Intr, log: () => void) {
     ephemeral = error.ephemeral;
   } else if (error instanceof Error) {
     console.log('caugth err');
-    embed.poryColor('error').poryThumb('error').setTitle(lang('err'));
-    // .setDescription(codeBlock(clean(error.message)));
+    embed
+      .poryColor('error')
+      .poryThumb('error')
+      .setTitle(lang('err'))
+      .setDescription(codeBlock(clean(error.message)));
 
     intrLogger.error(error);
   } else {
