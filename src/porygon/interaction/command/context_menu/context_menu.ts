@@ -94,9 +94,7 @@ function log(result: Promise<void>, args: BaseContextMenuFnArgs) {
   result
     .then(() => intrLogger.info(lang('ok', params)))
     .catch((error) =>
-      catchIntrError(error, args.intr, args.embed, () =>
-        intrLogger.error(lang('err', params)),
-      ),
+      catchIntrError(error, args.intr, () => intrLogger.error(lang('err', params))),
     );
 }
 

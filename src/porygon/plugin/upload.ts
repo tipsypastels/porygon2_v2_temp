@@ -10,6 +10,23 @@ import isEqual from 'lodash.isequal';
 type Result = Promise<Api[]>;
 type Cache = Record<string, Api>;
 
+/**
+ * Manages uploading and caching of commands for a given plugin. Each plugin has its
+ * own entry in the `.cmd_cache` directory, named by its kind's tag (the only stable way
+ * to uniquely identify a plugin).
+ *
+ * A `PluginCommandUploader` will compare all the data from the gathered commands, and
+ * compare them to what's in the cache. If there is no cache, it simply uploads them all.
+ * If none have changed, it uses the cached data. If one has changed, it simply uploads it
+ * on its own via single upload. If multiple have changed, it uploads them all, which is
+ * probably better than multiple single uploads.
+ *
+ * Note: in production, for plugins whose guild is not joined, the cache will contain `{}`,
+ * and the uploader will think it's trying to upload them all every time. However, uploading
+ * to an unjoined guild is a no-op in `PluginKind`, so this will never change. This isn't
+ * a problem in practice, but it can make logging slightly inaccurate because it will
+ * always report that commands have changed.
+ */
 export class PluginCommandUploader {
   constructor(
     private plugin: Plugin,

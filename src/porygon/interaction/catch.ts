@@ -1,14 +1,16 @@
-import { BaseCommandInteraction } from 'discord.js';
+import { BaseCommandInteraction as Intr } from 'discord.js';
 import { Embed } from 'porygon/embed';
 import { isEmbeddedError } from 'porygon/error';
 import { createLang } from 'porygon/lang';
-import { codeBlock } from 'support/string';
 import { intrLogger } from './logger';
 
-// Using a tuple here so it's less messy to call in a promise chain.
-type Args = [unknown, BaseCommandInteraction, Embed, () => void];
+export function catchIntrError(error: unknown, intr: Intr, log: () => void) {
+  // it's not safe to pass in the embed from the interaction handler,
+  // as it may have stale data that caused the error in the first place.
+  // https://discord.com/channels/322199235825238017/387508516262510612/876751386073767947
+  // thanks wobb!
+  const embed = new Embed();
 
-export function catchIntrError(...[error, intr, embed, log]: Args) {
   let logAfter = true;
   let ephemeral = false;
 
@@ -18,11 +20,9 @@ export function catchIntrError(...[error, intr, embed, log]: Args) {
     logAfter = false;
     ephemeral = error.ephemeral;
   } else if (error instanceof Error) {
-    embed
-      .poryColor('error')
-      .poryThumb('error')
-      .setTitle(lang('err'))
-      .setDescription(codeBlock(clean(error.message)));
+    console.log('caugth err');
+    embed.poryColor('error').poryThumb('error').setTitle(lang('err'));
+    // .setDescription(codeBlock(clean(error.message)));
 
     intrLogger.error(error);
   } else {
