@@ -13,6 +13,7 @@ import { Cache, Singleton } from 'support/cache';
 const DEV_SERVER = config('dev_server');
 
 export interface PluginKind {
+  tag: string;
   matches(guildId: Snowflake | undefined): boolean;
   upload(data: Data[], client: Porygon): Promise<Api[]>;
 }
@@ -32,6 +33,10 @@ export class PluginDev implements PluginKind {
 
   private constructor() {
     /* nop */
+  }
+
+  get tag() {
+    return 'dev';
   }
 
   guild(client: Porygon) {
@@ -58,6 +63,10 @@ export class PluginGlobal implements PluginKind {
     /* nop */
   }
 
+  get tag() {
+    return 'global';
+  }
+
   matches() {
     return true;
   }
@@ -78,6 +87,10 @@ export class PluginGuild implements PluginKind {
 
   private constructor(private guildId: Snowflake) {
     /* nop */
+  }
+
+  get tag() {
+    return `guild_${this.guildId}`;
   }
 
   guild(client: Porygon) {
@@ -101,6 +114,10 @@ export class PluginGuilds implements PluginKind {
 
   constructor(guildIds: Snowflake[]) {
     this.plugins = guildIds.map((id) => PluginGuild.init(id));
+  }
+
+  get tag() {
+    return `guilds_${this.plugins.map((p) => p.tag).join('_')}`;
   }
 
   matches(guildId: Snowflake | undefined) {
