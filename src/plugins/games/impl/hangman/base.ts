@@ -1,6 +1,6 @@
 import { Collection } from 'discord.js';
 
-type Render = (game: BaseHangman) => void;
+type Render = (game: BaseHangman) => void | Promise<void>;
 type End = () => void;
 
 /** @internal */
@@ -8,6 +8,7 @@ export enum State {
   Won,
   Lost,
   Ongoing,
+  Cancelled,
 }
 
 /** @internal */
@@ -56,6 +57,18 @@ export class BaseHangman {
 
     await this.render(this);
     return [this, guess];
+  }
+
+  async cancel() {
+    if (this.state !== State.Ongoing) {
+      return this;
+    }
+
+    this.end();
+    this.state = State.Cancelled;
+
+    await this.render(this);
+    return this;
   }
 
   private guess(content: string): [State, Guess | undefined] {

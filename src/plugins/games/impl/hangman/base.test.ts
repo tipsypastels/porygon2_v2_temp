@@ -150,5 +150,20 @@ describe(BaseHangman, () => {
 
       expect(game.state).toBe(State.Ongoing);
     });
+
+    it('ends the game immediately if cancel() is called', async () => {
+      const game = h();
+      await game.cancel();
+
+      expect(game.state).toBe(State.Cancelled);
+    });
+
+    it('does not cancel if the game is already ended', async () => {
+      const game = h();
+      await game.call(DEFAULT_WORD);
+      await game.cancel();
+
+      expect(game.state).toBe(State.Won);
+    });
   });
 });
