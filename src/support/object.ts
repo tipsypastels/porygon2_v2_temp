@@ -1,4 +1,5 @@
 import { inspect } from 'util';
+import { setIntersect } from './set';
 
 /**
  * An object with any shape and properties.
@@ -50,4 +51,27 @@ export function extractOnlyKey<T>(obj: T) {
   }
 
   return keys[0];
+}
+
+const DEFAULT_EQ = (a: any, b: any) => a === b;
+
+/**
+ * Returns whether all properties shared by `a` and `b` are equal, ignoring
+ * other properties. Uses `===` for equality unless a different operator
+ * is provided as a callback.
+ */
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function areSharedPropertiesEqual(a: object, b: object, eq = DEFAULT_EQ) {
+  const keys = setIntersect(new Set(Object.keys(a)), new Set(Object.keys(b)));
+
+  for (const key of keys) {
+    const aValue = (a as any)[key];
+    const bValue = (b as any)[key];
+
+    if (!eq(aValue, bValue)) {
+      return false;
+    }
+  }
+
+  return true;
 }
