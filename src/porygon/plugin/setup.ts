@@ -25,7 +25,7 @@ async function importPlugins(client: Porygon) {
   return await importer(async ({ path, load }) => {
     const dir = dirname(path);
 
-    setupLogger.info(`Setting up plugins ${basename(dir)}...`);
+    setupLogger.info(`Setting up plugin ${basename(dir)}...`);
 
     const prodKind = await load();
     const kind = DEV ? PluginDev.init() : prodKind;
