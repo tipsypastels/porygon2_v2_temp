@@ -3,4 +3,5 @@ node_modules
 .markov/*.markov
 .env
 assets/upload_cache.json
+/.cmd_cache/*.json
 /dist

@@ -30,7 +30,7 @@ const calc: Command<Opts> = async ({ opts, intr, embed }) => {
 
 calc.data = {
   name: 'calc',
-  description: 'Does your math homework.',
+  description: 'Doe.s your math homework.',
   options: [
     {
       name: 'equation',

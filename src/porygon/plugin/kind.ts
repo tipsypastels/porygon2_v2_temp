@@ -16,6 +16,7 @@ export interface PluginKind {
   tag: string;
   matches(guildId: Snowflake | undefined): boolean;
   upload(data: Data[], client: Porygon): Promise<Api[]>;
+  uploadOne(data: Data, client: Porygon): Promise<Api | undefined>;
 }
 
 export type PluginKindOrDev<T extends PluginKind> = T | PluginDev;
@@ -50,6 +51,10 @@ export class PluginDev implements PluginKind {
   async upload(data: Data[], client: Porygon) {
     return toArray(await this.guild(client).commands.set(data));
   }
+
+  async uploadOne(data: Data, client: Porygon) {
+    return this.guild(client).commands.create(data);
+  }
 }
 
 export class PluginGlobal implements PluginKind {
@@ -73,6 +78,10 @@ export class PluginGlobal implements PluginKind {
 
   async upload(data: Data[], client: Porygon) {
     return toArray(await client.application!.commands.set(data));
+  }
+
+  async uploadOne(data: Data, client: Porygon) {
+    return client.application!.commands.create(data);
   }
 }
 
@@ -105,6 +114,10 @@ export class PluginGuild implements PluginKind {
     const guild = this.guild(client);
     return toArray(await guild?.commands.set(data));
   }
+
+  async uploadOne(data: Data, client: Porygon) {
+    return this.guild(client)?.commands.create(data);
+  }
 }
 
 export class PluginGuilds implements PluginKind {
@@ -129,6 +142,13 @@ export class PluginGuilds implements PluginKind {
     const [commands] = await Promise.all(promises);
 
     return commands; // all entries are the same
+  }
+
+  async uploadOne(data: Data, client: Porygon) {
+    const promises = this.plugins.map((p) => p.uploadOne(data, client));
+    const [command] = await Promise.all(promises);
+
+    return command;
   }
 }
 
