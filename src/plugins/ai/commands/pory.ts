@@ -1,11 +1,12 @@
 import { Command } from 'porygon/interaction';
-import { codeBlock } from 'support/string';
+import { codeBlock, ellipsis } from 'support/string';
 import { Markov } from '../markov';
 
 interface Opts {
   prompt?: string;
 }
 
+const TRUNCATE = 300;
 const PORY = new Markov({
   name: 'pory',
   fallback: 'hi im pory',
@@ -17,7 +18,8 @@ const pory: Command<Opts> = async ({ opts, intr, embed, author, client, guild })
   const bot = guild.members.cache.get(client.user!.id)!;
 
   if (prompt) {
-    embed.addField(author.displayName, codeBlock(prompt));
+    const formattedPrompt = codeBlock(ellipsis(prompt, TRUNCATE));
+    embed.addField(author.displayName, formattedPrompt);
   }
 
   embed

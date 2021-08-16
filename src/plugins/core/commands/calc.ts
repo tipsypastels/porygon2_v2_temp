@@ -1,15 +1,18 @@
 import { Command } from 'porygon/interaction';
 import { evaluate } from 'porygon/math';
-import { codeBlock } from 'support/string';
+import { codeBlock, ellipsis } from 'support/string';
 
 interface Opts {
   equation: string;
 }
 
+const TRUNCATE = 100;
+
 const calc: Command<Opts> = async ({ opts, intr, embed }) => {
   const equation = opts.get('equation');
 
-  embed.addField('Equation', codeBlock(equation));
+  const formattedEquation = codeBlock(ellipsis(equation, TRUNCATE));
+  embed.addField('Equation', formattedEquation);
 
   try {
     const result = await evaluate(equation);
@@ -25,7 +28,7 @@ const calc: Command<Opts> = async ({ opts, intr, embed }) => {
       .setTitle('_Porygon adjusts her glasses and takes another look at that equation._');
   }
 
-  await intr.reply({ embeds: [embed] });
+  await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
 calc.data = {

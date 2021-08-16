@@ -33,3 +33,16 @@ export function bold(message: string) {
 export function stripSpaces(input: string) {
   return input.replace(/ /g, '');
 }
+
+export const ELLIPSIS = '…';
+
+/**
+ * Slices string to `len`, including an ellipsis
+ * if the string exceeds that length.
+ *
+ * This should be used for most user input in
+ * command responses.
+ */
+export function ellipsis(string: string, len: number) {
+  return string.length > len ? `${string.slice(0, len)}${ELLIPSIS}` : string;
+}

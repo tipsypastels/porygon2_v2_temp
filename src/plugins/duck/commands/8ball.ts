@@ -1,21 +1,24 @@
 import { config } from 'porygon/config';
 import { Command } from 'porygon/interaction';
 import { random } from 'support/array';
+import { ellipsis } from 'support/string';
 
 interface Opts {
   question: string;
 }
 
 const LINES = config('pkg.duck.8ball.lines');
+const TRUNCATE = 300;
 
 const _8ball: Command<Opts> = async ({ opts, embed, intr }) => {
+  const question = ellipsis(opts.get('question'), TRUNCATE);
   const line = random(LINES.value);
 
   embed
     .poryColor('info')
     .poryThumb('8ball')
     .setTitle('The wise oracle Porygon studies her magic 8-ball.')
-    .addField('Question', opts.get('question'))
+    .addField('Question', question)
     .addField('Answer', line);
 
   await intr.reply({ embeds: [embed] });
