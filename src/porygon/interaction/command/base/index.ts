@@ -2,7 +2,6 @@ import { BaseCommandInteraction } from 'discord.js';
 import { intrLogger } from '../../logger';
 import { Plugin } from 'porygon/plugin';
 
-export * from './factory';
 export * from './types';
 
 export function handleBaseCommand(intr: BaseCommandInteraction) {

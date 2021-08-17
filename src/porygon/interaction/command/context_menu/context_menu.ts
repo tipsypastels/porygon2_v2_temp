@@ -2,7 +2,8 @@ import { ContextMenuInteraction, Guild, GuildMember, Message } from 'discord.js'
 import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
 import { intrLogger } from 'porygon/interaction/logger';
-import { CreateBaseCommand, createBaseCommandCall } from '../base';
+import { CreateBaseCommand } from '../base';
+import { createBaseCommandCall } from '../base/factory';
 import { Cell } from '../cell';
 
 interface BaseArgs {

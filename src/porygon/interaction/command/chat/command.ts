@@ -7,7 +7,8 @@ import {
 } from 'discord.js';
 import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
-import { CreateBaseCommand, createBaseCommandCall } from '../base';
+import { CreateBaseCommand } from '../base';
+import { createBaseCommandCall } from '../base/factory';
 import { Cell } from '../cell';
 import { CommandOptions } from './options';
 
