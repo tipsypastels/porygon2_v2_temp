@@ -17,7 +17,7 @@ const remove: CommandFn<RemOpts> = async ({ opts, embed, intr, author }) => {
   const result = await petRemove(id, author);
 
   embed.merge(result);
-  await intr.reply({ embeds: [embed] });
+  await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
 const random: CommandFn<RandOpts> = async ({ opts, embed, intr, guild }) => {

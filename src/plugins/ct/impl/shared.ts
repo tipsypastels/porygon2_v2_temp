@@ -15,7 +15,7 @@ export const CtConfig = {
   },
 
   get ppmExceptions(): Record<Snowflake, number> {
-    return config('pkg.ct.ppm_exceptions').value;
+    return config('pkg.ct.ppmExceptions').value;
   },
 };
 

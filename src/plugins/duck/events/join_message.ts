@@ -5,7 +5,7 @@ import { bugLogger } from 'porygon/logger';
 import { EventFactory } from 'porygon/plugin';
 
 const CHANNEL_ID = config('pkg.duck.joins.channel');
-const ROLE_ID = config('pkg.duck.joins.duck_role');
+const ROLE_ID = config('pkg.duck.joins.duckRole');
 
 const join: EventFactory = async ({ events }) => {
   events.on('guildMemberAdd', call);

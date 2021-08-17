@@ -3,7 +3,7 @@ import { HANGMAN_ASSETS } from 'porygon/assets';
 import { config } from 'porygon/config';
 import { DEV } from 'porygon/dev';
 import { Embed } from 'porygon/embed';
-import { embeddedError } from 'porygon/error';
+import { createBuiltinErrors } from 'porygon/error';
 import { CommandChannel } from 'porygon/interaction';
 import { createLang } from 'porygon/lang';
 import { random } from 'support/array';
@@ -131,9 +131,7 @@ const wordRenderer: Renderer = (embed, game) => {
 
 function assertAvailableChannel(channel: CommandChannel) {
   if (ACTIVE_CHANNELS.has(channel.id)) {
-    throw embeddedError.dangerEph((e) => {
-      e.setTitle(lang('taken.title')).setDescription(lang('taken.desc'));
-    });
+    throw error('hangmanChannelBusy');
   }
 
   ACTIVE_CHANNELS.add(channel.id);
@@ -141,8 +139,7 @@ function assertAvailableChannel(channel: CommandChannel) {
 
 const lang = createLang(<const>{
   was: 'The word was',
-
-  taken: {
+  busy: {
     title: 'A hangman game is already in progress in this channel.',
     desc: 'Please finish it or wait for it to conclude.',
   },
@@ -160,5 +157,11 @@ const lang = createLang(<const>{
   cancelled: {
     title: 'Hangman - timed out!',
     blurb: 'Games time out after 10 minutes of inactivity.',
+  },
+});
+
+const error = createBuiltinErrors({
+  hangmanChannelBusy(e) {
+    e.poryErr('danger').setTitle(lang('busy.title')).setDescription(lang('busy.desc'));
   },
 });

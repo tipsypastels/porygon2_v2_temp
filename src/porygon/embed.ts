@@ -32,6 +32,10 @@ export class Embed extends MessageEmbed {
     return this.setColor(COLORS[color]);
   }
 
+  poryErr(state: AssetGroupKey<typeof PORY_ASSETS> & keyof typeof COLORS) {
+    return this.poryThumb(state).poryColor(state);
+  }
+
   clearImage() {
     this.image = null;
     return this;

@@ -69,3 +69,8 @@ export async function arrayFromAsyncIter<T>(iter: AsyncIterable<T>) {
   for await (const item of iter) out.push(item);
   return out;
 }
+
+/** The type of the first value in an array. */
+export type Head<T extends unknown[]> = T[0];
+/** The type of the rest of an array, minus the first element. */
+export type Tail<T extends unknown[]> = T extends [unknown, ...infer R] ? R : never;

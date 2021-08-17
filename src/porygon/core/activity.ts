@@ -3,7 +3,7 @@ import { schedule } from 'porygon/schedule';
 import { random } from 'support/array';
 import { Porygon } from './client';
 
-const MESSAGES = config('activity_messages');
+const MESSAGES = config('activityMessages');
 
 export function setupActivityMessages(client: Porygon) {
   set(client);

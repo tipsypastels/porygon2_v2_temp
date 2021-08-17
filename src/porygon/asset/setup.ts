@@ -13,8 +13,8 @@ type UploadCache = {
 
 const logger = createLogger('asset', colors.green);
 const CACHE_FILE = 'assets/upload_cache.json';
-const UPLOAD_GUILD = config('assets.upload_dump.guild');
-const UPLOAD_CHANNEL = config('assets.upload_dump.channel');
+const UPLOAD_GUILD = config('assets.uploadDump.guild');
+const UPLOAD_CHANNEL = config('assets.uploadDump.channel');
 
 let done = false;
 

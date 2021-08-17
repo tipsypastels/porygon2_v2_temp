@@ -2,7 +2,7 @@ import { config } from 'porygon/config';
 import { Command } from 'porygon/interaction';
 import { findOwner } from 'porygon/owner';
 
-const desc = config('help_desc');
+const desc = config('helpDesc');
 
 const help: Command = async ({ client, embed, intr }) => {
   const owner = findOwner(client);

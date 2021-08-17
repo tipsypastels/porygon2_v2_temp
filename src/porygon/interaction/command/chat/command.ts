@@ -7,16 +7,15 @@ import {
 } from 'discord.js';
 import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
-import { catchIntrError } from 'porygon/interaction/catch';
-import { intrLogger } from 'porygon/interaction/logger';
-import { CommandOptions } from './options';
+import { CreateBaseCommand, createBaseCommandCall } from '../base';
 import { Cell } from '../cell';
-import { BaseCommand, BaseCommandCallFn, BaseCommandFn } from '../base';
-import { createLang } from 'porygon/lang';
+import { CommandOptions } from './options';
 
 export type CommandChannel = TextChannel | ThreadChannel;
 
-export interface CommandFnArgs<Opts = unknown> {
+type CreateCommand<Opts = unknown> = CreateBaseCommand<Args<Opts>, CommandInteraction>;
+
+interface Args<Opts = unknown> {
   client: Porygon;
   opts: CommandOptions<Opts>;
   guild: Guild;
@@ -27,63 +26,49 @@ export interface CommandFnArgs<Opts = unknown> {
   cell: Cell;
 }
 
-export type CommandFn<Opts = unknown> = BaseCommandFn<CommandFnArgs<Opts>>;
-export type Command<Opts = unknown> = BaseCommand<CommandFn<Opts>>;
+export type CommandFn<Opts = unknown> = CreateCommand<Opts>['Fn'];
+export type Command<Opts = unknown> = CreateCommand<Opts>['Command'];
 
-export type CommandCallFn = BaseCommandCallFn<Command, CommandInteraction>;
+export const callCommand = createBaseCommandCall<CreateCommand>({
+  createArgs(intr, cell) {
+    const guild = intr.guild;
+    const channel = intr.channel;
 
-export const callCommand: CommandCallFn = (intr, cell, command) => {
-  const guild = intr.guild;
-  const channel = intr.channel;
+    if (!guild) {
+      // TODO: handle dms
+      return;
+    }
 
-  if (!guild) {
-    console.log('TODO: handle dm command');
-    return;
-  }
+    if (!isCommandChannel(channel)) {
+      return;
+    }
 
-  if (!isCommandChannel(channel)) {
-    return;
-  }
+    const client = cell.client;
+    const author = intr.member as GuildMember;
+    const embed = new Embed();
+    const opts = new CommandOptions(intr.options);
 
-  const client = cell.client;
-  const author = intr.member as GuildMember;
-  const embed = new Embed();
-  const opts = new CommandOptions(intr.options);
+    return {
+      client,
+      guild,
+      channel,
+      author,
+      embed,
+      intr,
+      opts,
+      cell,
+    };
+  },
 
-  const args: CommandFnArgs = {
-    client,
-    guild,
-    channel,
-    author,
-    embed,
-    intr,
-    opts,
-    cell,
-  };
+  getLoggerCommandName(command) {
+    return `/${command.data.name}`;
+  },
 
-  log(command(args), args);
-};
+  getLoggerLocationContext({ channel, guild }) {
+    return `${channel.name}, ${guild.name}`;
+  },
+});
 
-function isCommandChannel(ch: unknown): ch is CommandChannel {
+export function isCommandChannel(ch: unknown): ch is CommandChannel {
   return !!ch && (ch instanceof TextChannel || ch instanceof ThreadChannel);
 }
-
-function log(result: Promise<void>, args: CommandFnArgs) {
-  const params = {
-    author: args.author.user.username,
-    channel: args.channel.name,
-    guild: args.guild.name,
-    cmd: args.cell.name,
-  };
-
-  result
-    .then(() => intrLogger.info(lang('ok', params)))
-    .catch((error) =>
-      catchIntrError(error, args.intr, () => intrLogger.error(lang('err', params))),
-    );
-}
-
-const lang = createLang(<const>{
-  ok: '{author} used /{cmd} in {channel}, {guild}.',
-  err: '{author} encountered a crash using /{cmd} in {channel}, {guild}. More details may be above.',
-});

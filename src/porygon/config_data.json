@@ -7,7 +7,7 @@
     "dev": "746219046374080532"
   },
   "assets": {
-    "upload_dump": {
+    "uploadDump": {
       "guild": {
         "dev": "746219046374080532",
         "prod": "322199235825238017"
@@ -18,8 +18,8 @@
       }
     }
   },
-  "help_desc": "You can see a pop-up list of commands by pressing `/`. If you have any other questions or suggestions, please direct them to my creator!",
-  "activity_messages": [
+  "helpDesc": "You can see a pop-up list of commands by pressing `/`. If you have any other questions or suggestions, please direct them to my creator!",
+  "activityMessages": [
     "cyberduck supreme",
     "mining bitcoin",
     "just vibing",
@@ -67,7 +67,7 @@
   "pkg": {
     "duck": {
       "joins": {
-        "duck_role": {
+        "duckRole": {
           "prod": "754835519359418448",
           "dev": "777629541740314645"
         },
@@ -133,7 +133,7 @@
         ]
       },
       "vibe": {
-        "negative_traits": [
+        "negativeTraits": [
           "straight",
           "ugly",
           "a cursed user",
@@ -164,7 +164,7 @@
           "on their ninth day without sleep",
           "a player of the expanded free trial of our critically acclaimed MMORPG #FFXIV? you can play through the entirety of a realm reborn and the award-winning heavensward expansion up to level 60 for FREE with no restrictions on playtime"
         ],
-        "positive_traits": [
+        "positiveTraits": [
           "being gay",
           "being stannable",
           "being the big gay",
@@ -193,25 +193,25 @@
       }
     },
     "pets": {
-      "mod_perm": "KICK_MEMBERS",
+      "modPerm": "KICK_MEMBERS",
       "channel": {
         "prod": "755122989866942665",
         "dev": "775630206681612328"
       }
     },
     "pokecom": {
-      "role_list_url": "https://pokecommunity.com/about/discordroles",
+      "roleListUrl": "https://pokecommunity.com/about/discordroles",
       "logging": {
-        "log_channel": {
+        "logChannel": {
           "prod": "423905036859604993",
           "dev": "775630195578503189"
         },
-        "warning_channel": {
+        "warningChannel": {
           "prod": "613756774234718209",
           "dev": "775630201060720640"
         }
       },
-      "shim_legacy_commands": true
+      "shimLegacyCommands": true
     },
     "ct": {
       "role": {
@@ -222,7 +222,7 @@
         "dev": 10,
         "prod": 600
       },
-      "ppm_exceptions": {
+      "ppmExceptions": {
         "dev": {
           "775630182521634846": 0
         },

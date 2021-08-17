@@ -1,0 +1,46 @@
+Notes to myself on ephemerality, e.g. when to use ephemeral responses to interactions.
+
+I'm not sure the best way to be consistent on this. At the time I'm writing this, what
+things are ephemeral is a little random. /ping and /help are, which makes *some* sense,
+but I think I'd rather them not to be because they're pretty small and one-off.
+About half the errors are. Most games/duck commands are not, which makes sense since
+they invite group participation - it'd be crazy to make, say, /vibe ephemeral.
+
+So what *should* be ephemeral? Hmm. There's a difference in preference between PC
+and DC here. The former would obviously prefer less command churn in the chat, hence
+ephemerality. But also most of PC's commands are transactional. The fun spectacle stuff
+is DC only.
+
+As for errors, I think embedded errors can usually be ephemeral, but crashes should be
+public for the sake of visibility (we already know that many people don't or don't know
+how to report issues). Embedded errors would need some kind of logging so I can see they're
+happening, but they're much less urgent since they are deliberate end states of command usage.
+I think I'll give each one a human friendly error code. The only embedded errors I'd leave as
+public are the joke callout ones, like trying to request the moderoid role.
+
+Which errors shouldn't be ephemeral? I like the idea of the jokey callout errors being
+non-ephemeral. For example, Porygon will call you out if you try to delete someone's pet
+or reques tthe moderoid role. Let that stuff stay public.
+
+So, a full list would be something like.
+
+The following should be ephemeral:
+
+- Transactional commands, e.g. /role add, /rolelist.
+- Most embedded errors.
+- Op commands.
+
+The following should not:
+
+- Spectacle-based commands, e.g. /vibe, /pory.
+- Games like /hangman.
+- Callout error messages.
+- Quick one-off commands like most of plugincore.
+
+This might have to change if people abuse them. I can see plugincore being spammed
+once or twice, but I think the novelty will wear off quickly.
+
+If we need more control, I can see the possibility of an "ephemerality policy"
+as something that can be set per guild? Perhaps tie it into creating a replier type.
+Instead of specifying ephemerality, you would specify what kind of reply this is,
+and that would defer to the policy. I don't want to tackle that right now though.

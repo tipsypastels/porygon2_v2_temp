@@ -1,14 +1,8 @@
-import { embeddedError } from 'porygon/error';
+import { createBuiltinErrors } from 'porygon/error';
 import { createLang } from 'porygon/lang';
 
 export function diceParseError(roll: string): never {
-  throw embeddedError.warn((e) => {
-    e.setTitle(lang('title'))
-      .setDescription(lang('desc', { roll }))
-      .addField(lang('ex1.code'), lang('ex1.desc'))
-      .addField(lang('ex2.code'), lang('ex2.desc'))
-      .addField(lang('ex3.code'), lang('ex3.desc'));
-  });
+  throw error('invalidroll', roll);
 }
 
 const lang = createLang(<const>{
@@ -25,5 +19,16 @@ const lang = createLang(<const>{
   ex3: {
     code: '/roll 2d6+12',
     desc: 'Rolls two dice with six faces apiece, then adds twelve to each result.',
+  },
+});
+
+const error = createBuiltinErrors({
+  invalidroll(e, roll: string) {
+    e.poryErr('warning')
+      .setTitle(lang('title'))
+      .setDescription(lang('desc', { roll }))
+      .addField(lang('ex1.code'), lang('ex1.desc'))
+      .addField(lang('ex2.code'), lang('ex2.desc'))
+      .addField(lang('ex3.code'), lang('ex3.desc'));
   },
 });

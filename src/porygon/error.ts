@@ -1,96 +1,47 @@
-/**
- * A rundown of the error system.
- *
- * Because embeds are near universal in Porygon, and often used for passing
- * messages between different parts of the system to collectively build up
- * the final user output, many Porygon functions, especially those related
- * to commands, will throw an "embedded error" - an error which is really
- * just an `IntoEmbed`.
- *
- * This embed will be caught by command handlers (and anywhere else that
- * might need it) and identified using the `isEmbeddedError` predicate.
- * From there, it can just be merged into an embed as any output would.
- *
- * The `embeddedError` function can be used directly, or indirectly via
- * factories like `embeddedError.warn`, which layer on common shared UI
- * such as warning colours and thumbnails.
- */
+import { Embed, IntoEmbedFn } from './embed';
+import { Tail } from 'support/array';
 
-import { IntoEmbedFn } from './embed';
+type Fn = (embed: Embed, ...ctx: never[]) => void;
+type Errors = {
+  [key: string]: Fn;
+};
 
-const TAG = Symbol('embeddedError');
+type Context<E extends Errors, K extends keyof E> = Tail<Parameters<E[K]>>;
 
-export interface EmbeddedError {
+const TAG = Symbol('builtin-error');
+const NO_EPH = /Pub$/;
+
+export interface BuiltinError {
   [TAG]: true;
-  intoEmbed: IntoEmbedFn;
+  code: string;
   ephemeral: boolean;
+  intoEmbed: IntoEmbedFn;
 }
 
-export function isEmbeddedError(error: unknown): error is EmbeddedError {
-  return !!(error && typeof error === 'object' && TAG in error);
+export function isBuiltinError(err: unknown): err is BuiltinError {
+  return !!(err && typeof err === 'object' && TAG in err);
 }
 
 /**
- * Creates an embedded error. Try to use `embeddedError.warn`, `embeddedError.danger`,
- * or `embeddedError.error` when possible, as it's best to standardize these things,
- * and they still let you customize nearly as much.
+ * Creates a function that throws errors specialized to a given command or context.
+ * These errors translate to an `IntoEmbed` which will be caught by the command handler,
+ * thus they should only be used where such a catch will be available, as they are
+ * otherwise opaque objects.
  *
- * This function can be used for completely custom error embeds if needed.
+ * These errors are treated as ephemeral by default when caught. To make one non-ephemeral,
+ * suffix the error code with `Pub`. The reason for this is to make it obvious both
+ * when calling and defining (which may be far apart in long files).
  */
-export function embeddedError(fn: IntoEmbedFn, { ephemeral = false } = {}) {
-  return { [TAG]: true, intoEmbed: fn, ephemeral };
-}
+export function createBuiltinErrors<E extends Errors>(errors: E) {
+  return <C extends keyof E & string>(code: C, ...ctx: Context<E, C>): BuiltinError => {
+    const fn = errors[code];
+    const ephemeral = !NO_EPH.exec(code);
+    const visibleCode = code.replace(NO_EPH, '');
 
-const WARN: IntoEmbedFn = (e) => e.poryThumb('warning').poryColor('warning');
-const DANGER: IntoEmbedFn = (e) => e.poryThumb('danger').poryColor('danger');
-const ERROR: IntoEmbedFn = (e) => e.poryThumb('error').poryColor('error');
+    const intoEmbed: IntoEmbedFn = (embed) => {
+      embed.mergeWith(fn, ...ctx).setFooter(`Error Code: ${visibleCode}`);
+    };
 
-/**
- * Warnings should be used for non-malicious and non-critical errors. Examples:
- *
- *     - Malformed parameters
- *     - No such item
- *     - Nothing to do
- */
-embeddedError.warn = create(WARN);
-
-/**
- * Same as `embeddedError.warn`, but sends as an ephemeral embed once caught.
- * @see embeddedError.warn
- */
-embeddedError.warnEph = create(WARN, { ephemeral: true });
-
-/**
- * Danger should be used for non-critical errors where the user is probably
- * trying to do something weird or unsupported on purpose. Examples:
- *
- *     - Can't remove another user's pets
- *     - Can't request the moderoid role
- */
-embeddedError.danger = create(DANGER);
-
-/**
- * Same as `embeddedError.danger`, but sends as an ephemeral embed once caught.
- * @see embeddedError.danger
- */
-embeddedError.dangerEph = create(DANGER, { ephemeral: true });
-/**
- * Error should be used for critical errors, whether user-caused or not. Critical errors
- * are those where it is probably not possible to give the user an explanation of what
- * they did wrong or tell them to try again. Examples:
- *
- *     - Command handler threw
- *     - Service unavailable
- */
-embeddedError.error = create(ERROR);
-
-/**
- * Same as `embeddedError.error`, but sends as an ephemeral embed once caught.
- * @see embeddedError.error
- */
-embeddedError.errorEph = create(ERROR, { ephemeral: true });
-
-function create(base: IntoEmbedFn, { ephemeral = false } = {}) {
-  return (fn?: IntoEmbedFn) =>
-    embeddedError((e) => e.merge(base).merge(fn), { ephemeral });
+    return { [TAG]: true, code, ephemeral, intoEmbed };
+  };
 }

@@ -1,13 +1,11 @@
 import { ContextMenuInteraction, Guild, GuildMember, Message } from 'discord.js';
 import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
-import { catchIntrError } from 'porygon/interaction/catch';
 import { intrLogger } from 'porygon/interaction/logger';
-import { createLang } from 'porygon/lang';
-import { BaseCommand, BaseCommandCallFn, BaseCommandFn } from '../base';
+import { CreateBaseCommand, createBaseCommandCall } from '../base';
 import { Cell } from '../cell';
 
-export interface BaseContextMenuFnArgs {
+interface BaseArgs {
   client: Porygon;
   guild: Guild;
   author: GuildMember;
@@ -16,50 +14,49 @@ export interface BaseContextMenuFnArgs {
   cell: Cell;
 }
 
-export interface UserContextMenuFnArgs extends BaseContextMenuFnArgs {
+interface UserArgs extends BaseArgs {
   member: GuildMember;
 }
 
-export interface MsgContextMenuFnArgs extends BaseContextMenuFnArgs {
+interface MsgArgs extends UserArgs {
   message: Message;
 }
 
-export type UserContextMenuFn = BaseCommandFn<UserContextMenuFnArgs>;
-export type MsgContextMenuFn = BaseCommandFn<MsgContextMenuFnArgs>;
+type Create = CreateBaseCommand<BaseArgs, ContextMenuInteraction>;
+type CreateUser = CreateBaseCommand<UserArgs, ContextMenuInteraction>;
+type CreateMsg = CreateBaseCommand<MsgArgs, ContextMenuInteraction>;
 
-export type UserContextMenu = BaseCommand<UserContextMenuFn>;
-export type MsgContextMenu = BaseCommand<MsgContextMenuFn>;
+export type UserContextMenu = CreateUser['Command'];
+export type MsgContextMenu = CreateMsg['Command'];
+export type ContextMenu = Create['Command'];
 
-export type ContextMenu = UserContextMenu | MsgContextMenu;
+export const callContextMenu = createBaseCommandCall<Create>({
+  createArgs(intr, cell) {
+    const client = cell.client;
+    const { guild, member: author } = intr;
+    const embed = new Embed();
 
-export type ContextMenuCallFn = BaseCommandCallFn<ContextMenu, ContextMenuInteraction>;
+    if (!guild || !(author instanceof GuildMember)) {
+      return;
+    }
 
-export const callContextMenu: ContextMenuCallFn = (intr, cell, command) => {
-  const client = cell.client;
-  const { guild, member: author } = intr;
-  const embed = new Embed();
+    return merge({
+      client,
+      guild,
+      author,
+      embed,
+      intr,
+      cell,
+    });
+  },
 
-  if (!guild || !(author instanceof GuildMember)) {
-    return;
-  }
+  getLoggerCommandName(command) {
+    const type = (command.data.type as string).toLowerCase();
+    return `${type} menu ${command.data.name}`;
+  },
+});
 
-  const args = merge({
-    client,
-    guild,
-    author,
-    embed,
-    intr,
-    cell,
-  });
-
-  if (!args) {
-    return;
-  }
-
-  log(command(args), args);
-};
-
-function merge(args: BaseContextMenuFnArgs) {
+function merge(args: Create['Args']): Create['Args'] | undefined {
   if (args.intr.targetType === 'MESSAGE') {
     const message = args.intr.options.getMessage('message', true);
 
@@ -68,7 +65,7 @@ function merge(args: BaseContextMenuFnArgs) {
       return;
     }
 
-    (args as MsgContextMenuFnArgs).message = message;
+    (args as CreateMsg['Args']).message = message;
   } else {
     const member = args.intr.options.getMember('user', true);
 
@@ -77,28 +74,8 @@ function merge(args: BaseContextMenuFnArgs) {
       return;
     }
 
-    (args as UserContextMenuFnArgs).member = member;
+    (args as CreateUser['Args']).member = member;
   }
 
-  return args as MsgContextMenuFnArgs & UserContextMenuFnArgs;
+  return args;
 }
-
-function log(result: Promise<void>, args: BaseContextMenuFnArgs) {
-  const params = {
-    author: args.author.user.username,
-    type: args.intr.targetType.toLowerCase(),
-    guild: args.guild.name,
-    cmd: args.cell.name,
-  };
-
-  result
-    .then(() => intrLogger.info(lang('ok', params)))
-    .catch((error) =>
-      catchIntrError(error, args.intr, () => intrLogger.error(lang('err', params))),
-    );
-}
-
-const lang = createLang(<const>{
-  ok: '{author} used {type} menu {cmd} in {guild}.',
-  err: '{author} encountered a crash using {type} menu {cmd} in {guild}. More details may be above.',
-});

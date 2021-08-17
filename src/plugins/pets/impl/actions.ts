@@ -2,18 +2,19 @@ import { GuildMember, Message } from 'discord.js';
 import { config } from 'porygon/config';
 import { db } from 'porygon/core';
 import { Embed } from 'porygon/embed';
-import { embeddedError } from 'porygon/error';
+import { createBuiltinErrors } from 'porygon/error';
 import { CommandChannel } from 'porygon/interaction';
 import { createLang } from 'porygon/lang';
 
 const table = db.pkgPets_Pet;
 
 const CHANNEL_ID = config('pkg.pets.channel');
-const MOD_PERM = config('pkg.pets.mod_perm') as { value: 'KICK_MEMBERS' };
+const MOD_PERM = config('pkg.pets.modPerm') as { value: 'KICK_MEMBERS' };
 const LIMIT = 10;
 
 export async function petAdd(member: GuildMember, channel: CommandChannel) {
-  assertChannel(channel);
+  const isMod = member.permissions.has(MOD_PERM.value);
+  isMod || assertChannel(channel);
 
   const [message, url] = await find(member, channel);
   const data = { url, guildId: member.guild.id, userId: member.id };
@@ -33,16 +34,14 @@ export async function petRemove(id: number, member: GuildMember) {
   const entry = await table.findFirst({ where: { id, guildId: member.guild.id } });
 
   if (!entry) {
-    throw embeddedError.warnEph((e) => e.setTitle(lang('missing_rem', { id })));
+    throw error('petMissingRem', id);
   }
 
   const isCreator = member.id === entry.userId;
   const isMod = member.permissions.has(MOD_PERM.value);
 
   if (!isCreator && !isMod) {
-    throw embeddedError.danger((e) =>
-      e.setTitle(lang('invalid_rem.title')).setDescription(lang('invalid_rem.desc')),
-    );
+    throw error('petMaliciousRemovalPub');
   }
 
   await table.delete({ where: { id } });
@@ -74,25 +73,23 @@ async function find(member: GuildMember, channel: CommandChannel): Promise<Found
     return [message, attachment.url];
   }
 
-  throw embeddedError.warnEph((e) =>
-    e.setTitle(lang('missing_add.title')).setDescription(lang('missing_add.desc')),
-  );
+  throw error('petMissingAdd');
 }
 
 function assertChannel(channel: CommandChannel) {
   if (channel.id !== CHANNEL_ID.value) {
-    throw embeddedError.warnEph((e) => e.setTitle(lang('wrong_channel')));
+    throw error('petWrongChannel');
   }
 }
 
 const lang = createLang(<const>{
-  wrong_channel: 'Please use the #pets channel to add pets :)',
-  missing_add: {
+  wrongChannel: 'Please use the #pets channel to add pets :)',
+  missingAdd: {
     title: "I couldn't find a pet image from you.",
     desc: 'Please upload a pet image, and then use `/pet add` to save it :)',
   },
-  missing_rem: 'No such pet with ID: {id}.',
-  invalid_rem: {
+  missingRem: 'No such pet with ID: {id}.',
+  maliciousRem: {
     title: "You can't remove that pet!",
     desc: "You may only remove pets that you've uploaded.",
   },
@@ -102,5 +99,24 @@ const lang = createLang(<const>{
   },
   removed: {
     title: 'Pet removed!',
+  },
+});
+
+const error = createBuiltinErrors({
+  petWrongChannel(e) {
+    e.poryErr('warning').setTitle(lang('wrongChannel'));
+  },
+  petMissingAdd(e) {
+    e.poryErr('warning')
+      .setTitle(lang('missingAdd.title'))
+      .setDescription(lang('missingAdd.desc'));
+  },
+  petMissingRem(e, id: number) {
+    e.poryErr('warning').setTitle(lang('missingRem', { id }));
+  },
+  petMaliciousRemovalPub(e) {
+    e.poryErr('danger')
+      .setTitle(lang('maliciousRem.title'))
+      .setDescription(lang('maliciousRem.desc'));
   },
 });

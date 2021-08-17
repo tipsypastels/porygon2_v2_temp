@@ -9,7 +9,7 @@ export class Asset {
 
   constructor(readonly dir: string, readonly name: AssetName, readonly ext: string) {
     if (assetSetupIsDone()) {
-      throw new Error(lang('dynamic_create'));
+      throw new Error(lang('dynCreate'));
     }
 
     assetCache(this);
@@ -25,7 +25,7 @@ export class Asset {
 
   set url(url) {
     if (assetSetupIsDone()) {
-      throw new Error(lang('dynamic_set_url'));
+      throw new Error(lang('dynSetUrl'));
     }
 
     this._url = url;
@@ -33,8 +33,6 @@ export class Asset {
 }
 
 const lang = createLang(<const>{
-  dynamic_create:
-    "Can't create assets dynamically. All assets must be created during setup.",
-  dynamic_set_url:
-    "Can't set asset URLs dynamically! All URLs must be fixed during setup.",
+  dynCreate: "Can't create assets dynamically. All assets must be created during setup.",
+  dynSetUrl: "Can't set asset URLs dynamically! All URLs must be fixed during setup.",
 });
