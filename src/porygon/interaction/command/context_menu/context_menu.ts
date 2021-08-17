@@ -1,7 +1,8 @@
 import { ContextMenuInteraction, Guild, GuildMember, Message } from 'discord.js';
 import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
-import { intrLogger } from 'porygon/interaction/logger';
+import { onDMCommand } from '../../dm';
+import { intrLogger } from '../../logger';
 import { CreateBaseCommand } from '../base';
 import { createBaseCommandCall } from '../base/factory';
 import { Cell } from '../cell';
@@ -37,7 +38,12 @@ export const callContextMenu = createBaseCommandCall<Create>({
     const { guild, member: author } = intr;
     const embed = new Embed();
 
-    if (!guild || !(author instanceof GuildMember)) {
+    if (!guild) {
+      onDMCommand(client, intr);
+      return;
+    }
+
+    if (!(author instanceof GuildMember)) {
       return;
     }
 
