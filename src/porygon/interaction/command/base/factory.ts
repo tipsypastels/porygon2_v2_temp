@@ -34,6 +34,10 @@ export function createBaseCommandCall<C extends Create>(opts: Opts<C>): C['CallF
     return { loc, cmd, author };
   }
 
+  function getUnknownErrorEphemerality(command: C['Command'], args: C['Args']) {
+    return command.unknownErrorEphemerality?.(args) ?? false;
+  }
+
   function onSuccess(command: C['Command'], args: C['Args']) {
     intrLogger.info(lang('log.ok', getLoggerBaseParams(command, args)));
   }
@@ -53,12 +57,13 @@ export function createBaseCommandCall<C extends Create>(opts: Opts<C>): C['CallF
   }
 
   function onUnknownErr(err: unknown, command: C['Command'], args: C['Args']) {
+    const ephemeral = getUnknownErrorEphemerality(command, args);
     const embed = new Embed()
       .poryErr('error')
       .setTitle(lang('embed.unk.title'))
       .setDescription(getErrorMsg(err));
 
-    args.intr.reply({ embeds: [embed] });
+    args.intr.reply({ embeds: [embed], ephemeral });
 
     intrLogger.error(lang('log.unkErr', getLoggerBaseParams(command, args)));
     intrLogger.error(err as any);

@@ -18,6 +18,7 @@ export type BaseCommandFn<A extends BaseCommandArgs> = (args: A) => Promise<void
 
 export type BaseCommand<F extends BaseCommandFn<any> = BaseCommandFn<any>> = F & {
   data: Data;
+  unknownErrorEphemerality?(...args: Parameters<F>): boolean;
 };
 
 export interface BaseCommandCallFn<C extends BaseCommand<any>, I extends Intr> {

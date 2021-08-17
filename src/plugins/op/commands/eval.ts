@@ -9,7 +9,7 @@ import { DEV } from 'porygon/dev';
 
 interface Opts {
   code: string;
-  quiet?: boolean;
+  loud?: boolean;
 }
 
 const eval_: Command<Opts> = async (args) => {
@@ -17,11 +17,18 @@ const eval_: Command<Opts> = async (args) => {
 
   const { intr, author, guild, embed, client, opts, cell } = args;
   const code = opts.get('code');
+  const ephemeral = !opts.try('loud');
   const { plugin } = cell;
   const db = dbImport;
   const Plugin = PluginImport;
 
   const result = eval(code);
+
+  function getCell(name: string) {
+    return Plugin.SAVED_COMMANDS.find(
+      (cell) => cell.name === name && cell.isOn(guild.id),
+    );
+  }
 
   embed
     .poryColor('ok')
@@ -29,12 +36,13 @@ const eval_: Command<Opts> = async (args) => {
     .addField('Input', js(code, { inspect: false }))
     .addField('Output', js(result, { inspect: true }));
 
-  await intr.reply({ embeds: [embed] });
+  await intr.reply({ embeds: [embed], ephemeral });
 };
 
+eval_.unknownErrorEphemerality = ({ opts }) => !opts.try('loud');
 eval_.data = {
   name: 'eval',
-  defaultPermission: DEV,
+  defaultPermission: true,
   description: "If you don't know what this does, you shouldn't be using it.",
   options: [
     {
@@ -42,6 +50,12 @@ eval_.data = {
       type: 'STRING',
       required: true,
       description: 'Code to be run.',
+    },
+    {
+      name: 'loud',
+      type: 'BOOLEAN',
+      required: false,
+      description: 'Whether the response should be non-ephemeral. ',
     },
   ],
 };

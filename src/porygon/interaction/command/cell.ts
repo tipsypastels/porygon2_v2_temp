@@ -1,6 +1,6 @@
 import { Plugin } from 'porygon/plugin';
 import { BaseCommand } from './base';
-import { ApplicationCommand as Api, BaseCommandInteraction } from 'discord.js';
+import { ApplicationCommand as Api, BaseCommandInteraction, Snowflake } from 'discord.js';
 import { ContextMenu, callContextMenu } from './context_menu/context_menu';
 import { Command, callCommand } from './chat';
 
@@ -19,6 +19,10 @@ export class Cell {
     return this.plugin.client;
   }
 
+  get isGlobal() {
+    return !this.api.guildId;
+  }
+
   call(intr: BaseCommandInteraction): void {
     if (intr.isCommand()) {
       return callCommand(intr, this, this.cmd as Command);
@@ -27,5 +31,9 @@ export class Cell {
     if (intr.isContextMenu()) {
       return callContextMenu(intr, this, this.cmd as ContextMenu);
     }
+  }
+
+  isOn(guildId: Snowflake) {
+    return this.isGlobal || this.api.guildId === guildId;
   }
 }
