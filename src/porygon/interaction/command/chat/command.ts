@@ -7,7 +7,7 @@ import {
 } from 'discord.js';
 import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
-import { onDMCommand } from 'porygon/interaction/dm';
+import { onDMCommand } from '../../dm';
 import { CreateBaseCommand } from '../base';
 import { createBaseCommandCall } from '../base/factory';
 import { Cell } from '../cell';
