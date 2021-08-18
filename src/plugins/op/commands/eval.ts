@@ -24,7 +24,7 @@ const eval_: Command<Opts> = async (args) => {
 
   const result = await eval(code);
 
-  // enabled /perm, which allows managing permissions
+  // enables /perm, which allows managing permissions
   function enablePermForMe() {
     const perm = Cell.withNameOnGuild('perm', guild);
     return perm?.setPerm(author, true);

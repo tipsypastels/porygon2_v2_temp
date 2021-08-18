@@ -43,7 +43,14 @@ export class Cell {
   setPerm(target: Role | GuildMember, permission: boolean) {
     const type: PermType = target instanceof GuildMember ? 'USER' : 'ROLE';
     const permissions = [{ id: target.id, type, permission }];
-    return this.api.permissions.add({ permissions });
+    const options: any = { permissions };
+
+    // if this is a global command, it needs context on where to enable it
+    if (this.isGlobal) {
+      options.guild = target.guild;
+    }
+
+    return this.api.permissions.add(options);
   }
 
   call(intr: BaseCommandInteraction): void {
