@@ -9,16 +9,16 @@ import { previewAssets } from 'porygon/asset/preview';
 type SayOpts = { message: string; channel?: TextChannel };
 type PreviewAssetOpts = { asset: string };
 
-const say: CommandFn<SayOpts> = async ({ opts, intr, channel, author }) => {
+const say: CommandFn<SayOpts> = async ({ opts, intr, channel, embed, author }) => {
   assertOwner(author);
 
   const message = opts.get('message');
   const destination = opts.try('channel') ?? channel;
 
-  await Promise.all([
-    destination.send(message),
-    intr.reply({ content: '\\✅', ephemeral: true }),
-  ]);
+  await intr.reply({ content: '\\✅', ephemeral: true });
+
+  embed.poryColor('info').poryColor('ok').poryThumb('speech').setTitle(message);
+  await destination.send({ embeds: [embed] });
 };
 
 const stats: CommandFn = async ({ embed, intr, client, author }) => {
