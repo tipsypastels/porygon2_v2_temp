@@ -31,4 +31,8 @@ export class FailurePercentStat {
   add(value: boolean) {
     value ? this.pass() : this.fail();
   }
+
+  toString() {
+    return `${this.percent}%`;
+  }
 }

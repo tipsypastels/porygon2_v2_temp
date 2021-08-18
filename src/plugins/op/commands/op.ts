@@ -2,7 +2,7 @@ import { TextChannel } from 'discord.js';
 import { DEV } from 'porygon/dev';
 import { CommandFn, commandGroups } from 'porygon/interaction';
 import { assertOwner } from 'porygon/owner';
-import { uptime } from 'porygon/stats';
+import { missedPartialDeletions, missedPartialLeaves, uptime } from 'porygon/stats';
 import * as Assets from 'porygon/assets';
 import { previewAssets } from 'porygon/asset/preview';
 
@@ -27,9 +27,11 @@ const stats: CommandFn = async ({ embed, intr, client, author }) => {
     .setTitle('Stats for operators')
     .addField('Servers', client.guilds.cache.size.toString())
     .addField('Uptime', uptime.inWords())
-    .addField('Heartbeat', `${client.ws.ping}ms`);
+    .addField('Heartbeat', `${client.ws.ping}ms`)
+    .addField('Missed Leaves', missedPartialLeaves.toString())
+    .addField('Missed Deletions', missedPartialDeletions.toString());
 
-  await intr.reply({ embeds: [embed] });
+  await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
 const previewasset: CommandFn<PreviewAssetOpts> = async ({
