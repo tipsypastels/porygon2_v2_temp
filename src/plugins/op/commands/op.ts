@@ -6,17 +6,18 @@ import { uptime } from 'porygon/stats';
 import * as Assets from 'porygon/assets';
 import { previewAssets } from 'porygon/asset/preview';
 
-type SayOpts = { channel: TextChannel; message: string };
+type SayOpts = { message: string; channel?: TextChannel };
 type PreviewAssetOpts = { asset: string };
 
-const say: CommandFn<SayOpts> = async ({ opts, intr, embed, author }) => {
+const say: CommandFn<SayOpts> = async ({ opts, intr, channel, author }) => {
   assertOwner(author);
 
-  const { channel, message } = opts.pick('channel', 'message');
+  const message = opts.get('message');
+  const destination = opts.try('channel') ?? channel;
 
   await Promise.all([
-    channel.send(message),
-    intr.reply({ content: '✅', ephemeral: true }),
+    destination.send(message),
+    intr.reply({ content: '\\✅', ephemeral: true }),
   ]);
 };
 
@@ -62,16 +63,16 @@ op.data = {
       type: 'SUB_COMMAND',
       options: [
         {
-          name: 'channel',
-          description: 'The channel to send to.',
-          type: 'CHANNEL',
-          required: true,
-        },
-        {
           name: 'message',
           description: 'The message to send.',
           type: 'STRING',
           required: true,
+        },
+        {
+          name: 'channel',
+          description: 'The channel to send to. Defaults to current if unset.',
+          type: 'CHANNEL',
+          required: false,
         },
       ],
     },

@@ -6,23 +6,23 @@ import { Cell, CommandFn, commandGroups } from 'porygon/interaction';
 import { createLang } from 'porygon/lang';
 import { Stringable } from 'support/string';
 
-type RoleOpts = { name: string; role: Role; allow: boolean };
-type MemberOpts = { name: string; member: GuildMember; allow: boolean };
+type RoleOpts = { cmd: string; role: Role; allow: boolean };
+type MemberOpts = { cmd: string; member: GuildMember; allow: boolean };
 
 const role: CommandFn<RoleOpts> = async ({ opts, embed, intr, guild }) => {
-  const { name, role, allow } = opts.pick('name', 'role', 'allow');
-  await getCell(guild, name).setPerm(role, allow);
+  const { cmd, role, allow } = opts.pick('cmd', 'role', 'allow');
+  await getCell(guild, cmd).setPerm(role, allow);
 
-  embed.mergeWith(result, name, allow, role);
-  await intr.reply({ embeds: [embed] });
+  embed.mergeWith(result, cmd, allow, role);
+  await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
 const member: CommandFn<MemberOpts> = async ({ opts, embed, intr, guild }) => {
-  const { name, member, allow } = opts.pick('name', 'member', 'allow');
-  await getCell(guild, name).setPerm(member, allow);
+  const { cmd, member, allow } = opts.pick('cmd', 'member', 'allow');
+  await getCell(guild, cmd).setPerm(member, allow);
 
-  embed.mergeWith(result, name, allow, member);
-  await intr.reply({ embeds: [embed] });
+  embed.mergeWith(result, cmd, allow, member);
+  await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
 function getCell(guild: Guild, name: string): Cell {
@@ -42,8 +42,8 @@ function result(e: Embed, cmd: string, perm: boolean, target: Stringable) {
 
 const perm = commandGroups({ role, member });
 
-const NAME = <const>{
-  name: 'name',
+const CMD = <const>{
+  name: 'cmd',
   description: 'The name of the command.',
   required: true,
   type: 'STRING',
@@ -56,6 +56,7 @@ const ALLOW = <const>{
   type: 'BOOLEAN',
 };
 
+perm.unknownErrorEphemerality = () => true;
 perm.data = {
   name: 'perm',
   description: 'Manages command permissions.',
@@ -66,7 +67,7 @@ perm.data = {
       description: 'Manages permissions for a role.',
       type: 'SUB_COMMAND',
       options: [
-        NAME,
+        CMD,
         {
           name: 'role',
           description: 'The role set permissions for.',
@@ -81,7 +82,7 @@ perm.data = {
       description: 'Manages permissions for a member.',
       type: 'SUB_COMMAND',
       options: [
-        NAME,
+        CMD,
         {
           name: 'member',
           description: 'The member to set permissions for.',
