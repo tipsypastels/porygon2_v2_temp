@@ -2,7 +2,7 @@ import { createBuiltinErrors } from 'porygon/error';
 import { createLang } from 'porygon/lang';
 
 export function diceParseError(roll: string): never {
-  throw error('invalidroll', roll);
+  throw error('invalidRoll', roll);
 }
 
 const lang = createLang(<const>{
@@ -23,7 +23,7 @@ const lang = createLang(<const>{
 });
 
 const error = createBuiltinErrors({
-  invalidroll(e, roll: string) {
+  invalidRoll(e, roll: string) {
     e.poryErr('warning')
       .setTitle(lang('title'))
       .setDescription(lang('desc', { roll }))

@@ -1,5 +1,6 @@
 import { Empty } from 'support/object';
 import { Path, PathValue } from 'support/path';
+import { Stringable } from 'support/string';
 
 type PluralMap = {
   [key: number]: string;
@@ -13,7 +14,6 @@ export interface Lang {
   [key: string]: Lang | Phrase;
 }
 
-type Stringable = string | { toString(): string };
 type WithCount<S, T> = S extends PluralMap ? T & { count: number } : T;
 type ToObject<T extends string> = { [K in T]: Stringable };
 

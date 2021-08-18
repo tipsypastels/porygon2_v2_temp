@@ -1,5 +1,7 @@
 import { inspect } from 'util';
 
+export type Stringable = string | { toString(): string };
+
 export interface CodeBlockOpts {
   lang?: string;
   inspect?: boolean;

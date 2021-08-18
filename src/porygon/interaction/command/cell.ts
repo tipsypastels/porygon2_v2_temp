@@ -1,11 +1,24 @@
 import { Plugin } from 'porygon/plugin';
 import { BaseCommand } from './base';
-import { ApplicationCommand as Api, BaseCommandInteraction, Snowflake } from 'discord.js';
+import {
+  ApplicationCommandPermissionType as PermType,
+  ApplicationCommand as Api,
+  BaseCommandInteraction,
+  GuildMember,
+  Role,
+  Snowflake,
+} from 'discord.js';
 import { ContextMenu, callContextMenu } from './context_menu/context_menu';
 import { Command, callCommand } from './chat';
+import { resolveSnowflake, SnowflakeLike } from 'support/snowflake';
 
 export class Cell {
   constructor(readonly plugin: Plugin, private api: Api, private cmd: BaseCommand) {}
+
+  static withNameOnGuild(name: string, sf: SnowflakeLike) {
+    const id = resolveSnowflake(sf);
+    return Plugin.SAVED_COMMANDS.find((c) => c.name === name && c.isOn(id));
+  }
 
   get id() {
     return this.api.id;
@@ -25,6 +38,12 @@ export class Cell {
 
   get permissions() {
     return this.api.permissions;
+  }
+
+  setPerm(target: Role | GuildMember, permission: boolean) {
+    const type: PermType = target instanceof GuildMember ? 'USER' : 'ROLE';
+    const permissions = [{ id: target.id, type, permission }];
+    return this.api.permissions.add({ permissions });
   }
 
   call(intr: BaseCommandInteraction): void {
