@@ -64,7 +64,7 @@
     "no thots head empty",
     "mining duckcoin"
   ],
-  "pkg": {
+  "plug": {
     "duck": {
       "joins": {
         "duckRole": {

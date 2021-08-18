@@ -7,7 +7,7 @@ interface Opts {
   question: string;
 }
 
-const LINES = config('pkg.duck.8ball.lines');
+const LINES = config('plug.duck.8ball.lines');
 const TRUNCATE = 300;
 
 const _8ball: Command<Opts> = async ({ opts, embed, intr }) => {

@@ -7,15 +7,15 @@ export const CtConfig = {
   // don't assign directly so we can retain
   // the ability of config to change at runtime
   get roleId() {
-    return config('pkg.ct.role').value;
+    return config('plug.ct.role').value;
   },
 
   get threshold() {
-    return config('pkg.ct.threshold').value;
+    return config('plug.ct.threshold').value;
   },
 
   get ppmExceptions(): Record<Snowflake, number> {
-    return config('pkg.ct.ppmExceptions').value;
+    return config('plug.ct.ppmExceptions').value;
   },
 };
 

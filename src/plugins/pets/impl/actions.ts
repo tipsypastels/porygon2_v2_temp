@@ -6,10 +6,10 @@ import { createBuiltinErrors } from 'porygon/error';
 import { CommandChannel } from 'porygon/interaction';
 import { createLang } from 'porygon/lang';
 
-const table = db.pkgPets_Pet;
+const table = db.plugPets_Pet;
 
-const CHANNEL_ID = config('pkg.pets.channel');
-const MOD_PERM = config('pkg.pets.modPerm') as { value: 'KICK_MEMBERS' };
+const CHANNEL_ID = config('plug.pets.channel');
+const MOD_PERM = config('plug.pets.modPerm') as { value: 'KICK_MEMBERS' };
 const LIMIT = 10;
 
 export async function petAdd(member: GuildMember, channel: CommandChannel) {

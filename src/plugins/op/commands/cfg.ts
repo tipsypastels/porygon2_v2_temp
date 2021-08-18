@@ -18,7 +18,7 @@ const get: CommandFn<GetOpts> = async ({ opts, intr, embed }) => {
     .addField('Key', code(key))
     .addField('Value', codeBlock(value, { inspect: true, lang: 'js' }));
 
-  await intr.reply({ embeds: [embed] });
+  await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
 const set: CommandFn<SetOpts> = async ({ opts, intr, embed }) => {
@@ -34,7 +34,7 @@ const set: CommandFn<SetOpts> = async ({ opts, intr, embed }) => {
         .addField('Key', code(key))
         .addField('New Value', codeBlock(value, { lang: 'js' }));
 
-      return intr.reply({ embeds: [embed] });
+      return intr.reply({ embeds: [embed], ephemeral: true });
     })
     .catch(() => {
       embed
@@ -66,6 +66,7 @@ const update: CommandFn<UpdateOpts> = async ({ opts, intr, embed, author }) => {
 
 const cfg = commandGroups({ get, set, update });
 
+cfg.unknownErrorEphemerality = () => true;
 cfg.data = {
   name: 'cfg',
   description: 'Gets or sets a Porygon configuration value by its internal ID.',

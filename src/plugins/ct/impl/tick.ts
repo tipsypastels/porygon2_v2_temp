@@ -68,7 +68,7 @@ function query(where: Where) {
       SELECT 
         "userId"
       FROM
-        "public"."PkgCt_Score"
+        "public"."PlugCt_Score"
       WHERE
         "pointsThisCycle" + "pointsLastCycle" ${Prisma.raw(op)} ${threshold}
     `;

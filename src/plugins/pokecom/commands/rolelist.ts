@@ -1,7 +1,7 @@
 import { config } from 'porygon/config';
 import { Command } from 'porygon/interaction';
 
-const URL = config('pkg.pokecom.roleListUrl');
+const URL = config('plug.pokecom.roleListUrl');
 
 const rolelist: Command = async ({ intr }) => {
   await intr.reply({

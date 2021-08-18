@@ -3,8 +3,8 @@ import { Command } from 'porygon/interaction';
 import { random } from 'support/array';
 import { bold } from 'support/string';
 
-const POSITIVE_TRAITS = config('pkg.duck.vibe.positiveTraits');
-const NEGATIVE_TRAITS = config('pkg.duck.vibe.negativeTraits');
+const POSITIVE_TRAITS = config('plug.duck.vibe.positiveTraits');
+const NEGATIVE_TRAITS = config('plug.duck.vibe.negativeTraits');
 
 type TraitList = typeof POSITIVE_TRAITS;
 

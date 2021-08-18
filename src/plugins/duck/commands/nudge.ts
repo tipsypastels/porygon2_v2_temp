@@ -5,7 +5,7 @@ import { random, toSentence } from 'support/array';
 import { InclusiveRange } from 'support/range';
 
 const BASE_COUNT = new InclusiveRange(3, 7);
-const DISASTERS = config('pkg.duck.nudge.disasters');
+const DISASTERS = config('plug.duck.nudge.disasters');
 
 const nudge: Command = async ({ guild, embed, intr }) => {
   embed.poryColor('ok').setTitle(disaster()).setDescription(deaths(guild));

@@ -30,7 +30,7 @@ function fetch() {
       "userId",
       "pointsLastCycle" + "pointsThisCycle" as "score"
     FROM
-      "public"."PkgCt_Score"
+      "public"."PlugCt_Score"
     ORDER BY
       "score" DESC
     LIMIT

@@ -21,7 +21,7 @@ interface Opts {
 const ACTIVE_CHANNELS = new Set<Snowflake>();
 const TIMEOUT = Minutes(DEV ? 1 : 10);
 const LIFETIME = 10;
-const WORDS = config('pkg.games.hangman.words');
+const WORDS = config('plug.games.hangman.words');
 
 /**
  * @see BaseHangman for the implementation.

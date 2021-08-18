@@ -1,4 +1,4 @@
-import { PkgPets_Pet } from '@prisma/client';
+import { PlugPets_Pet } from '@prisma/client';
 import { Guild, GuildMember } from 'discord.js';
 import { db } from 'porygon/core';
 import { Embed, fromMember } from 'porygon/embed';
@@ -33,19 +33,19 @@ export async function petRandom(guild: Guild, member?: GuildMember) {
 
 async function randomEntry(guild: Guild, member?: GuildMember) {
   const [entry] = await (member ? randomBy(guild, member) : randomBase(guild));
-  return entry as PkgPets_Pet | undefined;
+  return entry as PlugPets_Pet | undefined;
 }
 
 function randomBase(guild: Guild) {
-  return db.$queryRaw<PkgPets_Pet[]>`
+  return db.$queryRaw<PlugPets_Pet[]>`
     SELECT
       *
     FROM
-      "public"."PkgPets_Pet"
+      "public"."PlugPets_Pet"
     WHERE
-      "PkgPets_Pet"."guildId" = ${guild.id}
+      "PlugPets_Pet"."guildId" = ${guild.id}
     AND
-      "PkgPets_Pet"."active" = TRUE
+      "PlugPets_Pet"."active" = TRUE
     ORDER BY
       RANDOM()
     LIMIT
@@ -53,17 +53,17 @@ function randomBase(guild: Guild) {
   `;
 }
 function randomBy(guild: Guild, member: GuildMember) {
-  return db.$queryRaw<PkgPets_Pet[]>`
+  return db.$queryRaw<PlugPets_Pet[]>`
     SELECT
       *
     FROM
-      "public"."PkgPets_Pet"
+      "public"."PlugPets_Pet"
     WHERE
-      "PkgPets_Pet"."guildId" = ${guild.id}
+      "PlugPets_Pet"."guildId" = ${guild.id}
     AND
-      "PkgPets_Pet"."active" = TRUE
+      "PlugPets_Pet"."active" = TRUE
     AND 
-      "PkgPets_Pet"."userId" = ${member.id}
+      "PlugPets_Pet"."userId" = ${member.id}
     ORDER BY
       RANDOM()
     LIMIT

@@ -1,4 +1,4 @@
-import { PkgDuck_PatCount } from '@prisma/client';
+import { PlugDuck_PatCount } from '@prisma/client';
 import { Guild, GuildMember, Snowflake } from 'discord.js';
 import { HEADPAT_ASSETS } from 'porygon/assets';
 import { db } from 'porygon/core';
@@ -10,14 +10,14 @@ export function getPatGif() {
 export async function incrementPatCount({ id }: GuildMember, by = 1) {
   await db.$executeRaw`
     INSERT INTO
-      "public"."PkgDuck_PatCount" ("userId", "pats")
+      "public"."PlugDuck_PatCount" ("userId", "pats")
     VALUES
       (${id}, ${by})
     ON CONFLICT ON CONSTRAINT
-      "PkgDuck_PatCount_pkey"
+      "PlugDuck_PatCount_pkey"
     DO UPDATE
     SET pats = (
-      "PkgDuck_PatCount"."pats" + "excluded"."pats"
+      "PlugDuck_PatCount"."pats" + "excluded"."pats"
     )
   `;
 }
@@ -41,12 +41,12 @@ export async function* patLeaderboard(guild: Guild) {
 }
 
 function fetchLeaderboard() {
-  return db.$queryRaw<PkgDuck_PatCount[]>`
+  return db.$queryRaw<PlugDuck_PatCount[]>`
     SELECT
       "userId",
       "pats"
     FROM
-      "public"."PkgDuck_PatCount"
+      "public"."PlugDuck_PatCount"
     ORDER BY
       "pats" DESC
     LIMIT

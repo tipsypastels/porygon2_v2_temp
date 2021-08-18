@@ -6,7 +6,7 @@ type User = { id: Snowflake };
 export async function activatePetsBy({ id }: User) {
   await db.$executeRaw`
     UPDATE 
-      "public"."PkgPets_Pet"
+      "public"."PlugPets_Pet"
     SET
       "active" = TRUE
     WHERE
@@ -17,7 +17,7 @@ export async function activatePetsBy({ id }: User) {
 export async function deactivatePetsBy({ id }: User) {
   await db.$executeRaw`
     UPDATE 
-      "public"."PkgPets_Pet"
+      "public"."PlugPets_Pet"
     SET
       "active" = FALSE
     WHERE

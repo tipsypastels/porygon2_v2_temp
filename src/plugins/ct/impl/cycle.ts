@@ -6,7 +6,7 @@ import { ctRunTick } from './tick';
 export async function ctRunCycle(guild: Guild) {
   await db.$executeRaw`
       UPDATE 
-        "public"."PkgCt_Score"
+        "public"."PlugCt_Score"
       SET 
         "pointsLastCycle" = "pointsThisCycle",
         "pointsThisCycle" = 0 

@@ -1,9 +1,9 @@
-import { PkgCt_Score } from '@prisma/client';
+import { PlugCt_Score } from '@prisma/client';
 import { GuildMember } from 'discord.js';
 import { db } from 'porygon/core';
 import { CtConfig } from './shared';
 
-const table = db.pkgCt_Score;
+const table = db.plugCt_Score;
 
 export enum CtRoleState {
   Yes = '✅ Yes.',
@@ -20,14 +20,14 @@ export interface CtScoreSummary {
 export async function ctIncrementScore(member: GuildMember, amount: number) {
   await db.$executeRaw`
       INSERT INTO 
-        "public"."PkgCt_Score" ("userId", "pointsThisCycle")
+        "public"."PlugCt_Score" ("userId", "pointsThisCycle")
       VALUES 
         (${member.id}, ${amount})
       ON CONFLICT ON CONSTRAINT 
-        "PkgCt_Score_pkey" 
+        "PlugCt_Score_pkey" 
       DO UPDATE
       SET "pointsThisCycle" = (
-        "PkgCt_Score"."pointsThisCycle" + "excluded"."pointsThisCycle"
+        "PlugCt_Score"."pointsThisCycle" + "excluded"."pointsThisCycle"
       )
   `;
 }
@@ -47,7 +47,7 @@ function fetch(member: GuildMember) {
   return table.findFirst({ where: { userId: member.id } });
 }
 
-function sum(entry: PkgCt_Score | null) {
+function sum(entry: PlugCt_Score | null) {
   return entry ? entry.pointsThisCycle + entry.pointsLastCycle : 0;
 }
 

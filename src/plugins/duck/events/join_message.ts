@@ -4,8 +4,8 @@ import { Embed } from 'porygon/embed';
 import { bugLogger } from 'porygon/logger';
 import { EventFactory } from 'porygon/plugin';
 
-const CHANNEL_ID = config('pkg.duck.joins.channel');
-const ROLE_ID = config('pkg.duck.joins.duckRole');
+const CHANNEL_ID = config('plug.duck.joins.channel');
+const ROLE_ID = config('plug.duck.joins.duckRole');
 
 const join: EventFactory = async ({ events }) => {
   events.on('guildMemberAdd', call);
