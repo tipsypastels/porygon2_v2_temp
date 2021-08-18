@@ -23,6 +23,10 @@ export class Cell {
     return !this.api.guildId;
   }
 
+  get permissions() {
+    return this.api.permissions;
+  }
+
   call(intr: BaseCommandInteraction): void {
     if (intr.isCommand()) {
       return callCommand(intr, this, this.cmd as Command);

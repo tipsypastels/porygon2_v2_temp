@@ -12,6 +12,9 @@ interface Opts {
   loud?: boolean;
 }
 
+// no point bring stricter, since eval is untyped
+type ID = string | number | bigint;
+
 const eval_: Command<Opts> = async (args) => {
   assertOwner(args.author);
 
@@ -22,12 +25,35 @@ const eval_: Command<Opts> = async (args) => {
   const db = dbImport;
   const Plugin = PluginImport;
 
-  const result = eval(code);
+  const result = await eval(code);
+
+  // functions to be called inside /eval
+  // very unsafe
 
   function getCell(name: string) {
     return Plugin.SAVED_COMMANDS.find(
       (cell) => cell.name === name && cell.isOn(guild.id),
     );
+  }
+
+  function allowUser(cellName: string, id: ID) {
+    return getCell(cellName)!.permissions.set(_intoPerm('USER', id, true));
+  }
+
+  function denyUser(cellName: string, id: ID) {
+    return getCell(cellName)!.permissions.set(_intoPerm('USER', id, false));
+  }
+
+  function allowRole(cellName: string, id: ID) {
+    return getCell(cellName)!.permissions.set(_intoPerm('ROLE', id, true));
+  }
+
+  function denyRole(cellName: string, id: ID) {
+    return getCell(cellName)!.permissions.set(_intoPerm('ROLE', id, false));
+  }
+
+  function _intoPerm(type: 'USER' | 'ROLE', id: ID, permission: boolean) {
+    return { permissions: [{ type, id: `${id}`, permission }] };
   }
 
   embed

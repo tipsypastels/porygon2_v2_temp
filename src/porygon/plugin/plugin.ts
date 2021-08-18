@@ -3,7 +3,6 @@ import { Porygon } from 'porygon/core';
 import { Cell, BaseCommand } from 'porygon/interaction';
 import { zip } from 'support/array';
 import { PluginKind } from './kind';
-import { PluginCommandUploader } from './upload';
 
 /**
  * A plugin is a unit of command and event grouping, and a manager for
@@ -35,7 +34,6 @@ import { PluginCommandUploader } from './upload';
  * `plugin.kind.tag` is available, though it's not a pretty one.
  *
  * @see PluginKind - Unique ID for each plugin.
- * @see PluginCommandUploader - Manages command uploads and caching.
  */
 export class Plugin {
   static ALL = new Collection<PluginKind, Plugin>();
@@ -60,8 +58,8 @@ export class Plugin {
   }
 
   private async uploadCommands() {
-    const uploader = new PluginCommandUploader(this, this.kind, this.unsavedCommands);
-    const apis = await uploader.upload();
+    const data = this.unsavedCommands.map((c) => c.data);
+    const apis = await this.kind.upload(data, this.client);
 
     for (const [command, api] of zip(this.unsavedCommands, apis)) {
       const ref = new Cell(this, api, command);
