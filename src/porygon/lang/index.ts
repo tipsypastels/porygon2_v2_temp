@@ -39,7 +39,7 @@ import { Lang, LangFn, Phrase, PluralMap } from './types';
  *
  * You can specify a non-root node of the lang tree. When doing this you must
  * pass in the union of the parameters of all their children. This can be
- * very useful with `Embed#mergeProps`.
+ * very useful with `Embed#assign`.
  *
  *     const lang = createLang(<const>{
  *       success: {
@@ -48,7 +48,7 @@ import { Lang, LangFn, Phrase, PluralMap } from './types';
  *       },
  *     });
  *
- *     embed.mergeProps(lang('success', { subject: 'you', whatYouWereDoingBefore: 'oh' }));
+ *     embed.assign(lang('success', { subject: 'you', whatYouWereDoingBefore: 'oh' }));
  *
  */
 export function createLang<L extends Lang>(lang: L): LangFn<L> {

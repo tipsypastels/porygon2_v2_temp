@@ -6,8 +6,8 @@ import { random } from 'support/array';
 
 // prettier-ignore
 const RESULTS: IntoEmbed[] = [
-  (e) => e.poryColor('ok').mergeProps(lang('spare')),
-  (e) => e.poryColor('danger').mergeProps(lang('kill')),
+  (e) => e.poryColor('ok').assign(lang('spare')),
+  (e) => e.poryColor('danger').assign(lang('kill')),
 ];
 
 const thanos: Command = async ({ embed, intr, author }) => {

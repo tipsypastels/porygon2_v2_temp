@@ -42,7 +42,7 @@ export async function clearFriendCode(member: GuildMember, code: FcClearCode) {
 
   if (code === 'all') {
     await delEntry(userId);
-    return (e: Embed) => e.mergeProps(lang('clear.all'));
+    return (e: Embed) => e.assign(lang('clear.all'));
   }
 
   const cur = await TABLE.findFirst({ where: { userId } });
@@ -61,7 +61,7 @@ export async function clearFriendCode(member: GuildMember, code: FcClearCode) {
     await TABLE.update({ where: { userId }, data: { [code]: null } });
   }
 
-  return (e: Embed) => e.mergeProps(lang('clear.code', { code }));
+  return (e: Embed) => e.assign(lang('clear.code', { code }));
 }
 
 function delEntry(userId: Snowflake) {
@@ -147,15 +147,15 @@ const lang = createLang(<const>{
 
 const error = createBuiltinErrors({
   emptyFcSetter(e) {
-    e.poryErr('warning').mergeProps(lang('emptySet'));
+    e.poryErr('warning').assign(lang('emptySet'));
   },
   invalidFc(e, code: string) {
-    e.poryErr('warning').mergeProps(lang('malformed', { code }));
+    e.poryErr('warning').assign(lang('malformed', { code }));
   },
   noOpFcClearAll(e) {
-    e.poryErr('warning').mergeProps(lang('clear.noOpAll'));
+    e.poryErr('warning').assign(lang('clear.noOpAll'));
   },
   noOpFcClearCode(e, code: string) {
-    e.poryErr('warning').mergeProps(lang('clear.noOpCode', { code }));
+    e.poryErr('warning').assign(lang('clear.noOpCode', { code }));
   },
 });

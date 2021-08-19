@@ -46,7 +46,7 @@ export class Embed extends MessageEmbed {
     return this;
   }
 
-  mergeProps(props: Partial<EmbedData>) {
+  assign(props: Partial<EmbedData>) {
     props.description = props.desc;
     delete props.desc;
 
