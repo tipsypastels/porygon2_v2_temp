@@ -26,3 +26,10 @@ model PlugPets_Pet {
   active  Boolean @default(true)
   url     String
 }
+
+model PlugFc_Codes {
+  userId String  @id
+  ds     String?
+  go     String?
+  switch String?
+}

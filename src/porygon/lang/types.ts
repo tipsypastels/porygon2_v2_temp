@@ -1,8 +1,9 @@
-import { Empty } from 'support/object';
+import { Empty, LeafOf } from 'support/object';
 import { Path, PathValue } from 'support/path';
 import { Stringable } from 'support/string';
 
-type PluralMap = {
+/** @internal */
+export type PluralMap = {
   [key: number]: string;
   _: string;
 };
@@ -22,14 +23,25 @@ type ExtractString<S> = S extends `${string}{${infer Param}}${infer Rest}`
   : never;
 
 type ExtractObject<S> = ExtractString<S[keyof S]>;
-type Extract<S> = S extends PluralMap ? ExtractObject<S> : ExtractString<S>;
 
-type Params<S> = WithCount<S, ToObject<Extract<S>>>;
+type ExtractParam<S> = S extends string
+  ? ExtractString<S>
+  : S extends PluralMap
+  ? ExtractObject<S>
+  : ExtractString<LeafOf<S, string>>;
+
+type Params<S> = WithCount<S, ToObject<ExtractParam<S>>>;
+
+type Return<L extends Lang, P extends Path<L>> = PathValue<L, P> extends
+  | string
+  | PluralMap
+  ? string
+  : PathValue<L, P>;
 
 /** @internal */
 export type LangFn<L extends Lang> = <P extends Path<L>>(
   ...args: LangFnArgs<L, P, Params<PathValue<L, P>>>
-) => string;
+) => Return<L, P>;
 
 type LangFnArgs<
   L extends Lang,

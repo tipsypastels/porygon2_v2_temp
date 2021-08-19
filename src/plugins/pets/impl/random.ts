@@ -1,7 +1,7 @@
 import { PlugPets_Pet } from '@prisma/client';
 import { Guild, GuildMember } from 'discord.js';
 import { db } from 'porygon/core';
-import { Embed, fromMember } from 'porygon/embed';
+import { Embed } from 'porygon/embed';
 import { createBuiltinErrors } from 'porygon/error';
 import { createLang } from 'porygon/lang';
 import { bugLogger } from 'porygon/logger';
@@ -25,7 +25,7 @@ export async function petRandom(guild: Guild, member?: GuildMember) {
   return function (embed: Embed) {
     embed
       .poryColor('info')
-      .setAuthor(...fromMember(owner))
+      .setAuthor(owner)
       .setImage(entry.url)
       .setFooter(lang('remove', { id: entry.id }));
   };

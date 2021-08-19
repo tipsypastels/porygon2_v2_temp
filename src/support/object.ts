@@ -37,6 +37,21 @@ export type Tag<T extends Record<string, unknown>, K extends string = 'kind'> = 
 };
 
 /**
+ * Returns the union of all primtive values in an object tree `T`.
+ */
+export type Leaf<T> = T extends object ? Leaf<T[keyof T]> : T;
+
+/**
+ * Returns the union of all primitive types `R` in an object tree `T`.
+ * Primitive values not assignable to `R` are assumed to be `never`.
+ */
+export type LeafOf<T, R> = T extends object
+  ? LeafOf<T[keyof T], R>
+  : T extends R
+  ? T
+  : never;
+
+/**
  * Extracts the only key of `obj`. Throws if there are zero or many keys.
  */
 export function extractOnlyKey<T>(obj: T) {

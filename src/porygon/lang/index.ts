@@ -1,7 +1,6 @@
 import get from 'lodash.get';
-import { Lang, LangFn, Phrase } from './types';
-
-type HasCount = { count: number };
+import { Stringable } from 'support/string';
+import { Lang, LangFn, Phrase, PluralMap } from './types';
 
 /**
  * Creates a very simple lightweight i18n function. This need not be
@@ -37,30 +36,66 @@ type HasCount = { count: number };
  * even if none of the strings actually use it. In addition, you can provide
  * strings for any numbers, not just `1` and `_`, although that'll usually
  * be all that's needed.
+ *
+ * You can specify a non-root node of the lang tree. When doing this you must
+ * pass in the union of the parameters of all their children. This can be
+ * very useful with `Embed#mergeProps`.
+ *
+ *     const lang = createLang(<const>{
+ *       success: {
+ *         title: 'Deleted {subject} successfully.',
+ *         description: 'Now back to {whatYouWereDoingBefore}.',
+ *       },
+ *     });
+ *
+ *     embed.mergeProps(lang('success', { subject: 'you', whatYouWereDoingBefore: 'oh' }));
+ *
  */
 export function createLang<L extends Lang>(lang: L): LangFn<L> {
   return function (...[path, params]) {
-    const phrase = get(lang, path) as Phrase;
-    let phraseString = resolvePhraseString(phrase, () => (params as HasCount).count);
+    const phrase = get(lang, path) as Phrase | Lang | undefined;
 
-    if (params) {
-      for (const [key, value] of Object.entries(params)) {
-        phraseString = phraseString.replace(`{${key}}`, value as string);
-      }
+    if (!phrase) {
+      throw new Error(`Unknown phrase path: ${path}`);
     }
 
-    return phraseString;
+    let ret: string | Lang;
+
+    if (typeof phrase !== 'string' && '_' in phrase) {
+      const { count } = params as any;
+      ret = (phrase as PluralMap)[count in phrase ? count : '_'];
+    } else {
+      ret = phrase;
+    }
+
+    if (typeof ret === 'string') {
+      return interp(ret, params);
+    }
+
+    return walk({ ...ret }) as any;
+
+    function walk(item: string | Lang): string | Lang {
+      if (typeof item === 'string') {
+        return interp(item, params);
+      }
+
+      const itemDup = { ...item };
+
+      for (const [key, value] of Object.entries(itemDup)) {
+        itemDup[key] = walk(value);
+      }
+
+      return itemDup;
+    }
   };
 }
 
-function resolvePhraseString(phrase: Phrase, getCount: () => number) {
-  if (typeof phrase === 'string') {
-    return phrase;
+function interp(string: string, params?: Record<string, Stringable>) {
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      string = string.replace(`{${key}}`, value.toString());
+    }
   }
 
-  // lazy because strings don't have a .count,
-  // so we'd rather not uncritically pass it in
-  // (even if it technically wouldn't blow up in pure js)
-  const count = getCount();
-  return phrase[count in phrase ? count : '_'];
+  return string;
 }

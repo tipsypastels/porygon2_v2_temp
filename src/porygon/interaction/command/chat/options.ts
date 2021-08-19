@@ -8,7 +8,7 @@ export class CommandOptions<Opts> {
     return this.getValue(key, true);
   }
 
-  try<K extends keyof Opts & string>(key: K) {
+  try<K extends keyof Opts & string>(key: K): Opts[K] | undefined {
     return this.getValue(key);
   }
 
@@ -17,13 +17,13 @@ export class CommandOptions<Opts> {
     return fromEntries(values);
   }
 
-  private getValue<K extends keyof Opts & string>(key: K): Opts[K] | null;
+  private getValue<K extends keyof Opts & string>(key: K): Opts[K] | undefined;
   private getValue<K extends keyof Opts & string>(key: K, required: true): Opts[K];
   private getValue(key: string, required?: boolean): any {
     const option = this.res.get(key, required);
 
     if (!option) {
-      return null;
+      return;
     }
 
     switch (option.type) {

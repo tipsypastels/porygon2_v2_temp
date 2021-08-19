@@ -1,5 +1,5 @@
 import { Message, PartialMessage } from 'discord.js';
-import { Embed, fromUser, IntoEmbed } from 'porygon/embed';
+import { Embed, IntoEmbed } from 'porygon/embed';
 import formatWith from 'date-fns/format';
 import { HandlerEventProxy } from 'porygon/plugin';
 import { code, codeBlock } from 'support/string';
@@ -29,7 +29,7 @@ export function logDeletions(events: HandlerEventProxy, opts: Opts) {
 
     const embed = new Embed()
       .poryColor('info')
-      .setAuthor(...fromUser(author))
+      .setAuthor(author)
       .setTitle('Message Deleted')
       .setDescription(message.content ?? '*(no content)*')
       .addInlineField('Channel', message.channel.toString())
