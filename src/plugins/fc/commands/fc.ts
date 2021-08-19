@@ -7,15 +7,21 @@ import {
   setFriendCodes,
 } from '../impl/friend_codes';
 
-type GetOpts = { member: GuildMember };
+type GetOpts = { member?: GuildMember };
 type SetOpts = { 'switch'?: string; '3ds'?: string; 'go'?: string };
 type ClearOpts = { code: FcClearCode };
 
-const get: CommandFn<GetOpts> = async ({ embed, opts, intr }) => {
-  const member = opts.get('member');
+const get: CommandFn<GetOpts> = async ({ embed, opts, intr, author }) => {
+  const member = opts.try('member') ?? author;
+  const isSelf = member.id === author.id;
   const result = await getFriendCodes(member);
 
-  embed.poryColor('info').setTitle('Friend Codes').setAuthor(member).merge(result);
+  embed
+    .poryColor('info')
+    .setTitle('Friend Codes')
+    .setAuthor(member)
+    .mergeWith(result, isSelf);
+
   await intr.reply({ embeds: [embed] });
 };
 
@@ -52,8 +58,8 @@ fc.data = {
         {
           name: 'member',
           type: 'USER',
-          description: 'Member to get.',
-          required: true,
+          description: 'Member to get. Defaults to you if unset.',
+          required: false,
         },
       ],
     },

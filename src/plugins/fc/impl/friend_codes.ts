@@ -80,9 +80,10 @@ function isEmptyExceptForTarget(entry: PlugFc_Codes, code: keyof Setter) {
 }
 
 function createIntoEmbed(member: GuildMember, entry: PlugFc_Codes | null) {
-  return function (e: Embed) {
+  return function (e: Embed, isSelf = false) {
     if (!entry) {
-      return e.setDesc(lang('emptyGet', { member }));
+      const key = isSelf ? 'emptyGetSelf' : 'emptyGet';
+      return e.setDesc(lang(key, { member }));
     }
 
     if (entry.switch) e.addField('Switch', codeBlock(entry.switch));
@@ -115,6 +116,7 @@ function normalizeCode(code: string | undefined) {
 
 const lang = createLang(<const>{
   emptyGet: '{member} has no friend codes set.',
+  emptyGetSelf: 'You have no friend codes set.',
   emptySet: {
     title: 'You used /fc set with no parameters.',
     desc: 'Please provide at least one of `3ds`, `switch`, or `go` to set.',
