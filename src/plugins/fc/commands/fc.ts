@@ -27,7 +27,7 @@ const set: CommandFn<SetOpts> = async ({ embed, opts, intr, author }) => {
   });
 
   embed.poryColor('ok').setTitle('Friend Codes updated!').merge(result);
-  await intr.reply({ embeds: [embed] });
+  await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
 const clear: CommandFn<ClearOpts> = async ({ embed, opts, intr, author }) => {
@@ -35,7 +35,7 @@ const clear: CommandFn<ClearOpts> = async ({ embed, opts, intr, author }) => {
   const result = await clearFriendCode(author, code);
 
   embed.poryColor('ok').merge(result);
-  await intr.reply({ embeds: [embed] });
+  await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
 const fc = commandGroups({ get, set, clear });
