@@ -1,7 +1,9 @@
 import { Collection, Snowflake } from 'discord.js';
 import { Porygon } from 'porygon/core';
+import { Embed } from 'porygon/embed';
 import { Cell, BaseCommand } from 'porygon/interaction';
 import { zip } from 'support/array';
+import { code } from 'support/string';
 import { PluginKind } from './kind';
 
 /**
@@ -41,6 +43,10 @@ export class Plugin {
 
   private unsavedCommands: BaseCommand[] = [];
 
+  // metadata, only tracked for intoPlugInfoEmbed
+  private connected = false;
+  private includedDirs: string[] = [];
+
   static uploadAllCommands() {
     return Promise.all(this.ALL.map((p) => p.uploadCommands()));
   }
@@ -51,6 +57,10 @@ export class Plugin {
 
   private constructor(private kind: PluginKind, readonly client: Porygon) {
     Plugin.ALL.set(kind, this);
+  }
+
+  markDirAsIncluded(dir: string) {
+    this.includedDirs.push(dir);
   }
 
   addCommand(command: BaseCommand) {
@@ -67,5 +77,15 @@ export class Plugin {
     }
 
     this.unsavedCommands = [];
+    this.connected = apis.length > 0;
+  }
+
+  intoPlugInfoEmbed(e: Embed) {
+    const data = [
+      `**Directories:** ${this.includedDirs.map(code).join(', ')}`,
+      `**Connected:** ${this.connected ? '✅' : '❌'}`,
+    ];
+
+    e.addField(this.kind.tag, data.join('\n'));
   }
 }

@@ -4,6 +4,7 @@ import { CommandFn, commandGroups } from 'porygon/interaction';
 import { assertOwner } from 'porygon/owner';
 import { missedPartialDeletions, missedPartialLeaves, uptime } from 'porygon/stats';
 import * as Assets from 'porygon/assets';
+import { Plugin } from 'porygon/plugin';
 import { previewAssets } from 'porygon/asset/preview';
 
 type SayOpts = { message: string; channel?: TextChannel };
@@ -34,6 +35,17 @@ const stats: CommandFn = async ({ embed, intr, client, author }) => {
   await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
+const pluginfo: CommandFn = async ({ embed, intr, author }) => {
+  assertOwner(author);
+
+  for (const [, plugin] of Plugin.ALL) {
+    embed.merge((e) => plugin.intoPlugInfoEmbed(e));
+  }
+
+  embed.setTitle('Plugin Status');
+  await intr.reply({ embeds: [embed], ephemeral: true });
+};
+
 const previewasset: CommandFn<PreviewAssetOpts> = async ({
   opts,
   intr,
@@ -50,7 +62,7 @@ const previewasset: CommandFn<PreviewAssetOpts> = async ({
   await intr.followUp({ content: '✅ Completed preview', ephemeral: true });
 };
 
-const op = commandGroups({ say, stats, previewasset });
+const op = commandGroups({ say, stats, pluginfo, previewasset });
 
 op.data = {
   name: 'op',
@@ -79,6 +91,11 @@ op.data = {
     {
       name: 'stats',
       description: 'Shows useful stats.',
+      type: 'SUB_COMMAND',
+    },
+    {
+      name: 'pluginfo',
+      description: 'Shows the status of plugins.',
       type: 'SUB_COMMAND',
     },
     {
