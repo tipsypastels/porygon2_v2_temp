@@ -14,7 +14,7 @@ const DEV_SERVER = config('dev_server');
 
 /**
  * A unique ID for a plugin. Each plugin directory exports one of these from
- * its `$package` file. Plugins with the same `PluginKind` are in fact the same
+ * its `$plugin` file. Plugins with the same `PluginKind` are in fact the same
  * object. See `Plugin` for why this is done.
  *
  * `PluginKind`s encapsulate bits of logic that are different between different
