@@ -2,6 +2,11 @@ import { inspect } from 'util';
 import { setIntersect } from './set';
 
 /**
+ * Null or undefined.
+ */
+export type Nullish = null | undefined;
+
+/**
  * An object with any shape and properties.
  */
 export type AnyObject = Record<PropertyKey, unknown>;
@@ -84,6 +89,23 @@ export function areSharedPropertiesEqual(a: object, b: object, eq = DEFAULT_EQ) 
     const bValue = (b as any)[key];
 
     if (!eq(aValue, bValue)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Returns whether an object is nullish, empty, or has only nullish properties.
+ */
+export function isBlank<T extends object>(obj: T | Nullish): obj is Nullish {
+  if (obj == null) {
+    return true;
+  }
+
+  for (const value of Object.values(obj)) {
+    if (value != null) {
       return false;
     }
   }

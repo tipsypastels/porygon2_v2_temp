@@ -1,4 +1,4 @@
-import { areSharedPropertiesEqual } from './object';
+import { areSharedPropertiesEqual, isBlank } from './object';
 import eq from 'lodash.isequal';
 
 describe(areSharedPropertiesEqual, () => {
@@ -28,5 +28,31 @@ describe(areSharedPropertiesEqual, () => {
     const b = { unused2: 1, value: { text: 'hello' } };
 
     expect(areSharedPropertiesEqual(a, b, eq)).toBe(true);
+  });
+});
+
+describe(isBlank, () => {
+  it('is true for empty objects', () => {
+    expect(isBlank({})).toBe(true);
+  });
+
+  it('is true for undefined', () => {
+    expect(isBlank(undefined)).toBe(true);
+  });
+
+  it('is true for null', () => {
+    expect(isBlank(null)).toBe(true);
+  });
+
+  it('is true for objects with only nullish properties', () => {
+    expect(isBlank({ a: null })).toBe(true);
+  });
+
+  it('is false for filled objects', () => {
+    expect(isBlank({ a: 1 })).toBe(false);
+  });
+
+  it('is not recursive', () => {
+    expect(isBlank({ a: {} })).toBe(false);
   });
 });

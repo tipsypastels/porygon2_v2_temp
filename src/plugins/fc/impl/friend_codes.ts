@@ -4,6 +4,7 @@ import { db } from 'porygon/core';
 import { Embed } from 'porygon/embed';
 import { createBuiltinErrors } from 'porygon/error';
 import { createLang } from 'porygon/lang';
+import { isBlank } from 'support/object';
 import { codeBlock } from 'support/string';
 
 const TABLE = db.plugFc_Codes;
@@ -23,8 +24,8 @@ export async function getFriendCodes(member: GuildMember) {
 }
 
 export async function setFriendCodes(member: GuildMember, set?: Setter) {
-  if (!set || !Object.keys(set).length) {
-    throw error('emptyFcSetter');
+  if (isBlank(set)) {
+    throw error('noOpFcSet');
   }
 
   const data = normalize(set);
@@ -39,16 +40,15 @@ export async function setFriendCodes(member: GuildMember, set?: Setter) {
 
 export async function clearFriendCode(member: GuildMember, code: FcClearCode) {
   const userId = member.id;
+  const cur = await TABLE.findFirst({ where: { userId } });
+
+  if (!cur) {
+    throw error('noOpFcDel');
+  }
 
   if (code === 'all') {
     await delEntry(userId);
     return (e: Embed) => e.assign(lang('clear.all'));
-  }
-
-  const cur = await TABLE.findFirst({ where: { userId } });
-
-  if (!cur) {
-    throw error('noOpFcClearAll');
   }
 
   if (!cur[code]) {
@@ -71,12 +71,10 @@ function delEntry(userId: Snowflake) {
 function isEmptyExceptForTarget(entry: PlugFc_Codes, code: keyof Setter) {
   const dup: Partial<PlugFc_Codes> = { ...entry };
 
-  console.log(dup);
-
   delete dup.userId;
   delete dup[code];
 
-  return Object.values(dup).filter((x) => !!x).length === 0;
+  return isBlank(dup);
 }
 
 function createIntoEmbed(member: GuildMember, entry: PlugFc_Codes | null) {
@@ -130,7 +128,7 @@ const lang = createLang(<const>{
       title: 'Friend code cleared!',
       desc: 'The `{code}` friend code has been removed from my databases.',
     },
-    noOpAll: {
+    noOpDel: {
       title: 'Delete what?',
       desc: "I don't believe you had any friend codes to begin with.",
     },
@@ -146,14 +144,14 @@ const lang = createLang(<const>{
 });
 
 const error = createBuiltinErrors({
-  emptyFcSetter(e) {
-    e.poryErr('warning').assign(lang('emptySet'));
-  },
   invalidFc(e, code: string) {
     e.poryErr('warning').assign(lang('malformed', { code }));
   },
-  noOpFcClearAll(e) {
-    e.poryErr('warning').assign(lang('clear.noOpAll'));
+  noOpFcSet(e) {
+    e.poryErr('warning').assign(lang('emptySet'));
+  },
+  noOpFcDel(e) {
+    e.poryErr('warning').assign(lang('clear.noOpDel'));
   },
   noOpFcClearCode(e, code: string) {
     e.poryErr('warning').assign(lang('clear.noOpCode', { code }));
