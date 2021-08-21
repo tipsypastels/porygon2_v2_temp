@@ -1,9 +1,7 @@
-import { Guild } from 'discord.js';
 import { db } from 'porygon/core';
 import { ctLogger } from './shared';
-import { ctRunTick } from './tick';
 
-export async function ctRunCycle(guild: Guild) {
+export async function ctRunCycle() {
   await db.$executeRaw`
       UPDATE 
         "public"."PlugCt_Score"
@@ -12,7 +10,5 @@ export async function ctRunCycle(guild: Guild) {
         "pointsThisCycle" = 0 
     `;
 
-  ctLogger.info('COOLTRAINER has been cycled! Running a tick now...');
-
-  await ctRunTick(guild);
+  ctLogger.info('COOLTRAINER has been cycled!');
 }

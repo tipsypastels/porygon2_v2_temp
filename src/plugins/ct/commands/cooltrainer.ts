@@ -23,8 +23,8 @@ const tick: CommandFn = async ({ embed, intr, guild }) => {
   await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
-const cycle: CommandFn = async ({ embed, intr, guild }) => {
-  ctRunCycle(guild);
+const cycle: CommandFn = async ({ embed, intr }) => {
+  ctRunCycle();
   embed.poryColor('ok').setTitle('Initiated a COOLTRAINER cycle.');
 
   await intr.reply({ embeds: [embed], ephemeral: true });
