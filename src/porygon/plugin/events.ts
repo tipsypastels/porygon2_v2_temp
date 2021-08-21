@@ -5,7 +5,7 @@ import { Porygon } from 'porygon/core';
 type Event = keyof Events;
 type Callback<K extends Event> = (...args: Events[K]) => void;
 type Occurrence = 'on' | 'once';
-export type HandlerEventProxy = ReturnType<typeof proxy>;
+export type EventProxy = ReturnType<typeof proxy>;
 
 function proxy(client: Porygon, kind: PluginKind) {
   function wrap<K extends Event>(occ: Occurrence, key: K, cb: Callback<K>) {
@@ -48,7 +48,7 @@ function toGuild(obj: any): Guild | undefined {
 }
 
 interface Args<K extends PluginKind> {
-  events: HandlerEventProxy;
+  events: EventProxy;
   kind: PluginKindOrDev<K>;
   client: Porygon;
 }

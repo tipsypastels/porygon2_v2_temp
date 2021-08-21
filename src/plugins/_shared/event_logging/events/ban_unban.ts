@@ -1,5 +1,5 @@
 import { GuildBan, User } from 'discord.js';
-import { HandlerEventProxy } from 'porygon/plugin';
+import { EventProxy } from 'porygon/plugin';
 import { codeBlock } from 'support/string';
 import { getBanLog, getUnbanLog } from '../audit';
 import { LogConfig, LogEmbed } from '../config';
@@ -12,7 +12,7 @@ export type UnbansLogConfig = LogConfig<'userId'>;
 // lang is overkill
 const UNKNOWN = '(unknown)';
 
-export function logBans(events: HandlerEventProxy, cfg: BansLogConfig) {
+export function logBans(events: EventProxy, cfg: BansLogConfig) {
   async function run(ban: GuildBan) {
     const log = await getBanLog(ban);
     const mod = log?.executor?.username ?? UNKNOWN;
@@ -39,7 +39,7 @@ export function logBans(events: HandlerEventProxy, cfg: BansLogConfig) {
   events.on('guildBanAdd', run);
 }
 
-export function logUnbans(events: HandlerEventProxy, cfg: BansLogConfig) {
+export function logUnbans(events: EventProxy, cfg: BansLogConfig) {
   async function run(ban: GuildBan) {
     const log = await getUnbanLog(ban);
     const mod = log?.executor?.username ?? UNKNOWN;

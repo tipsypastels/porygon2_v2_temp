@@ -1,6 +1,6 @@
 import { GuildAuditLogsEntry, GuildMember, PartialGuildMember } from 'discord.js';
 import { bugLogger } from 'porygon/logger';
-import { HandlerEventProxy } from 'porygon/plugin';
+import { EventProxy } from 'porygon/plugin';
 import { missedPartialLeaves } from 'porygon/stats';
 import { codeBlock } from 'support/string';
 import { formatTime } from 'support/time';
@@ -13,7 +13,7 @@ export type LeavesLogConfig = LogConfig<'joinedAt' | 'userId'>;
 export type KicksLogConfig = LogConfig<'joinedAt' | 'userId'>;
 
 export function logLeavesKicks(
-  events: HandlerEventProxy,
+  events: EventProxy,
   leaves?: LeavesLogConfig,
   kicks?: KicksLogConfig,
 ) {

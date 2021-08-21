@@ -1,5 +1,5 @@
 import { Message, PartialMessage } from 'discord.js';
-import { HandlerEventProxy } from 'porygon/plugin';
+import { EventProxy } from 'porygon/plugin';
 import { codeBlock } from 'support/string';
 import { formatTime } from 'support/time';
 import { LogConfig, LogEmbed } from '../config';
@@ -7,7 +7,7 @@ import { outputLogs } from '../output_channel';
 
 export type DeletionsLogConfig = LogConfig<'channel' | 'sentAt' | 'msgId' | 'userId'>;
 
-export function logDeletions(events: HandlerEventProxy, cfg: DeletionsLogConfig) {
+export function logDeletions(events: EventProxy, cfg: DeletionsLogConfig) {
   function run(message: Message | PartialMessage) {
     const { author, guild } = message;
 

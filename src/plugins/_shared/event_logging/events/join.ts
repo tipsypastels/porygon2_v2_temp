@@ -1,5 +1,5 @@
 import { GuildMember } from 'discord.js';
-import { HandlerEventProxy } from 'porygon/plugin';
+import { EventProxy } from 'porygon/plugin';
 import { codeBlock } from 'support/string';
 import { timeAgoInWords } from 'support/time';
 import { LogConfig, LogEmbed } from '../config';
@@ -7,7 +7,7 @@ import { outputLogs } from '../output_channel';
 
 export type JoinsLogConfig = LogConfig<'age' | 'userId'>;
 
-export function logJoins(events: HandlerEventProxy, cfg: JoinsLogConfig) {
+export function logJoins(events: EventProxy, cfg: JoinsLogConfig) {
   function run(member: GuildMember) {
     const embed = new LogEmbed(cfg.details);
 
