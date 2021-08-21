@@ -2,7 +2,7 @@ import { TextChannel } from 'discord.js';
 import { DEV } from 'porygon/dev';
 import { CommandFn, commandGroups } from 'porygon/interaction';
 import { assertOwner } from 'porygon/owner';
-import { missedPartialDeletions, missedPartialLeaves, uptime } from 'porygon/stats';
+import { missedPartialLeaves, uptime } from 'porygon/stats';
 import * as Assets from 'porygon/assets';
 import { Plugin } from 'porygon/plugin';
 import { previewAssets } from 'porygon/asset/preview';
@@ -29,8 +29,7 @@ const stats: CommandFn = async ({ embed, intr, client, author }) => {
     .addField('Servers', client.guilds.cache.size.toString())
     .addField('Uptime', uptime.inWords())
     .addField('Heartbeat', `${client.ws.ping}ms`)
-    .addField('Missed Leaves', missedPartialLeaves.toString())
-    .addField('Missed Deletions', missedPartialDeletions.toString());
+    .addField('Missed Leaves', missedPartialLeaves.toString());
 
   await intr.reply({ embeds: [embed], ephemeral: true });
 };

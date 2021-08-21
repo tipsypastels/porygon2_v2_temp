@@ -1,6 +1,6 @@
 import { Guild, Snowflake } from 'discord.js';
-import { Embed } from 'porygon/embed';
 import { bugLogger } from 'porygon/logger';
+import { LogEmbed } from './config';
 
 export type LogOutputChannel =
   | Snowflake
@@ -8,7 +8,7 @@ export type LogOutputChannel =
   | { value: Snowflake }
   | { value: Snowflake }[];
 
-export function outputLogs(ch: LogOutputChannel, embed: Embed, guild: Guild) {
+export function outputLogs(ch: LogOutputChannel, embed: LogEmbed<any>, guild: Guild) {
   const channelIds = resolve(ch);
   const promises = channelIds.map(async (id) => {
     const channel = await guild.channels.fetch(id);
@@ -25,7 +25,7 @@ export function outputLogs(ch: LogOutputChannel, embed: Embed, guild: Guild) {
       return;
     }
 
-    channel.send({ embeds: [embed] });
+    channel.send({ embeds: [embed.toEmbed()] });
   });
 
   return Promise.all(promises);

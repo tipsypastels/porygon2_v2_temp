@@ -1,4 +1,4 @@
-import { GuildMember, Message } from 'discord.js';
+import { Guild, GuildMember, Message } from 'discord.js';
 import { config } from 'porygon/config';
 import { db } from 'porygon/core';
 import { Embed } from 'porygon/embed';
@@ -13,8 +13,7 @@ const MOD_PERM = config('plug.pets.modPerm') as { value: 'KICK_MEMBERS' };
 const LIMIT = 10;
 
 export async function petAdd(member: GuildMember, channel: CommandChannel) {
-  const isMod = member.permissions.has(MOD_PERM.value);
-  isMod || assertChannel(channel);
+  await assertChannel(channel);
 
   const [message, url] = await find(member, channel);
   const data = { url, guildId: member.guild.id, userId: member.id };
@@ -76,14 +75,17 @@ async function find(member: GuildMember, channel: CommandChannel): Promise<Found
   throw error('petMissingAdd');
 }
 
-function assertChannel(channel: CommandChannel) {
+async function assertChannel(channel: CommandChannel) {
   if (channel.id !== CHANNEL_ID.value) {
     throw error('petWrongChannel');
   }
 }
 
 const lang = createLang(<const>{
-  wrongChannel: 'Please use the #pets channel to add pets :)',
+  wrongChannel: {
+    title: "You're in the wrong place!",
+    desc: 'Please use the <#{channel}> channel to add pets :)',
+  },
   missingAdd: {
     title: "I couldn't find a pet image from you.",
     desc: 'Please upload a pet image, and then use `/pet add` to save it :)',
@@ -104,7 +106,7 @@ const lang = createLang(<const>{
 
 const error = createBuiltinErrors({
   petWrongChannel(e) {
-    e.poryErr('warning').setTitle(lang('wrongChannel'));
+    e.poryErr('warning').assign(lang('wrongChannel', { channel: CHANNEL_ID.value }));
   },
   petMissingAdd(e) {
     e.poryErr('warning')
