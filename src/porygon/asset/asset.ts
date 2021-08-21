@@ -1,6 +1,6 @@
 import { createLang } from 'porygon/lang';
 import { assetCache } from './map';
-import { assetSetupIsDone } from './setup';
+import { assetSetupIsDone } from './done';
 
 export type AssetName = string | number;
 

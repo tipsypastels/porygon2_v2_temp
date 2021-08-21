@@ -1,9 +1,10 @@
-import { Collection, Snowflake } from 'discord.js';
+import { Collection } from 'discord.js';
 import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
 import { Cell, BaseCommand } from 'porygon/interaction';
 import { zip } from 'support/array';
 import { code } from 'support/string';
+import { saveCommand } from '../commands';
 import { PluginKind } from './kind';
 
 /**
@@ -39,7 +40,6 @@ import { PluginKind } from './kind';
  */
 export class Plugin {
   static ALL = new Collection<PluginKind, Plugin>();
-  static SAVED_COMMANDS = new Collection<Snowflake, Cell>();
 
   private unsavedCommands: BaseCommand[] = [];
 
@@ -72,8 +72,8 @@ export class Plugin {
     const apis = await this.kind.upload(data, this.client);
 
     for (const [command, api] of zip(this.unsavedCommands, apis)) {
-      const ref = new Cell(this, api, command);
-      Plugin.SAVED_COMMANDS.set(ref.id, ref);
+      const cell = new Cell(this, api, command);
+      saveCommand(cell);
     }
 
     this.unsavedCommands = [];

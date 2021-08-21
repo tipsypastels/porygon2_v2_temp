@@ -5,6 +5,7 @@ import { Porygon } from 'porygon/core';
 import { colors, createLogger } from 'porygon/logger';
 import { config } from 'porygon/config';
 import { eachAsset, mapAssets } from './map';
+import { markAssetSetupAsDone } from './done';
 
 type UploadCache = {
   lastRun: number;
@@ -15,12 +16,6 @@ const logger = createLogger('asset', colors.green);
 const CACHE_FILE = 'assets/upload_cache.json';
 const UPLOAD_GUILD = config('assets.uploadDump.guild');
 const UPLOAD_CHANNEL = config('assets.uploadDump.channel');
-
-let done = false;
-
-export function assetSetupIsDone() {
-  return done;
-}
 
 export async function setupAssets(client: Porygon) {
   // ensure all assets are loaded
@@ -57,7 +52,7 @@ export async function setupAssets(client: Porygon) {
     await createNextUploadCache();
   }
 
-  done = true;
+  markAssetSetupAsDone();
 }
 
 export function fetchUploadChannel(client: Porygon) {

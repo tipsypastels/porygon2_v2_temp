@@ -5,7 +5,8 @@
     "build:ext": "wasm-pack build --target nodejs ext/ai",
     "start": "NODE_ENV=production NODE_PATH=./dist node ./dist/main.js",
     "watch": "NODE_ENV=development NODE_PATH=./src nodemon",
-    "migrate": "prisma db push --preview-feature"
+    "migrate": "prisma db push --preview-feature",
+    "madge": "madge -c -b ./dist dist"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",

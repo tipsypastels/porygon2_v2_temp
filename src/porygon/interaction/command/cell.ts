@@ -12,6 +12,7 @@ import {
 import { ContextMenu, callContextMenu } from './context_menu/context_menu';
 import { Command, callCommand } from './chat';
 import { resolveSnowflake, SnowflakeLike } from 'support/snowflake';
+import { searchCommands } from 'porygon/commands';
 
 export type PermSummaryEntry =
   | { type: 'ROLE'; target: Role; permission: boolean }
@@ -22,7 +23,7 @@ export class Cell {
 
   static withNameOnGuild(name: string, sf: SnowflakeLike) {
     const id = resolveSnowflake(sf);
-    return Plugin.SAVED_COMMANDS.find((c) => c.name === name && c.isOn(id));
+    return searchCommands((c) => c.name === name && c.isOn(id));
   }
 
   get id() {
