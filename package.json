@@ -1,7 +1,7 @@
 {
   "scripts": {
     "test": "jest",
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "build:ext": "wasm-pack build --target nodejs ext/ai",
     "start": "NODE_ENV=production NODE_PATH=./dist node ./dist/main.js",
     "watch": "NODE_ENV=development NODE_PATH=./src nodemon",
