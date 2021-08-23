@@ -52,7 +52,7 @@ const show: CommandFn<ShowOpts> = async ({ opts, embed, intr, guild }) => {
     .mergeWith(summaryGroup, matchedMembers, 'members', defaultPerm)
     .mergeWith(summaryGroup, matchedRoles, 'roles', defaultPerm);
 
-  await intr.reply({ embeds: [embed] });
+  await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
 function getCell(guild: Guild, name: string): Cell {
