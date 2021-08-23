@@ -6,7 +6,9 @@
     "start": "NODE_ENV=production NODE_PATH=./dist node ./dist/main.js",
     "watch": "NODE_ENV=development NODE_PATH=./src nodemon",
     "migrate": "prisma db push --preview-feature",
-    "madge": "madge -c -b ./dist dist"
+    "madge": "madge -c -b ./dist dist",
+    "create:command": "node ./scripts/create_command.js",
+    "create:plugin": "node ./scripts/create_plugin.js"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
@@ -21,6 +23,7 @@
     "@typescript-eslint/eslint-plugin": "^4.28.5",
     "@typescript-eslint/parser": "^4.28.5",
     "eslint": "^7.31.0",
+    "inquirer": "^8.1.2",
     "jest": "^27.0.6",
     "nodemon": "^2.0.12",
     "prettier": "^2.3.2",
