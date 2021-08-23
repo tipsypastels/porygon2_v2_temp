@@ -1,8 +1,10 @@
-import { EventFactory, PluginGuild } from 'porygon/plugin';
+import { EventFactory } from 'porygon/plugin';
 import { schedule } from 'porygon/schedule';
 import { ctHandleMessage, ctRunCycle, ctRunTick } from '../impl';
 
-const ctSchedule: EventFactory<PluginGuild> = ({ events, kind, client }) => {
+type Kind = typeof import('../$plugin').default;
+
+const ctSchedule: EventFactory<Kind> = ({ events, kind, client }) => {
   const guild = kind.guild(client);
 
   if (guild) {

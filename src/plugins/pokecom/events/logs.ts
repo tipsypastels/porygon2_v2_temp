@@ -2,11 +2,13 @@ import { logEvents } from 'plugins/_shared/event_logging';
 import { config } from 'porygon/config';
 import { EventFactory } from 'porygon/plugin';
 
+type Kind = typeof import('../$plugin').default;
+
 const LOGS = config('plug.pokecom.logging.logChannel');
 const WARNS = config('plug.pokecom.logging.warningChannel');
 const BOTH = [LOGS, WARNS];
 
-const handler: EventFactory = ({ events }) => {
+const handler: EventFactory<Kind> = ({ events }) => {
   logEvents(events, {
     joins: { to: LOGS, details: 'all' },
     leaves: { to: LOGS, details: 'all' },
