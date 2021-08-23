@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { db as dbImport } from 'porygon//core';
-import { Cell, Command } from 'porygon/interaction';
+import { db as dbImport } from 'porygon/core';
+import { Cell as CellImport, Command } from 'porygon/interaction';
 import { assertOwner } from 'porygon/owner';
 import { codeBlock } from 'support/string';
 import { Plugin as PluginImport } from 'porygon/plugin';
@@ -21,6 +21,7 @@ const eval_: Command<Opts> = async (args) => {
   const { plugin } = cell;
   const db = dbImport;
   const Plugin = PluginImport;
+  const Cell = CellImport;
 
   const result = await eval(code);
 
