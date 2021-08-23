@@ -70,27 +70,6 @@ export class Cell {
     return this.api.permissions.fetch(options);
   }
 
-  // Note: Discord API throws when retrieving perms for a command that doesn't
-  // have any set. I assume this has to do with creating them lazily. Either
-  // way that's fine we'll just catch that.
-  async getPermSummary(guild: Guild) {
-    const options = { guild };
-    const raw = await this.api.permissions.fetch(options).catch(() => []);
-    const entries: PermSummaryEntry[] = [];
-    const promises = raw.map(async ({ type, id, permission }) => {
-      const manager = type === 'ROLE' ? guild.roles : guild.members;
-      const target = await manager.fetch(id).catch(() => null);
-
-      if (target) {
-        entries.push({ type, target, permission } as PermSummaryEntry);
-      }
-    });
-
-    await Promise.all(promises);
-    console.log(entries);
-    return entries;
-  }
-
   call(intr: BaseCommandInteraction): void {
     if (intr.isCommand()) {
       return callCommand(intr, this, this.cmd as Command);
