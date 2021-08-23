@@ -68,3 +68,15 @@ export class Singleton<T> {
     return this.value;
   }
 }
+
+export class CacheTable<T, K> {
+  private map = new Cache<K, T[]>(() => []);
+
+  add(key: K, value: T) {
+    this.map.get(key).push(value);
+  }
+
+  get(key: K) {
+    return this.map.get(key);
+  }
+}

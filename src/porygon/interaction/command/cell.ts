@@ -59,6 +59,17 @@ export class Cell {
     return this.api.permissions.add(options);
   }
 
+  clearPerm(target: Role | GuildMember) {
+    const key = target instanceof GuildMember ? 'users' : 'roles';
+    const options: any = { [key]: target.id, guild: target.guild };
+    return this.api.permissions.remove(options);
+  }
+
+  getPerms(guild: Guild) {
+    const options = { guild };
+    return this.api.permissions.fetch(options);
+  }
+
   // Note: Discord API throws when retrieving perms for a command that doesn't
   // have any set. I assume this has to do with creating them lazily. Either
   // way that's fine we'll just catch that.
@@ -76,6 +87,7 @@ export class Cell {
     });
 
     await Promise.all(promises);
+    console.log(entries);
     return entries;
   }
 

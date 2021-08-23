@@ -1,56 +1,50 @@
-import { Guild, GuildMember, Role } from 'discord.js';
+import { ApplicationCommandOptionData, Guild, GuildMember, Role } from 'discord.js';
 import { DEV } from 'porygon/dev';
 import { Embed } from 'porygon/embed';
 import { createBuiltinErrors } from 'porygon/error';
 import { Cell, CommandFn, commandGroups } from 'porygon/interaction';
 import { createLang } from 'porygon/lang';
-import { toSentence } from 'support/array';
 import { Stringable } from 'support/string';
+import { collectPermInfoSummary } from '../impl/perm_info';
 
-type RoleOpts = { cmd: string; role: Role; allow: boolean };
-type MemberOpts = { cmd: string; member: GuildMember; allow: boolean };
-type ShowOpts = { cmd: string };
+type Allow = 'yes' | 'no' | 'clear';
+
+type RoleOpts = { command: string; role: Role; allow: Allow };
+type MemberOpts = { command: string; member: GuildMember; allow: Allow };
+type ShowOpts = { command: string; verbose?: boolean };
 
 const role: CommandFn<RoleOpts> = async ({ opts, embed, intr, guild }) => {
-  const { cmd, role, allow } = opts.pick('cmd', 'role', 'allow');
-  await getCell(guild, cmd).setPerm(role, allow);
+  const { command, role, allow } = opts.pick('command', 'role', 'allow');
+  const cell = getCell(guild, command);
 
-  embed.mergeWith(result, cmd, allow, role);
+  await setPerm(cell, allow, role);
+
+  embed.mergeWith(result, command, allow, role);
   await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
 const member: CommandFn<MemberOpts> = async ({ opts, embed, intr, guild }) => {
-  const { cmd, member, allow } = opts.pick('cmd', 'member', 'allow');
-  await getCell(guild, cmd).setPerm(member, allow);
+  const { command, member, allow } = opts.pick('command', 'member', 'allow');
+  const cell = getCell(guild, command);
 
-  embed.mergeWith(result, cmd, allow, member);
+  await setPerm(cell, allow, member);
+
+  embed.mergeWith(result, command, allow, member);
   await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
 const show: CommandFn<ShowOpts> = async ({ opts, embed, intr, guild }) => {
-  const cmd = opts.get('cmd');
-  const cell = getCell(guild, cmd);
-  const defaultPerm = cell.defaultPerm;
-  const summary = await cell.getPermSummary(guild);
+  const command = opts.get('command');
+  const verbose = opts.try('verbose') ?? false;
+  const cell = getCell(guild, command);
 
-  const matchedMembers: GuildMember[] = [];
-  const matchedRoles: Role[] = [];
-
-  for (const entry of summary) {
-    // don't show members who's permission is manually set to the same as the default
-    // this might become an option later. verbose mode maybe?
-    if (entry.permission !== defaultPerm) {
-      if (entry.type === 'ROLE') matchedRoles.push(entry.target);
-      else matchedMembers.push(entry.target);
-    }
-  }
+  const summary = await collectPermInfoSummary({ cell, guild, verbose });
 
   embed
     .poryColor('info')
-    .setTitle(lang('summary.title', { cmd }))
-    .addField(lang('summary.default'), defaultPerm ? 'Yes' : 'No')
-    .mergeWith(summaryGroup, matchedMembers, 'members', defaultPerm)
-    .mergeWith(summaryGroup, matchedRoles, 'roles', defaultPerm);
+    .setTitle(lang('summary.title', { command }))
+    .addField(lang('summary.default'), cell.defaultPerm ? 'Yes' : 'No')
+    .merge(summary);
 
   await intr.reply({ embeds: [embed], ephemeral: true });
 };
@@ -62,42 +56,45 @@ function getCell(guild: Guild, name: string): Cell {
   throw error('unkCell', name);
 }
 
-function result(e: Embed, cmd: string, perm: boolean, target: Stringable) {
-  const avail = perm ? 'enabled' : 'disabled';
-
-  e.poryColor('ok')
-    .setTitle(lang('success.title'))
-    .setDescription(lang('success.desc', { cmd, avail, target }));
+function setPerm(cell: Cell, allow: Allow, target: GuildMember | Role) {
+  if (allow === 'clear') return cell.clearPerm(target);
+  return cell.setPerm(target, allow === 'yes');
 }
 
-type Domain = 'members' | 'roles';
+function result(e: Embed, command: string, allow: Allow, target: Stringable) {
+  e.poryColor('ok')
+    .setTitle(lang('success.title'))
+    .setDescription(resultDesc(command, allow, target));
+}
 
-function summaryGroup<T>(e: Embed, items: T[], domain: Domain, def: boolean) {
-  if (items.length === 0) {
-    return;
+function resultDesc(command: string, allow: Allow, target: Stringable) {
+  if (allow === 'clear') {
+    return lang('success.cleared', { command, target });
+  } else {
+    const avail = allow === 'yes' ? 'enabled' : 'disabled';
+    return lang('success.desc', { command, avail, target });
   }
-
-  const phrase = <const>`summary.${domain}With${def ? 'out' : ''}`;
-  const title = lang(phrase, { count: items.length });
-  const body = toSentence(items);
-
-  e.addField(title, body);
 }
 
 const perm = commandGroups({ role, member, show });
 
-const CMD = <const>{
-  name: 'cmd',
+const CMD: ApplicationCommandOptionData = {
+  name: 'command',
   description: 'The name of the command.',
   required: true,
   type: 'STRING',
 };
 
-const ALLOW = <const>{
+const ALLOW: ApplicationCommandOptionData = {
   name: 'allow',
   description: 'Whether the command should be allowed.',
   required: true,
-  type: 'BOOLEAN',
+  type: 'STRING',
+  choices: [
+    { name: 'Yes', value: 'yes' },
+    { name: 'No', value: 'no' },
+    { name: 'Clear', value: 'clear' },
+  ],
 };
 
 perm.unknownErrorEphemerality = () => true;
@@ -140,7 +137,15 @@ perm.data = {
       name: 'show',
       description: 'Shows who has permissions to use a command.',
       type: 'SUB_COMMAND',
-      options: [CMD],
+      options: [
+        CMD,
+        {
+          name: 'verbose',
+          description: 'Whether to show permissions that have no effect.',
+          type: 'BOOLEAN',
+          required: false,
+        },
+      ],
     },
   ],
 };
@@ -149,36 +154,21 @@ export default perm;
 
 const lang = createLang(<const>{
   unkCell: {
-    title: 'Unknown command: {cmd}',
+    title: 'Unknown command: {command}',
   },
   success: {
     title: 'Success!',
-    desc: '{cmd} is now {avail} for {target}!',
+    desc: '{command} is now {avail} for {target}!',
+    cleared: '{command} is no longer set for {target}.',
   },
   summary: {
-    title: 'Permissions for {cmd}',
+    title: 'Permissions for {command}',
     default: 'Enabled by default',
-    rolesWith: {
-      1: 'Role with access',
-      _: 'Roles with access',
-    },
-    rolesWithout: {
-      1: 'Role without access',
-      _: 'Roles without access',
-    },
-    membersWith: {
-      1: 'Member with access',
-      _: 'Members with access',
-    },
-    membersWithout: {
-      1: 'Member without access',
-      _: 'Members without access',
-    },
   },
 });
 
 const error = createBuiltinErrors({
-  unkCell(e, cmd: string) {
-    e.poryErr('danger').setTitle(lang('unkCell.title', { cmd }));
+  unkCell(e, command: string) {
+    e.poryErr('danger').setTitle(lang('unkCell.title', { command }));
   },
 });

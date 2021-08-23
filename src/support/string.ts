@@ -48,3 +48,10 @@ export const ELLIPSIS = '…';
 export function ellipsis(string: string, len: number) {
   return string.length > len ? `${string.slice(0, len)}${ELLIPSIS}` : string;
 }
+
+/**
+ * Capitalizes the first letter of `input`.
+ */
+export function capitalize(input: string) {
+  return input[0].toUpperCase() + input.slice(1);
+}
