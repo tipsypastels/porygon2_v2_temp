@@ -2,6 +2,12 @@ import { inspect } from 'util';
 
 export type Stringable = string | { toString(): string };
 
+/** Splits a string literal type on delimiter `D` into a tuple. */
+export type Split<
+  S extends string,
+  D extends string,
+> = S extends `${infer Item}${D}${infer Rest}` ? [Item, ...Split<Rest, D>] : [S];
+
 export interface CodeBlockOpts {
   lang?: string;
   inspect?: boolean;

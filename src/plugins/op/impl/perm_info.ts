@@ -3,7 +3,7 @@ import { Embed } from 'porygon/embed';
 import { Cell } from 'porygon/interaction';
 import { toSentence } from 'support/array';
 import { CacheTable } from 'support/cache';
-import { capitalize } from 'support/string';
+import { capitalize, Split } from 'support/string';
 
 interface Opts {
   cell: Cell;
@@ -17,9 +17,7 @@ interface Opts {
 }
 
 type Item = { toString(): string };
-type KeyType = 'users' | 'roles';
-type KeyScope = 'same' | 'different';
-type Key = `${KeyType}_${KeyScope}`;
+type Key = `${'users' | 'roles'}_${'same' | 'different'}`;
 type Push =
   | { type: 'USER'; target: GuildMember; permission: boolean }
   | { type: 'ROLE'; target: Role; permission: boolean };
@@ -87,7 +85,7 @@ class Collector {
   }
 
   private getTitle(key: Key) {
-    const [type, scope] = key.split('_') as [KeyType, KeyScope];
+    const [type, scope] = key.split('_') as Split<Key, '_'>;
     const isSame = scope === 'same';
     const hasPerm = this.defaultPerm === isSame;
     const explicit = isSame ? 'explicitly ' : '';
