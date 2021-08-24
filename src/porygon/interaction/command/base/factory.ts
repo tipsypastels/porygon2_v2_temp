@@ -49,10 +49,15 @@ export function createBaseCommandCall<C extends Create>(opts: Opts<C>): C['CallF
   }
 
   function onBuiltinError(err: BuiltinError, command: C['Command'], args: C['Args']) {
-    const embed = new Embed().merge(err);
+    const embed = new Embed().mergeWith(err, command.data.name);
     args.intr.reply({ embeds: [embed], ephemeral: err.ephemeral });
 
-    const params = { ...getLoggerBaseParams(command, args), code: err.code };
+    const params = {
+      ...getLoggerBaseParams(command, args),
+      codeDomain: command.data.name,
+      code: err.code,
+    };
+
     intrLogger.warn(lang('log.builtinErr', params));
   }
 
@@ -100,7 +105,8 @@ function cleanError(message: string) {
 const lang = createLang(<const>{
   log: {
     ok: '{author} used {cmd} in {loc}.',
-    builtinErr: '{author} misused {cmd} in {loc} and encountered error: {code}.',
+    builtinErr:
+      '{author} misused {cmd} in {loc} and encountered error: {codeDomain}.{code}.',
     unkErr: '{author} encountered a crash using {cmd} in {loc}. More details follow.',
   },
   embed: {

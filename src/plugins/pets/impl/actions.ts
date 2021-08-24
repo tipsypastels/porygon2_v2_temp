@@ -33,14 +33,14 @@ export async function petRemove(id: number, member: GuildMember) {
   const entry = await table.findFirst({ where: { id, guildId: member.guild.id } });
 
   if (!entry) {
-    throw error('petMissingRem', id);
+    throw error('missingRem', id);
   }
 
   const isCreator = member.id === entry.userId;
   const isMod = member.permissions.has(MOD_PERM.value);
 
   if (!isCreator && !isMod) {
-    throw error('petMaliciousRemovalPub');
+    throw error('maliciousRemovalPub');
   }
 
   await table.delete({ where: { id } });
@@ -72,12 +72,12 @@ async function find(member: GuildMember, channel: CommandChannel): Promise<Found
     return [message, attachment.url];
   }
 
-  throw error('petMissingAdd');
+  throw error('missingAdd');
 }
 
 async function assertChannel(channel: CommandChannel) {
   if (channel.id !== CHANNEL_ID.value) {
-    throw error('petWrongChannel');
+    throw error('wrongChannel');
   }
 }
 
@@ -105,18 +105,18 @@ const lang = createLang(<const>{
 });
 
 const error = createBuiltinErrors({
-  petWrongChannel(e) {
+  wrongChannel(e) {
     e.poryErr('warning').assign(lang('wrongChannel', { channel: CHANNEL_ID.value }));
   },
-  petMissingAdd(e) {
+  missingAdd(e) {
     e.poryErr('warning')
       .setTitle(lang('missingAdd.title'))
       .setDescription(lang('missingAdd.desc'));
   },
-  petMissingRem(e, id: number) {
+  missingRem(e, id: number) {
     e.poryErr('warning').setTitle(lang('missingRem', { id }));
   },
-  petMaliciousRemovalPub(e) {
+  maliciousRemovalPub(e) {
     e.poryErr('danger')
       .setTitle(lang('maliciousRem.title'))
       .setDescription(lang('maliciousRem.desc'));

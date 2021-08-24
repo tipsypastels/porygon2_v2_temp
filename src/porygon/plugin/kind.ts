@@ -126,11 +126,15 @@ export class PluginGuild implements PluginKind {
 }
 
 export class PluginGuilds implements PluginKind {
+  static init(guildIds: Snowflake[]) {
+    return new this(guildIds);
+  }
+
   // it's not safe to store guild IDs directly since they'll
   // clobber other commands from that guild
   private plugins: PluginGuild[];
 
-  constructor(guildIds: Snowflake[]) {
+  private constructor(guildIds: Snowflake[]) {
     this.plugins = guildIds.map((id) => PluginGuild.init(id));
   }
 

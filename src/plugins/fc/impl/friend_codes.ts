@@ -25,7 +25,7 @@ export async function getFriendCodes(member: GuildMember) {
 
 export async function setFriendCodes(member: GuildMember, set?: Setter) {
   if (isBlank(set)) {
-    throw error('noOpFcSet');
+    throw error('noOpSet');
   }
 
   const data = normalize(set);
@@ -43,7 +43,7 @@ export async function clearFriendCode(member: GuildMember, code: FcClearCode) {
   const cur = await TABLE.findFirst({ where: { userId } });
 
   if (!cur) {
-    throw error('noOpFcDel');
+    throw error('noOpDel');
   }
 
   if (code === 'all') {
@@ -52,7 +52,7 @@ export async function clearFriendCode(member: GuildMember, code: FcClearCode) {
   }
 
   if (!cur[code]) {
-    throw error('noOpFcClearCode', code);
+    throw error('noOpClearCode', code);
   }
 
   if (isEmptyExceptForTarget(cur, code)) {
@@ -106,7 +106,7 @@ function normalizeCode(code: string | undefined) {
     .replace(/(\d{4})(?=\d)/g, '$1-'); // add dashes between four digits if missing
 
   if (!code.match(SYNTAX)) {
-    throw error('invalidFc', code);
+    throw error('invalid', code);
   }
 
   return code;
@@ -144,16 +144,16 @@ const lang = createLang(<const>{
 });
 
 const error = createBuiltinErrors({
-  invalidFc(e, code: string) {
+  invalid(e, code: string) {
     e.poryErr('warning').assign(lang('malformed', { code }));
   },
-  noOpFcSet(e) {
+  noOpSet(e) {
     e.poryErr('warning').assign(lang('emptySet'));
   },
-  noOpFcDel(e) {
+  noOpDel(e) {
     e.poryErr('warning').assign(lang('clear.noOpDel'));
   },
-  noOpFcClearCode(e, code: string) {
+  noOpClearCode(e, code: string) {
     e.poryErr('warning').assign(lang('clear.noOpCode', { code }));
   },
 });

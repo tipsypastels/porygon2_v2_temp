@@ -131,7 +131,7 @@ const wordRenderer: Renderer = (embed, game) => {
 
 function assertAvailableChannel(channel: CommandChannel) {
   if (ACTIVE_CHANNELS.has(channel.id)) {
-    throw error('hangmanChannelBusy');
+    throw error('busy');
   }
 
   ACTIVE_CHANNELS.add(channel.id);
@@ -161,7 +161,7 @@ const lang = createLang(<const>{
 });
 
 const error = createBuiltinErrors({
-  hangmanChannelBusy(e) {
+  busy(e) {
     e.poryErr('danger').setTitle(lang('busy.title')).setDescription(lang('busy.desc'));
   },
 });

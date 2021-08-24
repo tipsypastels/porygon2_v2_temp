@@ -4,7 +4,7 @@ import { Embed } from 'porygon/embed';
 import { Cell, BaseCommand } from 'porygon/interaction';
 import { zip } from 'support/array';
 import { code } from 'support/string';
-import { saveCommand } from '../commands';
+import { saveCommand, searchCommands } from '../commands';
 import { PluginKind } from './kind';
 
 /**
@@ -65,6 +65,10 @@ export class Plugin {
 
   addCommand(command: BaseCommand) {
     this.unsavedCommands.push(command);
+  }
+
+  hasCommand(name: string) {
+    return !!searchCommands((c) => c.name === name && c.plugin === this);
   }
 
   private async uploadCommands() {

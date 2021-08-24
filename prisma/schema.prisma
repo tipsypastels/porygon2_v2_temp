@@ -33,3 +33,8 @@ model PlugFc_Codes {
   go     String?
   switch String?
 }
+
+model PlugRole_RoleConfig {
+  roleId      String  @id
+  requestable Boolean @default(false)
+}

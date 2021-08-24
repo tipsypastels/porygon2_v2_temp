@@ -1,4 +1,4 @@
-import { Embed, IntoEmbedFn } from './embed';
+import { Embed, IntoEmbedFnWith } from './embed';
 import { Tail } from 'support/array';
 
 type Fn = (embed: Embed, ...ctx: never[]) => void;
@@ -15,7 +15,7 @@ export interface BuiltinError {
   [TAG]: true;
   code: string;
   ephemeral: boolean;
-  intoEmbed: IntoEmbedFn;
+  intoEmbedWith: IntoEmbedFnWith<[string]>;
 }
 
 export function isBuiltinError(err: unknown): err is BuiltinError {
@@ -38,10 +38,10 @@ export function createBuiltinErrors<E extends Errors>(errors: E) {
     const ephemeral = !NO_EPH.exec(code);
     const visibleCode = code.replace(NO_EPH, '');
 
-    const intoEmbed: IntoEmbedFn = (embed) => {
-      embed.mergeWith(fn, ...ctx).setFooter(`Error Code: ${visibleCode}`);
+    const intoEmbedWith: BuiltinError['intoEmbedWith'] = (embed, cmd) => {
+      embed.mergeWith(fn, ...ctx).setFooter(`Error Code: ${cmd}.${visibleCode}`);
     };
 
-    return { [TAG]: true, code, ephemeral, intoEmbed };
+    return { [TAG]: true, code, ephemeral, intoEmbedWith };
   };
 }

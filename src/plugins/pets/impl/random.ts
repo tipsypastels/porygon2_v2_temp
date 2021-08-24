@@ -10,7 +10,7 @@ export async function petRandom(guild: Guild, member?: GuildMember) {
   const entry = await randomEntry(guild, member);
 
   if (!entry) {
-    throw error('petNone', member);
+    throw error('none', member);
   }
 
   const owner = member ?? (await guild.members.fetch(entry.userId).catch(() => null));
@@ -19,7 +19,7 @@ export async function petRandom(guild: Guild, member?: GuildMember) {
     // this is just here to avoid a race condition if a member just left the server
     // and we haven't deactivated their pets yet. it should be extremely rare
     bugLogger.debug(`RACE: Rolled a pet entry for missing member ${entry.userId}.`);
-    throw error('petRaceCondDetected');
+    throw error('raceCond');
   }
 
   return function (embed: Embed) {
@@ -81,11 +81,11 @@ const lang = createLang(<const>{
 });
 
 const error = createBuiltinErrors({
-  petNone(e, mem: GuildMember | undefined) {
+  none(e, mem: GuildMember | undefined) {
     const ctx = mem?.displayName ?? 'This server';
     e.poryErr('warning').setTitle(lang('none', { ctx }));
   },
-  petRaceCondDetected(e) {
+  raceCond(e) {
     e.poryColor('warning')
       .poryThumb('plead')
       .setTitle(lang('raceCond.title'))

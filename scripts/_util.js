@@ -1,7 +1,7 @@
 // @ts-check
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const { readdir, appendFile } = require('fs/promises');
+const { mkdir, access, readdir, appendFile } = require('fs/promises');
 
 exports.presence = (x) => !!x;
 
@@ -24,3 +24,24 @@ exports.getPluginNames = async function () {
   const dirs = await readdir('./src/plugins');
   return dirs.filter((x) => !x.startsWith('_') && !x.startsWith('$'));
 };
+
+/**
+ *
+ * @param {string} plugin
+ * @param {string} dir
+ */
+exports.createPluginDir = async function (plugin, dir) {
+  const path = `./src/plugins/${plugin}/${dir}`;
+  if (await exists(path)) {
+    return;
+  }
+
+  await mkdir(path);
+};
+
+/** @param {string} file */
+function exists(file) {
+  return access(file)
+    .then(() => true)
+    .catch(() => false);
+}

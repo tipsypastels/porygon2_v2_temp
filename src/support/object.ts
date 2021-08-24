@@ -57,6 +57,15 @@ export type LeafOf<T, R> = T extends object
   : never;
 
 /**
+ * Converts a union type to an intersection type.
+ */
+export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I,
+) => void
+  ? I
+  : never;
+
+/**
  * Extracts the only key of `obj`. Throws if there are zero or many keys.
  */
 export function extractOnlyKey<T>(obj: T) {
@@ -111,4 +120,11 @@ export function isBlank<T extends object>(obj: T | Nullish): obj is Nullish {
   }
 
   return true;
+}
+
+/**
+ * Returns whether an object has no properties (via Object.keys).
+ */
+export function isEmpty(obj: object) {
+  return Object.keys(obj).length === 0;
 }

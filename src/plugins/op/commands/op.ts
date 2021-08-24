@@ -107,6 +107,7 @@ op.data = {
           description: 'Exported name of asset to preview.',
           type: 'STRING',
           required: true,
+          choices: Object.keys(Assets).map((key) => ({ name: key, value: key })),
         },
       ],
     },

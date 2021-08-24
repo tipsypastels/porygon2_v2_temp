@@ -65,6 +65,9 @@
     "mining duckcoin"
   ],
   "plug": {
+    "role": {
+      "staffRoles": ["owner", "admin", "moderator", "moderoid"]
+    },
     "duck": {
       "joins": {
         "duckRole": {
@@ -211,7 +214,7 @@
           "dev": "878552829181194260"
         }
       },
-      "shimLegacyCommands": true
+      "shimLegacyCommands": false
     },
     "ct": {
       "role": {

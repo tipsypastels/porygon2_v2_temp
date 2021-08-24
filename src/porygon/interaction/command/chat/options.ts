@@ -17,6 +17,17 @@ export class CommandOptions<Opts> {
     return fromEntries(values);
   }
 
+  pickPresent<K extends keyof Opts & string>(...keys: K[]): Pick<Opts, K> {
+    const out: Partial<Pick<Opts, K>> = {};
+
+    for (const key of keys) {
+      const value = this.try(key);
+      if (value != null) out[key] = value;
+    }
+
+    return out as Pick<Opts, K>;
+  }
+
   private getValue<K extends keyof Opts & string>(key: K): Opts[K] | undefined;
   private getValue<K extends keyof Opts & string>(key: K, required: true): Opts[K];
   private getValue(key: string, required?: boolean): any {

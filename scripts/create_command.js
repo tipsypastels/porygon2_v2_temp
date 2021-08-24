@@ -38,6 +38,8 @@ async function main() {
     ])
   );
 
+  await util.createPluginDir(structure.plug, 'commands');
+
   if (structure.groups) {
     return createGroupCommand(structure);
   }
