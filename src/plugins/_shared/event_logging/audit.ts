@@ -72,6 +72,7 @@ function isUser(user: User, { target }: GuildAuditLogsEntry) {
 }
 
 function isRecent({ createdTimestamp: ts }: GuildAuditLogsEntry) {
+  console.log({ ts, lastFind, gt: ts > lastFind });
   if (ts > lastFind) {
     lastFind = ts;
     return true;
