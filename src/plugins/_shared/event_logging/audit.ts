@@ -1,4 +1,3 @@
-import subMinutes from 'date-fns/subMinutes';
 import { Guild, GuildAuditLogsEntry, GuildAuditLogsFetchOptions, User } from 'discord.js';
 import { bugLogger } from 'porygon/logger';
 import { Seconds } from 'support/time';
@@ -9,14 +8,14 @@ type Target = {
   guild: Guild;
 };
 
-const RETRIES = 5;
+const RETRIES = 3;
 const SLEEP = Seconds(5);
 
 // prevents finding the same event twice
 // note: in dev, this prevents logs from triggering for multiple fake "guilds",
 // such as the kick events for pokecom and pokecomstaf. won't be a problem
 // in production.
-let lastFind = 0;
+let lastFind = Date.now();
 
 export function getKickLog(target: Target) {
   return latest(target, 'MEMBER_KICK');
@@ -73,16 +72,12 @@ function isUser(user: User, { target }: GuildAuditLogsEntry) {
 }
 
 function isRecent({ createdTimestamp: ts }: GuildAuditLogsEntry) {
-  if (ts >= threeMinutesAgo() && ts > lastFind) {
+  if (ts > lastFind) {
     lastFind = ts;
     return true;
   }
 
   return false;
-}
-
-function threeMinutesAgo() {
-  return subMinutes(new Date(), 3).getTime();
 }
 
 function sleep() {
