@@ -43,7 +43,7 @@ async function latest(target: Target, type: Type) {
     const log = await get(target, type);
 
     if (log) {
-      bugLogger.debug(`Found audit log ${type} after ${i} cycles.`);
+      bugLogger.info(`Found audit log ${type} after ${i} cycles.`);
       return log;
     }
 
