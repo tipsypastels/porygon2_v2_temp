@@ -109,13 +109,13 @@ export class Plugin {
   intoPlugInfoEmbed(e: Embed) {
     const data = [
       `**Directories:** ${this.includedDirs.map(code).join(', ')}`,
-      `**Connected:** ${this.plugInfoEmbedConnectedSymbol}`,
+      `**Status:** ${this.plugInfoEmbedStatusSymbol}`,
     ];
 
     e.addField(this.kind.tag, data.join('\n'));
   }
 
-  private get plugInfoEmbedConnectedSymbol() {
+  private get plugInfoEmbedStatusSymbol() {
     if (this.kind.getChildKinds) return '↪️';
     return this.connected ? '✅' : '❌';
   }
