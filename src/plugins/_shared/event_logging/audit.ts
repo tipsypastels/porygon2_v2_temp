@@ -13,6 +13,9 @@ const RETRIES = 3;
 const SLEEP = Seconds(5);
 
 // prevents finding the same event twice
+// note: in dev, this prevents logs from triggering for multiple fake "guilds",
+// such as the kick events for pokecom and pokecomstaf. won't be a problem
+// in production.
 let lastFind = 0;
 
 export function getKickLog(target: Target) {

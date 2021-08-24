@@ -8,3 +8,4 @@ export * as op from './op/$plugin';
 export * as pets from './pets/$plugin';
 export * as pokecom from './pokecom/$plugin';
 export * as role from './role/$plugin';
+export * as pokecomstaf from './pokecomstaf/$plugin';

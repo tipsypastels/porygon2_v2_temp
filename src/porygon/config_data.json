@@ -216,6 +216,12 @@
       },
       "shimLegacyCommands": false
     },
+    "pokecomstaf": {
+      "logChannel": {
+        "prod": "486222418722029588",
+        "dev": "878553080948457482"
+      }
+    },
     "ct": {
       "role": {
         "dev": "775261617805459486",
