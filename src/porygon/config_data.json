@@ -1,5 +1,4 @@
 {
-  "dev_server": "746219046374080532",
   "guilds": {
     "pokecom": "157983957902819328",
     "pokecomstaf": "193103073210662914",
@@ -214,7 +213,7 @@
           "dev": "878552829181194260"
         }
       },
-      "shimLegacyCommands": true
+      "shimLegacyCommands": false
     },
     "pokecomstaf": {
       "logChannel": {

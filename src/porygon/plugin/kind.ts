@@ -11,7 +11,7 @@ import { bugLogger } from 'porygon/logger';
 import { Cache, Singleton } from 'support/cache';
 import { getConfigNameForGuild } from 'porygon/guilds';
 
-const DEV_SERVER = config('dev_server');
+const DEV_SERVER = config('guilds.dev');
 
 /**
  * A unique ID for a plugin. Each plugin directory exports one of these from
