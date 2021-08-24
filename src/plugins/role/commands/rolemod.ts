@@ -81,6 +81,7 @@ const REQUESTABLE = <const>{
 rolemod.data = {
   name: 'rolemod',
   description: 'Manages role settings.',
+  defaultPermission: false,
   options: [
     {
       name: 'get',
