@@ -41,7 +41,7 @@ const pluginfo: CommandFn = async ({ embed, intr, author }) => {
     embed.merge((e) => plugin.intoPlugInfoEmbed(e));
   }
 
-  embed.setTitle('Plugin Status');
+  embed.poryColor('info').setTitle('Plugin Status');
   await intr.reply({ embeds: [embed], ephemeral: true });
 };
 

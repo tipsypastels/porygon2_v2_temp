@@ -12,7 +12,7 @@ type Groups<Opts> = {
 // data will fail startup, so this is unlikely to be a problem. Just a tad
 // ugly.
 export function commandGroups<Opts>(fns: Groups<Opts>): Command<Opts> {
-  return function (args) {
+  return <Command>function (args) {
     const subCommand = args.opts.subCommand;
 
     if (!subCommand) {
@@ -25,5 +25,5 @@ export function commandGroups<Opts>(fns: Groups<Opts>): Command<Opts> {
 
     const fn = fns[subCommand as keyof Opts];
     return fn(args as any);
-  } as Command;
+  };
 }

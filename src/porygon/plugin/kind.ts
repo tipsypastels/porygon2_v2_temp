@@ -9,6 +9,7 @@ import { config } from 'porygon/config';
 import { DEV } from 'porygon/dev';
 import { bugLogger } from 'porygon/logger';
 import { Cache, Singleton } from 'support/cache';
+import { getConfigNameForGuild } from 'porygon/guilds';
 
 const DEV_SERVER = config('dev_server');
 
@@ -54,7 +55,7 @@ export class PluginDev implements PluginKind {
   }
 
   get tag() {
-    return 'dev';
+    return 'Dev';
   }
 
   guild(client: Porygon) {
@@ -82,7 +83,7 @@ export class PluginGlobal implements PluginKind {
   }
 
   get tag() {
-    return 'global';
+    return 'Global';
   }
 
   matches() {
@@ -108,7 +109,7 @@ export class PluginGuild implements PluginKind {
   }
 
   get tag() {
-    return `guild_${this.guildId}`;
+    return `Guild(${getConfigNameForGuild(this.guildId)})`;
   }
 
   guild(client: Porygon) {
@@ -130,16 +131,19 @@ export class PluginGuilds implements PluginKind {
     return new this(guildIds);
   }
 
-  // it's not safe to store guild IDs directly since they'll
+  // it's not safe to upload guild IDs directly since they'll
   // clobber other commands from that guild
   private plugins: PluginGuild[];
+  private guildIds: Snowflake[];
 
   private constructor(guildIds: Snowflake[]) {
     this.plugins = guildIds.map((id) => PluginGuild.init(id));
+    this.guildIds = guildIds;
   }
 
   get tag() {
-    return `guilds_${this.plugins.map((p) => p.tag).join('_')}`;
+    const call = this.guildIds.map(getConfigNameForGuild).join(', ');
+    return `Guilds(${call})`;
   }
 
   matches(guildId: Snowflake | undefined) {
