@@ -9,7 +9,7 @@ type Target = {
   guild: Guild;
 };
 
-const RETRIES = 3;
+const RETRIES = 5;
 const SLEEP = Seconds(5);
 
 // prevents finding the same event twice

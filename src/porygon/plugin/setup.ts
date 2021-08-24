@@ -12,8 +12,6 @@ export async function setupPlugins(client: Porygon) {
   await clearGlobalCommandsInDev(client);
 }
 
-// const PLUGIN_PATH = `/${__dirname}/../../plugins/<eachDir>/$plugin`;
-
 async function importPlugins(client: Porygon) {
   const plugins = await import('plugins/$plugins');
 

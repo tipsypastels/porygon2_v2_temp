@@ -93,7 +93,7 @@ export function createLang<L extends Lang>(lang: L): LangFn<L> {
 function interp(string: string, params?: Record<string, Stringable>) {
   if (params) {
     for (const [key, value] of Object.entries(params)) {
-      string = string.replace(`{${key}}`, value.toString());
+      string = string.replace(new RegExp(`\\{${key}\\}`, 'g'), value.toString());
     }
   }
 
