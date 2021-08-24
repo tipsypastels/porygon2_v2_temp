@@ -9,4 +9,5 @@ export { default as COMMAND_duck_nudge } from './commands/nudge';
 export { default as COMMAND_duck_pat } from './commands/pat';
 export { default as COMMAND_duck_thanos } from './commands/thanos';
 export { default as COMMAND_duck_vibe } from './commands/vibe';
+export { default as COMMAND_duck_experiment } from './commands/experiment';
 export { default as EVENT_duck_joinMessage } from './events/join_message';
