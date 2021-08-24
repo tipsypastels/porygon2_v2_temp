@@ -35,6 +35,7 @@ export interface PluginKind {
   tag: string;
   matches(guildId: Snowflake | undefined): boolean;
   upload(data: Data[], client: Porygon): Promise<Api[]>;
+  getChildKinds?(): PluginKind[];
 }
 
 export type PluginKindOrDev<T extends PluginKind> = T | PluginDev;
@@ -150,11 +151,12 @@ export class PluginGuilds implements PluginKind {
     return !!guildId && this.plugins.some((p) => p.matches(guildId));
   }
 
-  async upload(data: Data[], client: Porygon) {
-    const promises = this.plugins.map((p) => p.upload(data, client));
-    const [commands] = await Promise.all(promises);
+  async upload() {
+    return []; // upload is deferred to children
+  }
 
-    return commands; // all entries are the same
+  getChildKinds() {
+    return this.plugins;
   }
 }
 

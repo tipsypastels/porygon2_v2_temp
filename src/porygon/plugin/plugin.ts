@@ -2,10 +2,11 @@ import { Collection } from 'discord.js';
 import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
 import { Cell, BaseCommand } from 'porygon/interaction';
+import { bugLogger } from 'porygon/logger';
 import { zip } from 'support/array';
 import { code } from 'support/string';
 import { saveCommand, searchCommands } from '../commands';
-import { PluginKind } from './kind';
+import type { PluginKind } from './kind';
 
 /**
  * A plugin is a unit of command and event grouping, and a manager for
@@ -64,7 +65,17 @@ export class Plugin {
   }
 
   addCommand(command: BaseCommand) {
+    if (this.kind.getChildKinds) {
+      return this.addCommandToChildren(command, this.kind.getChildKinds());
+    }
+
     this.unsavedCommands.push(command);
+  }
+
+  private addCommandToChildren(command: BaseCommand, childKinds: PluginKind[]) {
+    for (const kind of childKinds) {
+      Plugin.init(kind, this.client).addCommand(command);
+    }
   }
 
   hasCommand(name: string) {
@@ -72,6 +83,17 @@ export class Plugin {
   }
 
   private async uploadCommands() {
+    if (this.unsavedCommands.length === 0) {
+      return;
+    }
+
+    // TODO: remove this check once this is known to work
+    if (this.kind.getChildKinds) {
+      bugLogger.error(
+        `Tried to upload to a ${this.kind.tag}. Parent PluginKinds should defer uploads to their children instead.`,
+      );
+    }
+
     const data = this.unsavedCommands.map((c) => c.data);
     const apis = await this.kind.upload(data, this.client);
 
