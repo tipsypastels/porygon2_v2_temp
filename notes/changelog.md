@@ -6,7 +6,7 @@ Porygon has been written to use Discord Slash Commands, which allow commands to 
 
 - The command prefix has been changed to `/`.
 - Many commands are now *ephemeral*. This means that Porygon's response to the command is only shown to the user using it. As a result, there's much less of a need to restrict commands to #random, as ephemeral commands can't flood the chat for anyone but the person using them.
-- Porygon's system for locking commands to specific channels has been removed as a result of this. The only exception is `/pets add`, which is a special case. It may be possible to add more restrictions, but given that most commands are ephemeral I don't think it will be needed.
+- Porygon's system for locking commands to specific channels has been removed as a result of this. The only exception is `/pet add`, which is a special case. It may be possible to add more restrictions, but given that most commands are ephemeral I don't think it will be needed.
 
 ## Changes to existing commands
 
@@ -54,10 +54,10 @@ Some commands may also have changed their semantics, see the next section.
 | `/fc get` | Yes | No | Shows friend codes for a user. |
 | `/fc set [switch] [3ds] [go]` | Yes | Yes | Sets your friend code or codes.
 | `/fc clear <switch, 3ds, go, all>` | Yes | Yes | Clears one or more of your friend codes.
-| `/pets add` | Yes** | No | Adds a pet.*** |
-| `/pets remove <id>` | Yes | Yes | Removes the pet with the specified ID.
-| `/pets random` | Yes | No | Shows a random pet from a random member.
-| `/pets random <member>` | Yes | No | Shows a random pet from the specified member.
+| `/pet add` | Yes** | No | Adds a pet.*** |
+| `/pet remove <id>` | Yes | Yes | Removes the pet with the specified ID.
+| `/pet random` | Yes | No | Shows a random pet from a random member.
+| `/pet random <member>` | Yes | No | Shows a random pet from the specified member.
 | `/role add <role>` | Yes | Yes | Gives you the role, if it is requestable.
 | `/role remove <role>` | Yes | Yes | Takes away the role, if it is requestable.
 | `/rolemod get <role>` | No | Yes | Shows properties of a role.
