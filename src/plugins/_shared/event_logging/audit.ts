@@ -42,7 +42,7 @@ async function latest(target: Target, type: Type) {
     const log = await get(target, type);
 
     if (log) {
-      bugLogger.info(`Found audit log ${type} after ${i} cycles.`);
+      bugLogger.debug(`Found audit log ${type} after ${i} cycles.`);
       return log;
     }
 
@@ -72,7 +72,6 @@ function isUser(user: User, { target }: GuildAuditLogsEntry) {
 }
 
 function isRecent({ createdTimestamp: ts }: GuildAuditLogsEntry) {
-  console.log({ ts, lastFind, gt: ts > lastFind });
   if (ts > lastFind) {
     lastFind = ts;
     return true;
