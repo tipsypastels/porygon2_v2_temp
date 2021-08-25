@@ -33,7 +33,7 @@ const eval_: Command<Opts> = async (args) => {
 
   // alters the "Enable Application Commands" for every role on the server
   async function setCommandsEnabled(enabled: boolean) {
-    intr.reply('Starting...');
+    intr.reply({ content: 'Starting...', ephemeral });
 
     const stats = { success: 0, failure: 0 };
 
