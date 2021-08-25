@@ -72,7 +72,7 @@ export class Plugin {
 
     if (this.children) {
       for (const plugin of this.children()) {
-        plugin.markDirAsIncluded(`{${dir}}]`);
+        plugin.markDirAsIncluded(`[${dir}]`);
       }
     }
   }
