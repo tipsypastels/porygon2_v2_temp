@@ -8,7 +8,8 @@
     "migrate": "prisma db push --preview-feature",
     "madge": "madge -c -b ./dist dist",
     "create:command": "node ./scripts/create_command.js",
-    "create:plugin": "node ./scripts/create_plugin.js"
+    "create:plugin": "node ./scripts/create_plugin.js",
+    "run:import": "node -r dotenv/config ./scripts/import.js"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",

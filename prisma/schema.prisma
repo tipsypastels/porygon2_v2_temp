@@ -20,11 +20,11 @@ model PlugCt_Score {
 }
 
 model PlugPets_Pet {
-  id      Int     @id @default(autoincrement())
-  guildId String
-  userId  String
-  active  Boolean @default(true)
-  url     String
+  // If we ever expand this to multiple servers, add a guildId
+  id     Int     @id @default(autoincrement())
+  userId String
+  active Boolean @default(true)
+  path   String
 }
 
 model PlugFc_Codes {

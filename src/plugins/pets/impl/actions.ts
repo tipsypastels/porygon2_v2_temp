@@ -1,10 +1,11 @@
-import { Guild, GuildMember, Message } from 'discord.js';
+import { GuildMember, Message } from 'discord.js';
 import { config } from 'porygon/config';
 import { db } from 'porygon/core';
 import { Embed } from 'porygon/embed';
 import { createBuiltinErrors } from 'porygon/error';
 import { CommandChannel } from 'porygon/interaction';
 import { createLang } from 'porygon/lang';
+import { petExtractPath } from './path_url';
 
 const table = db.plugPets_Pet;
 
@@ -16,7 +17,8 @@ export async function petAdd(member: GuildMember, channel: CommandChannel) {
   await assertChannel(channel);
 
   const [message, url] = await find(member, channel);
-  const data = { url, guildId: member.guild.id, userId: member.id };
+  const path = petExtractPath(url);
+  const data = { path, userId: member.id };
   const pet = await table.create({ data });
 
   message.react('✅');
@@ -30,7 +32,7 @@ export async function petAdd(member: GuildMember, channel: CommandChannel) {
 }
 
 export async function petRemove(id: number, member: GuildMember) {
-  const entry = await table.findFirst({ where: { id, guildId: member.guild.id } });
+  const entry = await table.findFirst({ where: { id } });
 
   if (!entry) {
     throw error('missingRem', id);
