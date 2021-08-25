@@ -6,13 +6,17 @@ export async function isCellUsableBy(cell: Cell, member: GuildMember) {
   const perms = await cell.getPerms(member.guild).catch(() => []);
 
   for (const perm of perms) {
+    // if this permission is relevant and not the default, (access to a
+    // restricted command or lack of access to a public command) we
+    // return that.
     if (!matches(perm, member) || perm.permission === defaultPerm) {
       continue;
     }
 
-    return !defaultPerm;
+    return perm.permission;
   }
 
+  // otherwise just do what the default says
   return defaultPerm;
 }
 

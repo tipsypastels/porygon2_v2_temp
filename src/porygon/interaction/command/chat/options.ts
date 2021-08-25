@@ -82,15 +82,21 @@ export class CommandOptions<Opts> {
   }
 
   private serializeValue(option: Option): string {
-    // prettier-ignore
     switch (option.type) {
-      case 'CHANNEL': return option.channel!.name;
-      case 'ROLE': return option.role!.name;
-      case 'USER': return option.user!.username;
-      case 'MENTIONABLE': return '<Mentionable>';
-      case 'SUB_COMMAND': return option.name;
-      case 'SUB_COMMAND_GROUP': return option.name;
-      default: return option.value!.toString();
+      case 'CHANNEL':
+        return option.channel!.name;
+      case 'ROLE':
+        return option.role!.name;
+      case 'USER':
+        return option.user!.username;
+      case 'MENTIONABLE':
+        return option.role?.name ?? option.user!.username;
+      case 'SUB_COMMAND':
+        return option.name;
+      case 'SUB_COMMAND_GROUP':
+        return option.name;
+      default:
+        return option.value!.toString();
     }
   }
 
