@@ -1,10 +1,10 @@
 import { PlugRole_RoleConfig } from '@prisma/client';
-import { Role } from 'discord.js';
+import { Guild, Role } from 'discord.js';
 import { config } from 'porygon/config';
 import { db } from 'porygon/core';
 import { createBuiltinErrors } from 'porygon/error';
+import { Cell } from 'porygon/interaction';
 import { createLang } from 'porygon/lang';
-import { Plugin } from 'porygon/plugin';
 
 const TABLE = db.plugRole_RoleConfig;
 const STAFF_ROLE_NAMES = config('plug.role.staffRoles');
@@ -18,9 +18,9 @@ export function isRoleConfigRequestable(config: PlugRole_RoleConfig | null) {
   return config?.requestable ?? false;
 }
 
-export async function assertRoleRequestable(role: Role, plugin: Plugin) {
+export async function assertRoleRequestable(role: Role) {
   const is = await isRoleRequestable(role);
-  is || respondToStaffRoleRequest(role) || respondToNonRequestableRole(role, plugin);
+  is || respondToStaffRoleRequest(role) || respondToNonRequestableRole(role);
 }
 
 function respondToStaffRoleRequest(role: Role) {
@@ -31,8 +31,8 @@ function respondToStaffRoleRequest(role: Role) {
   }
 }
 
-function respondToNonRequestableRole(role: Role, plugin: Plugin) {
-  throw error('notRequestable', role, plugin);
+function respondToNonRequestableRole(role: Role) {
+  throw error('notRequestable', role);
 }
 
 const lang = createLang(<const>{
@@ -53,11 +53,15 @@ const error = createBuiltinErrors({
       .poryThumb('angry')
       .assign(lang('staffRole', { role: role.name }));
   },
-  notRequestable(e, role: Role, plugin: Plugin) {
-    const desc = plugin.hasCommand('rolelist') ? 'desc' : 'descWithRoleList';
+  notRequestable(e, role: Role) {
+    const desc = hasRoleList(role.guild) ? 'descWithRoleList' : 'desc';
 
     e.poryErr('warning')
       .setTitle(lang('notRequestable.title', { role: role.name }))
       .setDesc(lang(`notRequestable.${desc}`));
   },
 });
+
+function hasRoleList(guild: Guild) {
+  return Cell.withNameOnGuild('rolelist', guild);
+}

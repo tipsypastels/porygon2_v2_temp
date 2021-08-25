@@ -91,10 +91,6 @@ export class Plugin {
     }
   }
 
-  hasCommand(name: string) {
-    return !!searchCommands((c) => c.name === name && c.plugin === this);
-  }
-
   private async uploadCommands() {
     if (this.unsavedCommands.length === 0) {
       return;

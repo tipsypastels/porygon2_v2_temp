@@ -5,7 +5,7 @@ const URL = config('plug.pokecom.roleListUrl');
 
 const rolelist: Command = async ({ intr }) => {
   await intr.reply({
-    content: `[You can see a list of requestable roles here :)](${URL.value})`,
+    content: `[Click here to see a list of requestable roles :)](${URL.value})`,
     ephemeral: true,
   });
 };

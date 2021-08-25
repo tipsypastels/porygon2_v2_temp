@@ -4,22 +4,22 @@ import { assertHasRole, assertLacksRole, assertRoleRequestable } from '../impl';
 
 type Opts = { role: Role };
 
-const add: CommandFn<Opts> = async ({ opts, intr, embed, author, cell }) => {
+const add: CommandFn<Opts> = async ({ opts, intr, embed, author }) => {
   const role = opts.get('role');
 
   await assertLacksRole(author, role);
-  await assertRoleRequestable(role, cell.plugin);
+  await assertRoleRequestable(role);
   await author.roles.add(role);
 
   embed.poryColor('ok').setTitle(`Gave you "${role.name}"!`);
   await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
-const remove: CommandFn<Opts> = async ({ opts, intr, embed, author, cell }) => {
+const remove: CommandFn<Opts> = async ({ opts, intr, embed, author }) => {
   const role = opts.get('role');
 
   await assertHasRole(author, role);
-  await assertRoleRequestable(role, cell.plugin);
+  await assertRoleRequestable(role);
   await author.roles.remove(role);
 
   embed.poryColor('ok').setTitle(`Took away "${role.name}"!`);
