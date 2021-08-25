@@ -5,7 +5,7 @@ import { Cell, BaseCommand } from 'porygon/interaction';
 import { bugLogger } from 'porygon/logger';
 import { zip } from 'support/array';
 import { code } from 'support/string';
-import { saveCommand, searchCommands } from '../commands';
+import { saveCommand } from '../commands';
 import type { PluginKind } from './kind';
 
 type PluginChildren = () => Generator<Plugin>;
