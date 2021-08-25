@@ -1,5 +1,5 @@
 import './ascii';
-import { Client } from 'discord.js';
+import { Client, Options } from 'discord.js';
 import { createLogger, colors } from 'porygon/logger';
 import { intents } from './intents';
 import { setupPlugins } from 'porygon/plugin/setup';
@@ -12,10 +12,14 @@ const INVITE =
   'https://discord.com/oauth2/authorize?client_id={CLIENT_ID}&scope=bot+applications.commands&permissions=470019135';
 
 const logger = createLogger('core', colors.blue);
+const makeCache = Options.cacheWithLimits({
+  MessageManager: 400,
+  GuildMemberManager: 400,
+});
 
 export class Porygon extends Client {
   constructor() {
-    super({ intents });
+    super({ intents, makeCache });
 
     this.once('ready', async () => {
       await this.setup();
