@@ -10,34 +10,11 @@ import { collectPermInfoSummary } from '../impl/perm_info';
 
 type Allow = 'yes' | 'no' | 'clear';
 
-type RoleOpts = { command: string; role: Role; allow: Allow };
-type MemberOpts = { command: string; member: GuildMember; allow: Allow };
-type ShowOpts = { command: string; verbose?: boolean };
+type GetOpts = { command: string; verbose?: boolean };
+type SetOpts = { command: string; subject: GuildMember | Role; allow: Allow };
 type CanUseOpts = { command: string; member: GuildMember };
 
-const role: CommandFn<RoleOpts> = async ({ opts, embed, intr, author }) => {
-  const { command, role, allow } = opts.pick('command', 'role', 'allow');
-  const cell = getCell(author.guild, command);
-
-  await assertCanManagePermissionForCell(cell, author);
-  await setPerm(cell, allow, role);
-
-  embed.mergeWith(result, command, allow, role);
-  await intr.reply({ embeds: [embed], ephemeral: true });
-};
-
-const member: CommandFn<MemberOpts> = async ({ opts, embed, intr, author }) => {
-  const { command, member, allow } = opts.pick('command', 'member', 'allow');
-  const cell = getCell(author.guild, command);
-
-  await assertCanManagePermissionForCell(cell, author);
-  await setPerm(cell, allow, member);
-
-  embed.mergeWith(result, command, allow, member);
-  await intr.reply({ embeds: [embed], ephemeral: true });
-};
-
-const show: CommandFn<ShowOpts> = async ({ opts, embed, intr, author }) => {
+const get: CommandFn<GetOpts> = async ({ opts, embed, intr, author }) => {
   const { guild } = author;
   const command = opts.get('command');
   const verbose = opts.try('verbose') ?? false;
@@ -51,6 +28,17 @@ const show: CommandFn<ShowOpts> = async ({ opts, embed, intr, author }) => {
     .addField(lang('summary.default'), cell.defaultPerm ? 'Yes' : 'No')
     .merge(summary);
 
+  await intr.reply({ embeds: [embed], ephemeral: true });
+};
+
+const set: CommandFn<SetOpts> = async ({ opts, embed, intr, author }) => {
+  const { command, subject, allow } = opts.pick('command', 'subject', 'allow');
+  const cell = getCell(author.guild, command);
+
+  await assertCanManagePermissionForCell(cell, author);
+  await setPerm(cell, allow, subject);
+
+  embed.mergeWith(result, command, allow, subject);
   await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
@@ -80,18 +68,18 @@ function setPerm(cell: Cell, allow: Allow, target: GuildMember | Role) {
   return cell.setPerm(target, allow === 'yes');
 }
 
-function result(e: Embed, command: string, allow: Allow, target: Stringable) {
+function result(e: Embed, command: string, allow: Allow, subject: Stringable) {
   e.poryColor('ok')
     .setTitle(lang('success.title'))
-    .setDescription(resultDesc(command, allow, target));
+    .setDescription(resultDesc(command, allow, subject));
 }
 
-function resultDesc(command: string, allow: Allow, target: Stringable) {
+function resultDesc(command: string, allow: Allow, subject: Stringable) {
   if (allow === 'clear') {
-    return lang('success.cleared', { command, target });
+    return lang('success.cleared', { command, subject });
   } else {
     const avail = allow === 'yes' ? 'enabled' : 'disabled';
-    return lang('success.desc', { command, avail, target });
+    return lang('success.desc', { command, avail, subject });
   }
 }
 
@@ -103,25 +91,13 @@ async function assertCanManagePermissionForCell(cell: Cell, author: GuildMember)
   throw error('illegalSet', cell);
 }
 
-const perm = commandGroups({ role, member, show, canuse });
+const perm = commandGroups({ get, set, canuse });
 
 const CMD: ApplicationCommandOptionData = {
   name: 'command',
   description: 'The name of the command.',
   required: true,
   type: 'STRING',
-};
-
-const ALLOW: ApplicationCommandOptionData = {
-  name: 'allow',
-  description: 'Whether the command should be allowed.',
-  required: true,
-  type: 'STRING',
-  choices: [
-    { name: 'Yes', value: 'yes' },
-    { name: 'No', value: 'no' },
-    { name: 'Clear', value: 'clear' },
-  ],
 };
 
 perm.unknownErrorEphemerality = () => true;
@@ -131,37 +107,7 @@ perm.data = {
   defaultPermission: DEV,
   options: [
     {
-      name: 'role',
-      description: 'Manages permissions for a role.',
-      type: 'SUB_COMMAND',
-      options: [
-        CMD,
-        {
-          name: 'role',
-          description: 'The role set permissions for.',
-          required: true,
-          type: 'ROLE',
-        },
-        ALLOW,
-      ],
-    },
-    {
-      name: 'member',
-      description: 'Manages permissions for a member.',
-      type: 'SUB_COMMAND',
-      options: [
-        CMD,
-        {
-          name: 'member',
-          description: 'The member to set permissions for.',
-          required: true,
-          type: 'USER',
-        },
-        ALLOW,
-      ],
-    },
-    {
-      name: 'show',
+      name: 'get',
       description: 'Shows who has permissions to use a command.',
       type: 'SUB_COMMAND',
       options: [
@@ -174,6 +120,32 @@ perm.data = {
         },
       ],
     },
+    {
+      name: 'set',
+      description: 'Manages permissions for a command.',
+      type: 'SUB_COMMAND',
+      options: [
+        CMD,
+        {
+          name: 'subject',
+          description: 'The member or role set permissions for.',
+          required: true,
+          type: 'MENTIONABLE',
+        },
+        {
+          name: 'allow',
+          description: 'Whether the command should be allowed.',
+          required: true,
+          type: 'STRING',
+          choices: [
+            { name: 'Yes', value: 'yes' },
+            { name: 'No', value: 'no' },
+            { name: 'Clear', value: 'clear' },
+          ],
+        },
+      ],
+    },
+
     {
       name: 'canuse',
       description: 'Detect whether a member can use a command.',
@@ -203,8 +175,8 @@ const lang = createLang(<const>{
   },
   success: {
     title: 'Success!',
-    desc: '{command} is now {avail} for {target}!',
-    cleared: '{command} is no longer set for {target}.',
+    desc: '{command} is now {avail} for {subject}!',
+    cleared: '{command} is no longer set for {subject}.',
   },
   summary: {
     title: 'Permissions for {command}',

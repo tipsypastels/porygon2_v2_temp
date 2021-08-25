@@ -50,8 +50,10 @@ export class CommandOptions<Opts> {
       case 'ROLE': {
         return option.role;
       }
+      case 'MENTIONABLE': {
+        return option.role ?? option.member;
+      }
       default: {
-        // note, we don't support mentionable via this system
         // nor subcommand/group since those have proper methods
         return option.value;
       }

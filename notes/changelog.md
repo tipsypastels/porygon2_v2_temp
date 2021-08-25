@@ -64,9 +64,9 @@ Some commands may also have changed their semantics, see the next section.
 | `/rolemod set <role> [name] [hoist] [mentionable] [requestable]` | No | Yes | Updates the role with the listed properties.
 | `/rolemod create <name> [hoist] [mentionable] [requestable]` | No | Yes | Creates a role with the listed properties.
 | `/rolelist` | Yes | Yes | Links to the role list page.
-| `/perm show <command> [verbose]` | No | Yes | Shows who has permission to use the command.
-| `/perm role <command> <role> <allow>` | No | Yes | Updates whether the role can use the specified command.
-| `/perm member <command> <member> <allow>` | No | Yes | Updates whether the member can use the specified command.
+| `/perm get <command> [verbose]` | No | Yes | Shows who has permission to use the command.
+| `/perm set <command> <role, member> <allow>` | No | Yes | Updates whether the role/member can use the specified command.
+| `/perm canuse <command> <member>` | No | Yes | Shows whether the member can use the specified command.
 
 `*` - Not ephemeral currently, but may change if overused.
 
