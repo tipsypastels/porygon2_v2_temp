@@ -13,6 +13,7 @@ import { ContextMenu, callContextMenu } from './context_menu/context_menu';
 import { Command, callCommand } from './chat';
 import { resolveSnowflake, SnowflakeLike } from 'support/snowflake';
 import { searchCommands } from 'porygon/commands';
+import { isCellUsableBy } from './usable';
 
 export type PermSummaryEntry =
   | { type: 'ROLE'; target: Role; permission: boolean }
@@ -82,5 +83,9 @@ export class Cell {
 
   isOn(guildId: Snowflake) {
     return this.isGlobal || this.api.guildId === guildId;
+  }
+
+  isUsableBy(member: GuildMember) {
+    return isCellUsableBy(this, member);
   }
 }
