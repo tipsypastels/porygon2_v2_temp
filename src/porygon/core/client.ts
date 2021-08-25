@@ -8,6 +8,9 @@ import { setupAssets } from 'porygon/asset/setup';
 import { uptime } from 'porygon/stats';
 import { setupActivityMessages } from './activity';
 
+const INVITE =
+  'https://discord.com/oauth2/authorize?client_id={CLIENT_ID}&scope=bot+applications.commands&permissions=470019135';
+
 const logger = createLogger('core', colors.blue);
 
 export class Porygon extends Client {
@@ -22,6 +25,13 @@ export class Porygon extends Client {
     });
 
     this.on('interactionCreate', handleInteraction);
+  }
+
+  get inviteUrl() {
+    const { user } = this;
+    if (!user) throw new Error("Can't access Porygon#inviteUrl before ready.");
+
+    return INVITE.replace('{CLIENT_ID}', user.id);
   }
 
   private setup() {

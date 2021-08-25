@@ -6,6 +6,7 @@ import { assertOwner } from 'porygon/owner';
 import { codeBlock } from 'support/string';
 import { Plugin as PluginImport } from 'porygon/plugin';
 import { DEV } from 'porygon/dev';
+import { GuildConfigName } from 'porygon/guilds';
 
 interface Opts {
   code: string;
@@ -24,6 +25,13 @@ const eval_: Command<Opts> = async (args) => {
   const Cell = CellImport;
 
   const result = await eval(code);
+
+  // eval stores some functions which are too unstructured
+  // or infrequently used to be worth even an /op command
+  // might rethink this once discord hides commands one
+  // can't use, but i don't want to flood the list with
+  // op stuff right now so i'm hiding smaller things
+  // in here.
 
   // enables /perm, which allows managing permissions
   function enablePermForMe() {
