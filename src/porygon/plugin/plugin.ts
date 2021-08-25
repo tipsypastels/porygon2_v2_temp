@@ -8,6 +8,8 @@ import { code } from 'support/string';
 import { saveCommand, searchCommands } from '../commands';
 import type { PluginKind } from './kind';
 
+type PluginChildren = () => Generator<Plugin>;
+
 /**
  * A plugin is a unit of command and event grouping, and a manager for
  * the setup process of both. Plugins are never initialized directly
@@ -43,6 +45,7 @@ export class Plugin {
   static ALL = new Collection<PluginKind, Plugin>();
 
   private unsavedCommands: BaseCommand[] = [];
+  private children?: PluginChildren;
 
   // metadata, only tracked for intoPlugInfoEmbed
   private connected = false;
@@ -58,23 +61,33 @@ export class Plugin {
 
   private constructor(private kind: PluginKind, readonly client: Porygon) {
     Plugin.ALL.set(kind, this);
+
+    if (kind.getChildKinds) {
+      this.children = createPluginChildren(kind.getChildKinds(), client);
+    }
   }
 
   markDirAsIncluded(dir: string) {
     this.includedDirs.push(dir);
+
+    if (this.children) {
+      for (const plugin of this.children()) {
+        plugin.markDirAsIncluded(`{${dir}}]`);
+      }
+    }
   }
 
   addCommand(command: BaseCommand) {
-    if (this.kind.getChildKinds) {
-      return this.addCommandToChildren(command, this.kind.getChildKinds());
+    if (this.children) {
+      return this.addCommandToChildren(command, this.children);
     }
 
     this.unsavedCommands.push(command);
   }
 
-  private addCommandToChildren(command: BaseCommand, childKinds: PluginKind[]) {
-    for (const kind of childKinds) {
-      Plugin.init(kind, this.client).addCommand(command);
+  private addCommandToChildren(command: BaseCommand, children: PluginChildren) {
+    for (const plugin of children()) {
+      plugin.addCommand(command);
     }
   }
 
@@ -87,8 +100,7 @@ export class Plugin {
       return;
     }
 
-    // TODO: remove this check once this is known to work
-    if (this.kind.getChildKinds) {
+    if (this.children) {
       bugLogger.error(
         `Tried to upload to a ${this.kind.tag}. Parent PluginKinds should defer uploads to their children instead.`,
       );
@@ -119,4 +131,12 @@ export class Plugin {
     if (this.kind.getChildKinds) return '↪️';
     return this.connected ? '✅' : '❌';
   }
+}
+
+function createPluginChildren(kinds: PluginKind[], client: Porygon) {
+  return function* () {
+    for (const kind of kinds) {
+      yield Plugin.init(kind, client);
+    }
+  };
 }
