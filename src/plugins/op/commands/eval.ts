@@ -31,13 +31,37 @@ const eval_: Command<Opts> = async (args) => {
     return perm?.setPerm(author, true);
   }
 
+  // alters the "Enable Application Commands" for every role on the server
+  async function setCommandsEnabled(enabled: boolean) {
+    intr.reply('Starting...');
+
+    const stats = { success: 0, failure: 0 };
+
+    for (const [, role] of guild.roles.cache) {
+      try {
+        const method = enabled ? 'add' : 'remove';
+        const perms = role.permissions[method]('USE_APPLICATION_COMMANDS');
+        await role.setPermissions(perms);
+        await new Promise((r) => setTimeout(r, 5000));
+        console.log(role.name);
+        stats.success++;
+      } catch (e) {
+        console.error(`${role.name}: ${e}`);
+        stats.failure++;
+      }
+    }
+
+    return stats;
+  }
+
   embed
     .poryColor('ok')
     .setTitle('Evaluated Code')
     .addField('Input', js(code, { inspect: false }))
     .addField('Output', js(result, { inspect: true }));
 
-  await intr.reply({ embeds: [embed], ephemeral });
+  const method = intr.replied ? 'followUp' : 'reply';
+  await intr[method]({ embeds: [embed], ephemeral });
 };
 
 eval_.unknownErrorEphemerality = ({ opts }) => !opts.try('loud');
