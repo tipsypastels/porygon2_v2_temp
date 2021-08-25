@@ -37,18 +37,19 @@ const eval_: Command<Opts> = async (args) => {
 
     const stats = { success: 0, failure: 0 };
 
-    for (const [, role] of guild.roles.cache) {
+    for await (const [, role] of guild.roles.cache) {
       try {
         const method = enabled ? 'add' : 'remove';
         const perms = role.permissions[method]('USE_APPLICATION_COMMANDS');
         await role.setPermissions(perms);
-        await new Promise((r) => setTimeout(r, 5000));
         console.log(role.name);
         stats.success++;
       } catch (e) {
         console.error(`${role.name}: ${e}`);
         stats.failure++;
       }
+
+      await new Promise((r) => setTimeout(r, 2000));
     }
 
     return stats;
