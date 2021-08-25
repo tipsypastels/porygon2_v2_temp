@@ -128,7 +128,7 @@ export class Plugin {
   }
 
   private get plugInfoEmbedStatusSymbol() {
-    if (this.kind.getChildKinds) return '↪️';
+    if (this.children) return '↪️';
     return this.connected ? '✅' : '❌';
   }
 }
