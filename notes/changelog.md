@@ -16,7 +16,7 @@ Some commands may also have changed their semantics, see the next section.
 
 | Command              | Change                    |
 |----------------------|---------------------------|
-| `!fc`                | Renamed to `/fc show`     |
+| `!fc`                | Renamed to `/fc get`     |
 | `!setfc`             | Renamed to `/fc set`      |
 | `!delfc`             | Renamed to `/fc clear`    |
 | `!addpet`            | Renamed to `/pet add`     |
