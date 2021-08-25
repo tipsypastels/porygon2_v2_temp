@@ -66,6 +66,10 @@ export const callCommand = createBaseCommandCall<CreateCommand>({
     return `/${command.data.name}`;
   },
 
+  getLoggerCommandOptions(args) {
+    return args.opts.getSerializedOptionsString();
+  },
+
   getLoggerLocationContext({ channel, guild }) {
     return `${channel.name}, ${guild.name}`;
   },

@@ -1,4 +1,7 @@
-import { CommandInteractionOptionResolver as Resolver } from 'discord.js';
+import {
+  CommandInteractionOption as Option,
+  CommandInteractionOptionResolver as Resolver,
+} from 'discord.js';
 import fromEntries from 'object.fromentries';
 
 export class CommandOptions<Opts> {
@@ -52,6 +55,40 @@ export class CommandOptions<Opts> {
         // nor subcommand/group since those have proper methods
         return option.value;
       }
+    }
+  }
+
+  getSerializedOptionsString() {
+    const items: string[] = [];
+
+    function pushItem(item: string) {
+      items.push(item);
+    }
+
+    function pushKeyword(keyword: string, value: string) {
+      pushItem(`${keyword}: ${value}`);
+    }
+
+    if (this.res['_group']) pushItem(this.res['_group']);
+    if (this.res['_subcommand']) pushItem(this.res['_subcommand']);
+
+    for (const option of this.res['_hoistedOptions']) {
+      pushKeyword(option.name, this.serializeValue(option));
+    }
+
+    return items.join(' ');
+  }
+
+  private serializeValue(option: Option): string {
+    // prettier-ignore
+    switch (option.type) {
+      case 'CHANNEL': return option.channel!.name;
+      case 'ROLE': return option.role!.name;
+      case 'USER': return option.user!.username;
+      case 'MENTIONABLE': return '<Mentionable>';
+      case 'SUB_COMMAND': return option.name;
+      case 'SUB_COMMAND_GROUP': return option.name;
+      default: return option.value!.toString();
     }
   }
 

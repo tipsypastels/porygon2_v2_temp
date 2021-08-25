@@ -15,6 +15,7 @@ type Create = CreateBaseCommand<any, any>;
 interface Opts<C extends Create> {
   createArgs(...call: C['CallFnArgs']): C['Args'] | undefined;
   getLoggerCommandName(command: C['Command']): string;
+  getLoggerCommandOptions?(args: C['Args']): string;
   getLoggerLocationContext?(args: C['Args']): string;
 }
 
@@ -27,10 +28,16 @@ export function createBaseCommandCall<C extends Create>(opts: Opts<C>): C['CallF
     return (opts.getLoggerLocationContext ?? defaultLocationContext)(args);
   }
 
+  function getFullCommandString(command: C['Command'], args: C['Args']) {
+    const name = opts.getLoggerCommandName(command);
+    const rest = opts.getLoggerCommandOptions?.(args);
+    return rest ? `${name} ${rest}` : name;
+  }
+
   function getLoggerBaseParams(command: C['Command'], args: C['Args']) {
     const loc = getLocationContext(args);
-    const cmd = opts.getLoggerCommandName(command);
-    const author = args.author.displayName;
+    const cmd = getFullCommandString(command, args);
+    const author = args.author.user.username;
     return { loc, cmd, author };
   }
 
@@ -104,10 +111,10 @@ function cleanError(message: string) {
 
 const lang = createLang(<const>{
   log: {
-    ok: '{author} used {cmd} in {loc}.',
+    ok: '{author} used "{cmd}" in {loc}.',
     builtinErr:
-      '{author} misused {cmd} in {loc} and encountered error: {codeDomain}.{code}.',
-    unkErr: '{author} encountered a crash using {cmd} in {loc}. More details follow.',
+      '{author} misused "{cmd}" in {loc} and encountered error: {codeDomain}.{code}.',
+    unkErr: '{author} encountered a crash using "{cmd}" in {loc}. More details follow.',
   },
   embed: {
     unk: {
