@@ -68,7 +68,7 @@ const eval_: Command<Opts> = async (args) => {
 eval_.unknownErrorEphemerality = ({ opts }) => !opts.try('loud');
 eval_.data = {
   name: 'eval',
-  defaultPermission: true,
+  defaultPermission: DEV,
   description: "If you don't know what this does, you shouldn't be using it.",
   options: [
     {

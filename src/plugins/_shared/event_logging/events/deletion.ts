@@ -11,7 +11,7 @@ export function logDeletions(events: EventProxy, cfg: DeletionsLogConfig) {
   function run(message: Message | PartialMessage) {
     const { author, guild } = message;
 
-    if (!author || !guild) {
+    if (!author || author.bot || !guild) {
       return;
     }
 
