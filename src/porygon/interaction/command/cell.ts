@@ -66,6 +66,9 @@ export class Cell {
     return this.api.permissions.remove(options);
   }
 
+  /**
+   * @throws If there are no permissions for that command.
+   */
   getPerms(guild: Guild) {
     const options = { guild };
     return this.api.permissions.fetch(options);

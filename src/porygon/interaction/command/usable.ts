@@ -3,7 +3,7 @@ import { Cell } from './cell';
 
 export async function isCellUsableBy(cell: Cell, member: GuildMember) {
   const defaultPerm = cell.defaultPerm;
-  const perms = await cell.getPerms(member.guild);
+  const perms = await cell.getPerms(member.guild).catch(() => []);
 
   for (const perm of perms) {
     if (!matches(perm, member) || perm.permission === defaultPerm) {
