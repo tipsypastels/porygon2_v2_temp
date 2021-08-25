@@ -35,7 +35,9 @@ export function createLogger(name: string, color: Color): Logger {
     const ts = createTimestamp();
     const header = createHeader(level);
 
-    console.log(`${ts} ${header} ${message}`);
+    // faster than console log
+    const stdout = (console as any)._stdout;
+    stdout.write(`${ts} ${header} ${message}\n`);
   }
 
   const error: LogErrorFn = (m) => log('error', m);
