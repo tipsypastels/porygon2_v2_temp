@@ -1,7 +1,6 @@
-import { config } from 'porygon/config';
 import { PluginGuild } from 'porygon/plugin';
 
-export default PluginGuild.init(config('guilds.duck').value);
+export default PluginGuild.init('duck');
 export { default as COMMAND_duck_8ball } from './commands/8ball';
 export { default as COMMAND_duck_hug } from './commands/hug';
 export { default as COMMAND_duck_inky } from './commands/inky';

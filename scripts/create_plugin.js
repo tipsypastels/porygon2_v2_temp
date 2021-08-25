@@ -47,7 +47,6 @@ async function main() {
   );
 
   const dir = `src/plugins/${structure.name}`;
-  const needsConfigImport = structure.kind !== 'global';
   const ctor = `Plugin${structure.kind[0].toUpperCase() + structure.kind.slice(1)}`;
   const init = getKindInit(ctor, structure);
 
@@ -57,10 +56,6 @@ async function main() {
     `export default ${init};`,
     ``,
   ];
-
-  if (needsConfigImport) {
-    contents.splice(1, 0, `import { config } from 'porygon/config';`);
-  }
 
   await mkdir(dir);
   await writeFile(`${dir}/$plugin.ts`, contents.join('\n'));
@@ -86,10 +81,10 @@ function getKindInit(ctor, structure) {
       return `${ctor}.init()`;
     }
     case 'guild': {
-      return `${ctor}.init(config('guilds.${structure.guildName}').value)`;
+      return `${ctor}.init('${structure.guildName}')`;
     }
     case 'guilds': {
-      const configs = structure.guildNames.map((c) => `config('guilds.${c}).value`);
+      const configs = structure.guildNames.map((c) => `'${c}'`);
       return `${ctor}.init(config([${configs.join(', ')}]))`;
     }
   }

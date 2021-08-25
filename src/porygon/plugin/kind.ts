@@ -9,9 +9,9 @@ import { config } from 'porygon/config';
 import { DEV } from 'porygon/dev';
 import { bugLogger } from 'porygon/logger';
 import { Cache, Singleton } from 'support/cache';
-import { getConfigNameForGuild } from 'porygon/guilds';
+import { GuildConfigName } from 'porygon/guilds';
 
-const DEV_SERVER = config('guilds.dev');
+const DEV_SERVER = config('guilds.dev.id');
 
 /**
  * A unique ID for a plugin. Each plugin directory exports one of these from
@@ -97,20 +97,22 @@ export class PluginGlobal implements PluginKind {
 }
 
 export class PluginGuild implements PluginKind {
-  private static ALL = new Cache((guildId: Snowflake) => {
-    return new PluginGuild(guildId);
+  private static ALL = new Cache((name: GuildConfigName) => {
+    return new PluginGuild(name);
   });
 
-  static init(guildId: Snowflake) {
-    return this.ALL.get(guildId);
+  static init(name: GuildConfigName) {
+    return this.ALL.get(name);
   }
 
-  private constructor(private guildId: Snowflake) {
-    /* nop */
+  private guildId: string;
+
+  private constructor(private name: GuildConfigName) {
+    this.guildId = config(`guilds.${name}.id`).value;
   }
 
   get tag() {
-    return `Guild(${getConfigNameForGuild(this.guildId)})`;
+    return `Guild(${this.name})`;
   }
 
   guild(client: Porygon) {
@@ -128,23 +130,20 @@ export class PluginGuild implements PluginKind {
 }
 
 export class PluginGuilds implements PluginKind {
-  static init(guildIds: Snowflake[]) {
-    return new this(guildIds);
+  static init(...names: GuildConfigName[]) {
+    return new this(names);
   }
 
   // it's not safe to upload guild IDs directly since they'll
   // clobber other commands from that guild
   private plugins: PluginGuild[];
-  private guildIds: Snowflake[];
 
-  private constructor(guildIds: Snowflake[]) {
-    this.plugins = guildIds.map((id) => PluginGuild.init(id));
-    this.guildIds = guildIds;
+  private constructor(private names: GuildConfigName[]) {
+    this.plugins = names.map((name) => PluginGuild.init(name));
   }
 
   get tag() {
-    const call = this.guildIds.map(getConfigNameForGuild).join(', ');
-    return `Guilds(${call})`;
+    return `Guilds(${this.names.join(', ')})`;
   }
 
   matches(guildId: Snowflake | undefined) {
