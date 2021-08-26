@@ -63,6 +63,8 @@ const eval_: Command<Opts> = async (args) => {
   }
 
   async function testIterateMembers() {
+    intr.reply({ content: 'Starting...', ephemeral });
+
     let after: string | undefined;
     let count = 0;
     let batches = 0;
