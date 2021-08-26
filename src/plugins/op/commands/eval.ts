@@ -6,7 +6,6 @@ import { assertOwner } from 'porygon/owner';
 import { codeBlock } from 'support/string';
 import { Plugin as PluginImport } from 'porygon/plugin';
 import { DEV } from 'porygon/dev';
-import { GuildConfigName } from 'porygon/guilds';
 
 interface Opts {
   code: string;
