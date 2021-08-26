@@ -38,3 +38,8 @@ model PlugRole_RoleConfig {
   roleId      String  @id
   requestable Boolean @default(false)
 }
+
+model PlugPokecom_JoinDateCache {
+  userId   String   @id
+  joinDate DateTime
+}

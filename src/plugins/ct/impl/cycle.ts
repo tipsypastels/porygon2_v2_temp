@@ -1,7 +1,11 @@
 import { db } from 'porygon/core';
-import { ctLogger } from './shared';
+import { CtConfig, ctLogger } from './shared';
 
 export async function ctRunCycle() {
+  if (!CtConfig.enabled) {
+    return;
+  }
+
   await db.$executeRaw`
       UPDATE 
         "public"."PlugCt_Score"

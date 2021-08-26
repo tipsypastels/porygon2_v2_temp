@@ -3,7 +3,7 @@ import { ctIncrementScore } from './score';
 import { CtConfig } from './shared';
 
 export function ctHandleMessage(message: Message) {
-  if (message.author.bot) {
+  if (message.author.bot || !CtConfig.enabled) {
     return;
   }
 
