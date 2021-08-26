@@ -9,15 +9,17 @@ export function cacheJoinDateForMembers(guild: Guild) {
   return eachMember(guild, cacheJoinDate);
 }
 
-export function cacheJoinDate({ id: userId, user, joinedAt }: GuildMember) {
+export async function cacheJoinDate({ id: userId, user, joinedAt }: GuildMember) {
   if (joinedAt) {
-    TABLE.upsert({
+    await TABLE.upsert({
       where: { userId },
       update: { joinedAt },
       create: { userId, joinedAt },
-    }).catch((error) => {
-      bugLogger.error(`Failed to cache join date for ${user.username}: ${error}`);
-    });
+    })
+      .then(() => console.log(`Cached ${user.username}`))
+      .catch((error) => {
+        bugLogger.error(`Failed to cache join date for ${user.username}: ${error}`);
+      });
   }
 }
 
