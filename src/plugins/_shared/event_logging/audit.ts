@@ -1,5 +1,6 @@
 import { Guild, GuildAuditLogsEntry, GuildAuditLogsFetchOptions, User } from 'discord.js';
 import { bugLogger } from 'porygon/logger';
+import { sleep } from 'support/async';
 import { Seconds } from 'support/time';
 
 type Type = GuildAuditLogsFetchOptions['type'];
@@ -47,7 +48,7 @@ async function latest(target: Target, type: Type) {
     }
 
     if (i < RETRIES - 1) {
-      await sleep();
+      await sleep(SLEEP);
     }
   }
 }
@@ -78,10 +79,4 @@ function isRecent({ createdTimestamp: ts }: GuildAuditLogsEntry) {
   }
 
   return false;
-}
-
-function sleep() {
-  return new Promise<void>((resolve) => {
-    setTimeout(resolve, SLEEP);
-  });
 }

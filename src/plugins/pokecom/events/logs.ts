@@ -10,12 +10,14 @@ const BOTH = [LOGS, WARNS];
 
 const handler: EventFactory<Kind> = ({ events }) => {
   logEvents(events, {
-    joins: { to: LOGS, details: 'all' },
-    leaves: { to: LOGS, details: 'all' },
-    kicks: { to: BOTH, details: 'all' },
-    bans: { to: BOTH, details: 'all' },
-    unbans: { to: BOTH, details: 'all' },
-    deletions: { to: LOGS, details: 'all' },
+    log: {
+      joins: { to: LOGS, details: 'all' },
+      leaves: { to: LOGS, details: 'all' },
+      kicks: { to: BOTH, details: 'all' },
+      bans: { to: BOTH, details: 'all' },
+      unbans: { to: BOTH, details: 'all' },
+      deletions: { to: LOGS, details: 'all' },
+    },
   });
 };
 

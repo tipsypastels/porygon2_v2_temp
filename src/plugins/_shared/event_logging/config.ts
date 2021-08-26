@@ -10,14 +10,16 @@ export interface LogConfig<ExtraDetails extends string> {
   details?: ExtraDetails[] | 'all';
 }
 
-export type LogEventsConfig = Partial<{
-  joins: JoinsLogConfig;
-  leaves: LeavesLogConfig;
-  kicks: KicksLogConfig;
-  bans: BansLogConfig;
-  unbans: UnbansLogConfig;
-  deletions: DeletionsLogConfig;
-}>;
+export type LogEventsConfig = {
+  log: Partial<{
+    joins: JoinsLogConfig;
+    leaves: LeavesLogConfig;
+    kicks: KicksLogConfig;
+    bans: BansLogConfig;
+    unbans: UnbansLogConfig;
+    deletions: DeletionsLogConfig;
+  }>;
+};
 
 export class LogEmbed<ExtraDetails extends string> {
   private enabledDetails: Set<ExtraDetails> | 'all';

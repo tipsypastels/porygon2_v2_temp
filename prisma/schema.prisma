@@ -41,5 +41,5 @@ model PlugRole_RoleConfig {
 
 model PlugPokecom_JoinDateCache {
   userId   String   @id
-  joinDate DateTime
+  joinedAt DateTime
 }

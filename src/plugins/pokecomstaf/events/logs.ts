@@ -8,11 +8,13 @@ const LOGS = config('plug.pokecomstaf.logChannel');
 
 const handler: EventFactory<Kind> = ({ events }) => {
   logEvents(events, {
-    joins: { to: LOGS },
-    leaves: { to: LOGS },
-    kicks: { to: LOGS },
-    bans: { to: LOGS, details: 'all' },
-    unbans: { to: LOGS, details: 'all' },
+    log: {
+      joins: { to: LOGS },
+      leaves: { to: LOGS },
+      kicks: { to: LOGS },
+      bans: { to: LOGS, details: 'all' },
+      unbans: { to: LOGS, details: 'all' },
+    },
   });
 };
 

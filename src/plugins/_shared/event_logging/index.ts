@@ -6,7 +6,7 @@ import { logJoins } from './events/join';
 import { logLeavesKicks } from './events/leave_kick';
 
 export function logEvents(events: EventProxy, cfg: LogEventsConfig) {
-  const { joins, leaves, kicks, bans, unbans, deletions } = cfg;
+  const { joins, leaves, kicks, bans, unbans, deletions } = cfg.log;
 
   if (joins) logJoins(events, joins);
   if (leaves || kicks) logLeavesKicks(events, leaves, kicks);
