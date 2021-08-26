@@ -62,6 +62,35 @@ const eval_: Command<Opts> = async (args) => {
     return stats;
   }
 
+  async function testIterateMembers() {
+    let after: string | undefined;
+    let count = 0;
+    let batches = 0;
+
+    for (;;) {
+      const members = await guild.members.list({ limit: 1000, after });
+
+      if (members.size === 0) {
+        console.log('done');
+        break;
+      }
+
+      batches++;
+      console.log(`Batch ${batches}`);
+
+      const promises = members.map(async (member) => {
+        console.log(member.user.username);
+      });
+
+      await Promise.all(promises);
+
+      after = members.last()!.id;
+      count += members.size;
+    }
+
+    return { count, batches };
+  }
+
   embed
     .poryColor('ok')
     .setTitle('Evaluated Code')
