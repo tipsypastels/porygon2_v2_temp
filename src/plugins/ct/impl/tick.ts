@@ -12,10 +12,6 @@ interface Entry {
 }
 
 export async function ctRunTick(guild: Guild) {
-  if (!CtConfig.enabled) {
-    return;
-  }
-
   const role = await guild.roles.fetch(CtConfig.roleId);
 
   if (!role) {

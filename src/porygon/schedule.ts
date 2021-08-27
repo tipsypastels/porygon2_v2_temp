@@ -16,8 +16,10 @@ export function schedule(name: string, time: string, fn: Fn) {
 export class Task {
   static ALL = new Collection<string, Task>();
 
-  isSilent = false;
-  runCount = 0;
+  private isSilent = false;
+  private isActive?: () => boolean;
+  private runCount = 0;
+  private skipCount = 0;
 
   constructor(readonly name: string, readonly time: string, private fn: Fn) {
     logger.task.info(`Task scheduled: %${name}% at ${time}.`);
@@ -31,21 +33,38 @@ export class Task {
     return this;
   }
 
-  private run() {
-    const level = this.isSilent ? 'debug' : 'info';
-    logger.task[level](`Task running: %${this.name}%.`);
-
-    this.fn();
-
-    this.runCount++;
+  activeIf(isActive: () => boolean) {
+    this.isActive = isActive;
+    return this;
   }
 
-  get nextRun() {
+  private run() {
+    const level = this.isSilent ? 'debug' : 'info';
+    const log = logger.task[level];
+
+    if (this.isActive?.() ?? true) {
+      log(`Task running: %${this.name}%.`);
+
+      this.fn();
+      this.runCount++;
+    } else {
+      log(`Task skipped: %${this.name}%.`);
+      this.skipCount++;
+    }
+  }
+
+  private get nextRun() {
     const date = parser.parseExpression(this.time).next().toDate();
     return formatDistance(date, new Date());
   }
 
   toEmbedString() {
-    return `\`${this.name}\`\n**Runs:** ${this.runCount}\n**Runs in:** ${this.nextRun}`;
+    const lines = [`\`${this.name}\``];
+
+    if (this.runCount) lines.push(`**Runs:** ${this.runCount}`);
+    if (this.skipCount) lines.push(`**Skips:** ${this.skipCount}`);
+
+    lines.push(`**Runs in:** ${this.nextRun}`);
+    return lines.join('\n');
   }
 }
