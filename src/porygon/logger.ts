@@ -61,7 +61,7 @@ function createOne(opts: Opts, namesPadTo: number): Logger {
     const levelText = header(level, LEVELS_PAD_TO, LEVEL_COLORS[level]);
     const timeText = time();
 
-    doLog(`${nameText} ${levelText} ${timeText} ${message}`);
+    doLog(`  ${nameText} ${levelText} ${timeText} ${message}`);
   }
 
   const error: LogErrorFn = (m) => log('error', m);
