@@ -5,6 +5,7 @@ export class TimeDifferenceStat {
 
   startTiming() {
     this._startTime = this.currentTime;
+    return this;
   }
 
   inWords() {
