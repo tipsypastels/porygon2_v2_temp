@@ -2,10 +2,12 @@ import { TextChannel } from 'discord.js';
 import { DEV } from 'porygon/dev';
 import { CommandFn, commandGroups } from 'porygon/interaction';
 import { assertOwner } from 'porygon/owner';
-import { missedPartialLeaves, uptime } from 'porygon/stats';
+import { joinDateSource, uptime } from 'porygon/stats';
 import * as Assets from 'porygon/assets';
 import { Plugin } from 'porygon/plugin';
 import { previewAssets } from 'porygon/asset/preview';
+import { Task } from 'porygon/schedule';
+import { createLang } from 'porygon/lang';
 
 type SayOpts = { message: string; channel?: TextChannel };
 type PreviewAssetOpts = { asset: string };
@@ -23,13 +25,18 @@ const say: CommandFn<SayOpts> = async ({ opts, intr, channel, author }) => {
 const stats: CommandFn = async ({ embed, intr, client, author }) => {
   assertOwner(author);
 
+  const taskString = Task.ALL.map((task) => task.toEmbedString()).join('\n\n');
+  const jdSourceString = lang('joinDateSources', joinDateSource.flatten());
+
   embed
+    .poryThumb('speech')
     .poryColor('info')
     .setTitle('Stats for operators')
     .addField('Servers', client.guilds.cache.size.toString())
     .addField('Uptime', uptime.inWords())
     .addField('Heartbeat', `${client.ws.ping}ms`)
-    .addField('Missed Leaves', missedPartialLeaves.toString());
+    .addField('Tasks', taskString)
+    .addField('Join Date Sources', jdSourceString);
 
   await intr.reply({ embeds: [embed], ephemeral: true });
 };
@@ -123,3 +130,8 @@ function fetchAsset(name: string) {
 
   return Assets[name as keyof typeof Assets];
 }
+
+const lang = createLang(<const>{
+  joinDateSources:
+    '**Member:** {member}, **Database:** {database}, **Missing:** {missing}',
+});

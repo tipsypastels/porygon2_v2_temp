@@ -1,50 +1,86 @@
-import { GuildAuditLogsEntry, GuildMember, PartialGuildMember } from 'discord.js';
+import {
+  Guild,
+  GuildAuditLogsEntry,
+  GuildMember,
+  PartialGuildMember,
+  Snowflake,
+  User,
+} from 'discord.js';
 import { logger } from 'porygon/logger';
 import { EventProxy } from 'porygon/plugin';
-import { missedPartialLeaves } from 'porygon/stats';
+import { joinDateSource } from 'porygon/stats';
+import { Nullish } from 'support/object';
 import { codeBlock } from 'support/string';
 import { formatTime } from 'support/time';
 import { getKickLog } from '../audit';
-import { LogConfig, LogEmbed } from '../config';
+import { LogConfig, LogConfigFallbackJoinDate, LogEmbed } from '../config';
 import { outputLogs } from '../output_channel';
 
 // same right now, but might change in the future
 export type LeavesLogConfig = LogConfig<'joinedAt' | 'userId'>;
 export type KicksLogConfig = LogConfig<'joinedAt' | 'userId'>;
 
+type Memberlike = { id: Snowflake; user: User; guild: Guild; joinedAt: Date | Nullish };
+type TryMemberlike = Promise<Memberlike | undefined>;
+
 export function logLeavesKicks(
   events: EventProxy,
   leaves?: LeavesLogConfig,
   kicks?: KicksLogConfig,
+  jdFallback?: LogConfigFallbackJoinDate,
 ) {
   async function run(member: GuildMember | PartialGuildMember) {
-    if (member.partial) {
-      const { guild, displayName } = member;
-      logger.bug.warn(`A partial member left ${guild.name}: ${displayName}`);
-
-      missedPartialLeaves.fail();
+    const memberlike = await resolve(member);
+    if (!memberlike) {
+      logger.bug.warn(`Failed to find user data for leaving member %${member.id}%.`);
       return;
     }
 
-    missedPartialLeaves.pass();
-
-    const kick = await getKickLog(member);
-    return kick ? kicked(member, kick) : left(member);
+    const kick = await getKickLog(memberlike);
+    return kick ? kicked(memberlike, kick) : left(memberlike);
   }
 
-  function shared(embed: LogEmbed<'joinedAt' | 'userId'>, member: GuildMember) {
+  async function resolve(member: GuildMember | PartialGuildMember): TryMemberlike {
+    const { id, guild, client } = member;
+
+    // @ts-expect-error xxx
+    member = { partial: true };
+
+    if (member.partial) {
+      const [user, joinedAt] = await Promise.all([
+        client.users.fetch(id).catch(() => undefined),
+        jdFallback?.(id),
+      ]);
+
+      if (!user) return;
+
+      incrementJdStat(joinedAt ? 'database' : 'missing');
+      return { id, guild, user, joinedAt };
+    }
+
+    incrementJdStat('member');
+    return member;
+  }
+
+  function incrementJdStat(stat: 'member' | 'database' | 'missing') {
+    // only increment stats if we got this function, otherwise it doesn't matter
+    if (jdFallback) {
+      joinDateSource.increment(stat);
+    }
+  }
+
+  function shared(embed: LogEmbed<'joinedAt' | 'userId'>, member: Memberlike) {
     embed
       .detail('joinedAt', (e) => {
-        if (member.joinedAt) {
-          e.addField('Joined At', formatTime(member.joinedAt));
-        }
+        const { joinedAt } = member;
+        e.addField('Joined At', joinedAt ? formatTime(joinedAt) : 'Unknown');
       })
       .detail('userId', (e) => {
         e.addField('User ID', codeBlock(member.id));
       });
   }
 
-  async function kicked(member: GuildMember, log: GuildAuditLogsEntry) {
+  async function kicked(member: Memberlike, log: GuildAuditLogsEntry) {
     if (!kicks) return;
 
     const embed = new LogEmbed(kicks.details);
@@ -62,7 +98,7 @@ export function logLeavesKicks(
     outputLogs(kicks.to, embed, member.guild);
   }
 
-  function left(member: GuildMember) {
+  function left(member: Memberlike) {
     if (!leaves) return;
 
     const log = new LogEmbed(leaves.details);

@@ -30,7 +30,7 @@ const LEVEL_COLORS: Record<keyof Logger, Color> = {
   error: colors.red,
   warn: colors.yellow,
   info: colors.blue,
-  debug: colors.green,
+  debug: colors.bgMagenta,
 };
 
 const LEVELS_PAD_TO = 5;

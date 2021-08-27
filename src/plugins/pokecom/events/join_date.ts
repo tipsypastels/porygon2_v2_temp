@@ -3,6 +3,7 @@ import { DEV } from 'porygon/dev';
 import { createLang } from 'porygon/lang';
 import { logger } from 'porygon/logger';
 import { EventFactory } from 'porygon/plugin';
+import { schedule, at } from 'porygon/schedule';
 import { TimeDifferenceStat } from 'porygon/stats';
 import { sleep } from 'support/async';
 import { Seconds } from 'support/time';
@@ -17,7 +18,11 @@ const handler: EventFactory<Kind> = ({ events, kind, client }) => {
     cacheAllMembers(guild);
 
     events.on('guildMemberAdd', Cache.cacheJoinDate);
-    events.on('guildMemberRemove', ({ id }) => Cache.uncacheJoinDate(id));
+    events.on('guildMemberRemove', Cache.uncacheJoinDate);
+
+    schedule('pokecom.clearJoinDates', at.everyWeek(), () =>
+      Cache.clearAndReloadAllJoinDates(guild),
+    );
   }
 };
 
@@ -40,6 +45,6 @@ async function cacheAllMembers(guild: Guild) {
 const lang = createLang(<const>{
   cacheAll: {
     start: 'Building the cached join date list for PokéCommunity now...',
-    end: 'Cached %{memberCount}% members. Process took {time}.',
+    end: 'Cached %{memberCount} ({newInserts} new)% join dates. Process took {time}.',
   },
 });

@@ -1,3 +1,4 @@
+import { Snowflake } from 'discord.js';
 import { Embed, IntoEmbed } from 'porygon/embed';
 import { BansLogConfig, UnbansLogConfig } from './events/ban_unban';
 import { DeletionsLogConfig } from './events/deletion';
@@ -10,6 +11,8 @@ export interface LogConfig<ExtraDetails extends string> {
   details?: ExtraDetails[] | 'all';
 }
 
+export type LogConfigFallbackJoinDate = (userId: Snowflake) => Promise<Date | undefined>;
+
 export type LogEventsConfig = {
   log: Partial<{
     joins: JoinsLogConfig;
@@ -19,6 +22,7 @@ export type LogEventsConfig = {
     unbans: UnbansLogConfig;
     deletions: DeletionsLogConfig;
   }>;
+  getFallbackJoinDate?: LogConfigFallbackJoinDate;
 };
 
 export class LogEmbed<ExtraDetails extends string> {
