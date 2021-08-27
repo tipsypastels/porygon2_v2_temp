@@ -35,7 +35,7 @@ export class Porygon extends Client {
       await this.setup();
 
       uptime.startTiming();
-      logger.setup.info('Porygon is ready!');
+      logger.setup.info('%Porygon is ready!%');
     });
 
     this.on('interactionCreate', handleInteraction);
