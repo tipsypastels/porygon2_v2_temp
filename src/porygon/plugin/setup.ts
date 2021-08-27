@@ -22,7 +22,7 @@ async function importPlugins(client: Porygon) {
 
     plugin.markDirAsIncluded(dir);
 
-    logger.setup.info(`Setting up plugin ${dir}...`);
+    logger.setup.info(`Setting up plugin %${dir}%...`);
 
     for (const [name, item] of Object.entries(module) as [string, unknown][]) {
       if (name === 'default') {

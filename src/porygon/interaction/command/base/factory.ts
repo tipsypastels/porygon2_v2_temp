@@ -111,10 +111,10 @@ function cleanError(message: string) {
 
 const lang = createLang(<const>{
   log: {
-    ok: '{author} used "{cmd}" in {loc}.',
+    ok: '{author} used %{cmd}% in {loc}.',
     builtinErr:
-      '{author} misused "{cmd}" in {loc} and encountered error: {codeDomain}.{code}.',
-    unkErr: '{author} encountered a crash using "{cmd}" in {loc}. More details follow.',
+      '{author} misused %{cmd}% in {loc} and encountered error: %{codeDomain}.{code}%.',
+    unkErr: '{author} encountered a crash using %{cmd}% in {loc}. More details follow.',
   },
   embed: {
     unk: {

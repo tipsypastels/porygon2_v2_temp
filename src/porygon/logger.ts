@@ -34,6 +34,7 @@ const LEVEL_COLORS: Record<keyof Logger, Color> = {
 };
 
 const LEVELS_PAD_TO = 5;
+const KEYWORD = /%(.+?)%/g;
 
 function create<K extends string>(opts: Record<K, Opts>) {
   const out: Partial<Record<K, Logger>> = {};
@@ -60,8 +61,9 @@ function createOne(opts: Opts, namesPadTo: number): Logger {
     const nameText = header(opts.name, namesPadTo, opts.color);
     const levelText = header(level, LEVELS_PAD_TO, LEVEL_COLORS[level]);
     const timeText = time();
+    const msgText = msg(`${message}`, opts.color);
 
-    doLog(`  ${nameText} ${levelText} ${timeText} ${message}`);
+    doLog(`  ${nameText} ${levelText} ${timeText} ${msgText}`);
   }
 
   const error: LogErrorFn = (m) => log('error', m);
@@ -78,6 +80,10 @@ function header(text: string, len: number, color: Color) {
 
 function time() {
   return colors.gray.dim(strftime('%H:%M'));
+}
+
+function msg(text: string, keywordColor: Color) {
+  return text.replace(KEYWORD, (_, m) => keywordColor(m));
 }
 
 function doLog(text: string) {
