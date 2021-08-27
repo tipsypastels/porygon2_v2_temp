@@ -46,8 +46,6 @@ export class Task {
   }
 
   toEmbedString() {
-    return `\`${this.name}\`\n**Run count:** ${this.runCount}\n**Runs in:** ${this.nextRun}`;
+    return `\`${this.name}\`\n**Runs:** ${this.runCount}\n**Runs in:** ${this.nextRun}`;
   }
 }
-
-Object.defineProperty(Task.prototype, 'nextRun', { enumerable: true });

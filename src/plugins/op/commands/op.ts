@@ -8,6 +8,7 @@ import { Plugin } from 'porygon/plugin';
 import { previewAssets } from 'porygon/asset/preview';
 import { Task } from 'porygon/schedule';
 import { createLang } from 'porygon/lang';
+import { db } from 'porygon/core';
 
 type SayOpts = { message: string; channel?: TextChannel };
 type PreviewAssetOpts = { asset: string };
@@ -26,7 +27,7 @@ const stats: CommandFn = async ({ embed, intr, client, author }) => {
   assertOwner(author);
 
   const taskString = Task.ALL.map((task) => task.toEmbedString()).join('\n\n');
-  const jdSourceString = lang('joinDateSources', joinDateSource.flatten());
+  const joinDatesString = await getJoinDateStats();
 
   embed
     .poryThumb('speech')
@@ -36,7 +37,7 @@ const stats: CommandFn = async ({ embed, intr, client, author }) => {
     .addField('Uptime', uptime.inWords())
     .addField('Heartbeat', `${client.ws.ping}ms`)
     .addField('Tasks', taskString)
-    .addField('Join Date Sources', jdSourceString);
+    .addField('PokéCommunity Join Date Logger', joinDatesString);
 
   await intr.reply({ embeds: [embed], ephemeral: true });
 };
@@ -131,7 +132,13 @@ function fetchAsset(name: string) {
   return Assets[name as keyof typeof Assets];
 }
 
+async function getJoinDateStats() {
+  const cached = await db.plugPokecom_JoinDateCache.count();
+  const params = { ...joinDateSource.flatten(), cached };
+  return lang('joinDateStats', params);
+}
+
 const lang = createLang(<const>{
-  joinDateSources:
-    '**Member:** {member}, **Database:** {database}, **Missing:** {missing}',
+  joinDateStats:
+    '**Table Size:** {cached}\n**Sources:**\n```\nMember: {member}\nDatabase: {database}\nMissing: {missing}```',
 });
