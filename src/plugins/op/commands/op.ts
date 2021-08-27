@@ -9,6 +9,7 @@ import { previewAssets } from 'porygon/asset/preview';
 import { Task } from 'porygon/schedule';
 import { createLang } from 'porygon/lang';
 import { db } from 'porygon/core';
+import { Embed } from 'porygon/embed';
 
 type SayOpts = { message: string; channel?: TextChannel };
 type PreviewAssetOpts = { asset: string };
@@ -20,7 +21,17 @@ const say: CommandFn<SayOpts> = async ({ opts, intr, channel, author }) => {
   const destination = opts.try('channel') ?? channel;
 
   await intr.reply({ content: '\\✅', ephemeral: true });
-  await destination.send(message);
+
+  if (message.startsWith('this.')) {
+    const embed = new Embed();
+    const func = new Function(`${message}`).bind(embed);
+
+    func();
+
+    await destination.send({ embeds: [embed] });
+  } else {
+    await destination.send(message);
+  }
 };
 
 const stats: CommandFn = async ({ embed, intr, client, author }) => {
