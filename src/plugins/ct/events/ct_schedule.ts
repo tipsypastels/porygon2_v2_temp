@@ -14,8 +14,8 @@ const ctSchedule: EventFactory<Kind> = ({ events, kind, client }) => {
   if (guild) {
     events.on('messageCreate', ctHandleMessage);
 
-    schedule('ct.tick', TICK_FREQ, () => ctRunTick(guild)).activeIf(ACTIVE);
-    schedule('ct.cycle', CYCLE_FREQ, () => ctRunCycle()).activeIf(ACTIVE);
+    schedule('cooltrainer.tick', TICK_FREQ, () => ctRunTick(guild)).activeIf(ACTIVE);
+    schedule('cooltrainer.cycle', CYCLE_FREQ, () => ctRunCycle()).activeIf(ACTIVE);
   }
 };
 
