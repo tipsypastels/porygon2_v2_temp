@@ -1,5 +1,5 @@
 import { GuildAuditLogsEntry, GuildMember, PartialGuildMember } from 'discord.js';
-import { bugLogger } from 'porygon/logger';
+import { logger } from 'porygon/logger';
 import { EventProxy } from 'porygon/plugin';
 import { missedPartialLeaves } from 'porygon/stats';
 import { codeBlock } from 'support/string';
@@ -20,7 +20,7 @@ export function logLeavesKicks(
   async function run(member: GuildMember | PartialGuildMember) {
     if (member.partial) {
       const { guild, displayName } = member;
-      bugLogger.warn(`A partial member left ${guild.name}: ${displayName}`);
+      logger.bug.warn(`A partial member left ${guild.name}: ${displayName}`);
 
       missedPartialLeaves.fail();
       return;

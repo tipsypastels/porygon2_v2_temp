@@ -2,17 +2,16 @@ import { TextChannel } from 'discord.js';
 import { stat, writeFile } from 'fs/promises';
 import fromEntries from 'object.fromentries';
 import { Porygon } from 'porygon/core';
-import { colors, createLogger } from 'porygon/logger';
 import { config } from 'porygon/config';
 import { eachAsset, mapAssets } from './map';
 import { markAssetSetupAsDone } from './done';
+import { logger } from 'porygon/logger';
 
 type UploadCache = {
   lastRun: number;
   urls: Record<string, string>;
 };
 
-const logger = createLogger('asset', colors.green);
 const CACHE_FILE = 'assets/upload_cache.json';
 const UPLOAD_GUILD = config('assets.uploadDump.guild');
 const UPLOAD_CHANNEL = config('assets.uploadDump.channel');
@@ -38,7 +37,7 @@ export async function setupAssets(client: Porygon) {
       continue;
     }
 
-    logger.info(`Uploading asset ${asset.path}...`);
+    logger.asset.info(`Uploading asset ${asset.path}...`);
 
     const message = await channel.send({ files: [asset.path] });
     const attachment = message.attachments.first()!;
@@ -63,11 +62,11 @@ export function fetchUploadChannel(client: Porygon) {
 function fetchUploadCache(): Promise<UploadCache | null> {
   return import(`../../../${CACHE_FILE}`)
     .then((cache: UploadCache) => {
-      logger.info('Fetched asset cache...');
+      logger.asset.info('Fetched asset cache...');
       return cache;
     })
     .catch(() => {
-      logger.warn('No asset upload cache found, creating a new one.');
+      logger.asset.warn('No asset upload cache found, creating a new one.');
       return null;
     });
 }

@@ -1,5 +1,6 @@
 import { db } from 'porygon/core';
-import { CtConfig, ctLogger } from './shared';
+import { logger } from 'porygon/logger';
+import { CtConfig } from './shared';
 
 export async function ctRunCycle() {
   if (!CtConfig.enabled) {
@@ -14,5 +15,5 @@ export async function ctRunCycle() {
         "pointsThisCycle" = 0 
     `;
 
-  ctLogger.info('COOLTRAINER has been cycled!');
+  logger.ct.info('COOLTRAINER has been cycled!');
 }

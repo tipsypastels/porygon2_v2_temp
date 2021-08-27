@@ -1,16 +1,16 @@
 import './ascii';
 import { Client, ClientOptions, Options } from 'discord.js';
-import { createLogger, colors } from 'porygon/logger';
 import { setupPlugins } from 'porygon/plugin/setup';
 import { handleInteraction } from 'porygon/interaction';
 import { setupAssets } from 'porygon/asset/setup';
 import { uptime } from 'porygon/stats';
 import { setupActivityMessages } from './activity';
+import '../logger';
+import { logger } from '../logger';
 
 const INVITE =
   'https://discord.com/oauth2/authorize?client_id={CLIENT_ID}&scope=bot+applications.commands&permissions=470019135';
 
-const logger = createLogger('core', colors.blue);
 const options: ClientOptions = {
   intents: [
     'GUILDS',
@@ -35,7 +35,7 @@ export class Porygon extends Client {
       await this.setup();
 
       uptime.startTiming();
-      logger.info('Porygon is ready!');
+      logger.setup.info('Porygon is ready!');
     });
 
     this.on('interactionCreate', handleInteraction);
@@ -54,8 +54,8 @@ export class Porygon extends Client {
       setupAssets(this),
       setupActivityMessages(this),
     ]).catch((e) => {
-      logger.error(e);
-      logger.error('Setup failed.');
+      logger.setup.error(e);
+      logger.setup.error('Setup failed.');
       process.exit(1);
     });
   }

@@ -1,7 +1,7 @@
 import { GuildMember } from 'discord.js';
 import { config } from 'porygon/config';
 import { Embed } from 'porygon/embed';
-import { bugLogger } from 'porygon/logger';
+import { logger } from 'porygon/logger';
 import { EventFactory } from 'porygon/plugin';
 
 type Kind = typeof import('../$plugin').default;
@@ -25,7 +25,7 @@ async function welcome(member: GuildMember) {
   const channel = await guild.channels.fetch(CHANNEL_ID.value);
 
   if (!channel || !channel.isText()) {
-    return bugLogger.error('Failed to find Duck Communism welcome channel.');
+    return logger.bug.error('Failed to find Duck Communism welcome channel.');
   }
 
   const embed = new Embed()
@@ -41,7 +41,7 @@ async function addRole(member: GuildMember) {
   const role = await guild.roles.fetch(ROLE_ID.value);
 
   if (!role) {
-    return bugLogger.error('Failed to find Duck Communism member role.');
+    return logger.bug.error('Failed to find Duck Communism member role.');
   }
 
   member.roles.add(role);

@@ -4,7 +4,7 @@ import { db } from 'porygon/core';
 import { Embed } from 'porygon/embed';
 import { createBuiltinErrors } from 'porygon/error';
 import { createLang } from 'porygon/lang';
-import { bugLogger } from 'porygon/logger';
+import { logger } from 'porygon/logger';
 import { petUrl } from './path_url';
 
 export async function petRandom(guild: Guild, member?: GuildMember) {
@@ -19,7 +19,7 @@ export async function petRandom(guild: Guild, member?: GuildMember) {
   if (!owner) {
     // this is just here to avoid a race condition if a member just left the server
     // and we haven't deactivated their pets yet. it should be extremely rare
-    bugLogger.debug(`RACE: Rolled a pet entry for missing member ${entry.userId}.`);
+    logger.bug.debug(`RACE: Rolled a pet entry for missing member ${entry.userId}.`);
     throw error('raceCond');
   }
 

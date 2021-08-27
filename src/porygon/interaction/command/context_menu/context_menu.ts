@@ -1,8 +1,8 @@
 import { ContextMenuInteraction, Guild, GuildMember, Message } from 'discord.js';
 import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
+import { logger } from 'porygon/logger';
 import { onDMCommand } from '../../dm';
-import { intrLogger } from '../../logger';
 import { CreateBaseCommand } from '../base';
 import { createBaseCommandCall } from '../base/factory';
 import { Cell } from '../cell';
@@ -68,7 +68,7 @@ function merge(args: Create['Args']): Create['Args'] | undefined {
     const message = args.intr.options.getMessage('message', true);
 
     if (!(message instanceof Message)) {
-      intrLogger.debug('MsgContextMenu received an invalid message, aborting...');
+      logger.intr.debug('MsgContextMenu received an invalid message, aborting...');
       return;
     }
 
@@ -77,7 +77,7 @@ function merge(args: Create['Args']): Create['Args'] | undefined {
     const member = args.intr.options.getMember('user', true);
 
     if (!(member instanceof GuildMember)) {
-      intrLogger.debug('MsgContextMenu received an invalid member, aborting...');
+      logger.intr.debug('MsgContextMenu received an invalid member, aborting...');
       return;
     }
 

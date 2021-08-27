@@ -2,7 +2,7 @@ import { Collection } from 'discord.js';
 import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
 import { Cell, BaseCommand } from 'porygon/interaction';
-import { bugLogger } from 'porygon/logger';
+import { logger } from 'porygon/logger';
 import { zip } from 'support/array';
 import { code } from 'support/string';
 import { saveCommand } from '../commands';
@@ -97,7 +97,7 @@ export class Plugin {
     }
 
     if (this.children) {
-      bugLogger.error(
+      logger.bug.error(
         `Tried to upload to a ${this.kind.tag}. Parent PluginKinds should defer uploads to their children instead.`,
       );
     }

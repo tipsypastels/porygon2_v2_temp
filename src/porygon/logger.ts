@@ -2,42 +2,64 @@ import colors, { Color } from 'colors';
 import strftime from 'strftime';
 import { DEV } from './dev';
 
-export { colors };
+export const logger = create({
+  bug: { name: 'Bug', color: colors.red },
+  setup: { name: 'Setup', color: colors.blue },
+  ct: { name: 'Tier', color: colors.yellow },
+  task: { name: 'Task', color: colors.green },
+  asset: { name: 'Asset', color: colors.magenta },
+  intr: { name: 'Intr', color: colors.cyan },
+});
 
-export type LogLevel = 'error' | 'warn' | 'info' | 'debug';
-export type LogFn = (message: string) => void;
-export type LogErrorFn = (message: string | Error) => void;
+type LogFn = (message: string) => void;
+type LogErrorFn = (message: string | Error) => void;
 
-export interface Logger {
+interface Opts {
+  name: string;
+  color: Color;
+}
+
+interface Logger {
   error: LogErrorFn;
   warn: LogFn;
   info: LogFn;
   debug: LogFn;
 }
 
-export function createLogger(name: string, color: Color): Logger {
-  function createHeader(level: LogLevel) {
-    const nameText = color(name);
-    const levelColor = COLORS[level];
+const LEVEL_COLORS: Record<keyof Logger, Color> = {
+  error: colors.red,
+  warn: colors.yellow,
+  info: colors.blue,
+  debug: colors.green,
+};
 
-    return `${levelColor(`${level}(`)}${nameText}${levelColor(')')}`;
+function create<K extends string>(opts: Record<K, Opts>) {
+  const out: Partial<Record<K, Logger>> = {};
+  const entries = Object.entries(opts) as [K, Opts][];
+  const namesPadTo = Math.max(...entries.map(([, o]) => o.name.length));
+
+  for (const [key, opts] of entries) {
+    out[key] = createOne(opts, namesPadTo);
   }
 
-  function log(level: LogLevel, message: string | Error | undefined) {
+  return out as Record<K, Logger>;
+}
+
+function createOne(opts: Opts, namesPadTo: number): Logger {
+  function log(level: keyof Logger, message: string | Error | undefined) {
     if (!message) {
       return;
     }
 
-    if (typeof message !== 'string') {
+    if (message instanceof Error) {
       message = message.stack;
     }
 
-    const ts = createTimestamp();
-    const header = createHeader(level);
+    const nameText = header(opts.name, namesPadTo, opts.color);
+    const timeText = time();
+    const msgText = LEVEL_COLORS[level](`${message}`);
 
-    // faster than console log
-    const stdout = (console as any)._stdout;
-    stdout.write(`${ts} ${header} ${message}\n`);
+    doLog(`${nameText} ${timeText} ${msgText}`);
   }
 
   const error: LogErrorFn = (m) => log('error', m);
@@ -48,17 +70,14 @@ export function createLogger(name: string, color: Color): Logger {
   return { error, warn, info, debug };
 }
 
-function createTimestamp() {
+function header(text: string, len: number, color: Color) {
+  return color.bold(`${text.toUpperCase().padEnd(len)}`);
+}
+
+function time() {
   return colors.gray(strftime('%H:%M'));
 }
 
-const COLORS: Record<LogLevel, Color> = {
-  error: colors.red,
-  warn: colors.yellow,
-  info: colors.blue,
-  debug: colors.bgMagenta,
-};
-
-// shared loggers
-export const bugLogger = createLogger('bug', colors.bgRed);
-export const setupLogger = createLogger('setup', colors.green);
+function doLog(text: string) {
+  (console as any)._stdout.write(`${text}\n`); // faster than console.log
+}

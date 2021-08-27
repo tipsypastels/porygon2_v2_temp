@@ -1,7 +1,5 @@
 import { Snowflake } from 'discord.js';
 import { config } from 'porygon/config';
-import { createLogger } from 'porygon/logger';
-import colors from 'colors';
 
 export const CtConfig = {
   // don't assign directly so we can retain
@@ -22,5 +20,3 @@ export const CtConfig = {
     return config('plug.ct.ppmExceptions').value;
   },
 };
-
-export const ctLogger = createLogger('cooltrainer', colors.bgBlue);

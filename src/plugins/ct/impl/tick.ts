@@ -1,8 +1,8 @@
 import { Prisma } from '@prisma/client';
 import { Guild, GuildMember, Snowflake } from 'discord.js';
 import { db } from 'porygon/core';
-import { bugLogger } from 'porygon/logger';
-import { CtConfig, ctLogger } from './shared';
+import { logger } from 'porygon/logger';
+import { CtConfig } from './shared';
 
 type Where = 'above' | 'below';
 type Each = (member: GuildMember) => void;
@@ -19,7 +19,7 @@ export async function ctRunTick(guild: Guild) {
   const role = await guild.roles.fetch(CtConfig.roleId);
 
   if (!role) {
-    return bugLogger.error('Cooltrainer role not found. Aborting tick.');
+    return logger.bug.error('Cooltrainer role not found. Aborting tick.');
   }
 
   const has = (member: GuildMember) => {
@@ -79,5 +79,5 @@ function query(where: Where) {
 }
 
 function log(member: GuildMember, action: string) {
-  ctLogger.info(`${member.user.username} ${action} COOLTRAINER.`);
+  logger.ct.info(`${member.user.username} ${action} COOLTRAINER.`);
 }

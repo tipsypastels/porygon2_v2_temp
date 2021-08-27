@@ -1,7 +1,7 @@
 import { Porygon } from 'porygon/core';
 import { DEV } from 'porygon/dev';
 import { BaseCommand } from 'porygon/interaction';
-import { bugLogger, setupLogger } from 'porygon/logger';
+import { logger } from 'porygon/logger';
 import { EventFactory as Handler, setupEventFactory as setupHandler } from './events';
 import { PluginDev } from './kind';
 import { Plugin } from './plugin';
@@ -22,7 +22,7 @@ async function importPlugins(client: Porygon) {
 
     plugin.markDirAsIncluded(dir);
 
-    setupLogger.info(`Setting up plugin ${dir}...`);
+    logger.setup.info(`Setting up plugin ${dir}...`);
 
     for (const [name, item] of Object.entries(module) as [string, unknown][]) {
       if (name === 'default') {
@@ -58,7 +58,7 @@ function getPluginItemType(name: string, dir: string) {
   const [type, dir2, rest] = name.split('_');
 
   if (!rest) {
-    bugLogger.warn(`Plugin ${dir} item ${name} should be ${type}_${dir}_${dir2}.`);
+    logger.bug.warn(`Plugin ${dir} item ${name} should be ${type}_${dir}_${dir2}.`);
   }
 
   if (rest && dir2 !== dir) {

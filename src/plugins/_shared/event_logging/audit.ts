@@ -1,5 +1,5 @@
 import { Guild, GuildAuditLogsEntry, GuildAuditLogsFetchOptions, User } from 'discord.js';
-import { bugLogger } from 'porygon/logger';
+import { logger } from 'porygon/logger';
 import { sleep } from 'support/async';
 import { Seconds } from 'support/time';
 
@@ -43,7 +43,7 @@ async function latest(target: Target, type: Type) {
     const log = await get(target, type);
 
     if (log) {
-      bugLogger.debug(`Found audit log ${type} after ${i} cycles.`);
+      logger.bug.debug(`Found audit log ${type} after ${i} cycles.`);
       return log;
     }
 

@@ -24,8 +24,5 @@ const DELAY_UNTIL_MEMBER_LIST_IS_ACCURATE = Seconds(DEV ? 0 : 30);
 
 async function cacheAllMembers(guild: Guild) {
   await sleep(DELAY_UNTIL_MEMBER_LIST_IS_ACCURATE);
-
-  console.log('Caching members');
-  const data = await Cache.cacheJoinDateForMembers(guild);
-  console.log(data);
+  await Cache.cacheJoinDateForMembers(guild);
 }

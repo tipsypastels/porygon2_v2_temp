@@ -1,5 +1,5 @@
 import { Guild, Snowflake } from 'discord.js';
-import { bugLogger } from 'porygon/logger';
+import { logger } from 'porygon/logger';
 import { LogEmbed } from './config';
 
 export type LogOutputChannel =
@@ -16,12 +16,12 @@ export function outputLogs(ch: LogOutputChannel, embed: LogEmbed<any>, guild: Gu
     // All the channel IDs we get here are from config, so treat
     // type errors as a bug rather than user error.
     if (!channel) {
-      bugLogger.error(`Tried to log to nonexistant channel ${id}`);
+      logger.bug.error(`Tried to log to nonexistant channel ${id}`);
       return;
     }
 
     if (!channel.isText()) {
-      bugLogger.error(`Tried to log to non-text channel ${id}.`);
+      logger.bug.error(`Tried to log to non-text channel ${id}.`);
       return;
     }
 

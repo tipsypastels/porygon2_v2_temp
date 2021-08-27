@@ -7,9 +7,9 @@ import {
 import { Porygon } from 'porygon/core';
 import { config } from 'porygon/config';
 import { DEV } from 'porygon/dev';
-import { bugLogger } from 'porygon/logger';
 import { Cache, Singleton } from 'support/cache';
 import { GuildConfigName } from 'porygon/guilds';
+import { logger } from 'porygon/logger';
 
 const DEV_SERVER = config('guilds.dev.id');
 
@@ -45,7 +45,7 @@ export class PluginDev implements PluginKind {
 
   static init() {
     if (!DEV) {
-      bugLogger.error('Tried to create a PluginDev in production.');
+      logger.bug.error('Tried to create a PluginDev in production.');
     }
 
     return this.MEMO.get();

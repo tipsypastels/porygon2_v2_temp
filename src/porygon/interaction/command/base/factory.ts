@@ -1,7 +1,7 @@
 import { Embed } from 'porygon/embed';
 import { BuiltinError, isBuiltinError } from 'porygon/error';
-import { intrLogger } from 'porygon/interaction/logger';
 import { createLang } from 'porygon/lang';
+import { logger } from 'porygon/logger';
 import { codeBlock } from 'support/string';
 import { CreateBaseCommand } from './types';
 
@@ -46,7 +46,7 @@ export function createBaseCommandCall<C extends Create>(opts: Opts<C>): C['CallF
   }
 
   function onSuccess(command: C['Command'], args: C['Args']) {
-    intrLogger.info(lang('log.ok', getLoggerBaseParams(command, args)));
+    logger.intr.info(lang('log.ok', getLoggerBaseParams(command, args)));
   }
 
   function onError(err: any, command: C['Command'], args: C['Args']) {
@@ -65,7 +65,7 @@ export function createBaseCommandCall<C extends Create>(opts: Opts<C>): C['CallF
       code: err.code,
     };
 
-    intrLogger.warn(lang('log.builtinErr', params));
+    logger.intr.warn(lang('log.builtinErr', params));
   }
 
   function onUnknownErr(err: unknown, command: C['Command'], args: C['Args']) {
@@ -77,8 +77,8 @@ export function createBaseCommandCall<C extends Create>(opts: Opts<C>): C['CallF
 
     args.intr.reply({ embeds: [embed], ephemeral });
 
-    intrLogger.error(lang('log.unkErr', getLoggerBaseParams(command, args)));
-    intrLogger.error(err as any);
+    logger.intr.error(lang('log.unkErr', getLoggerBaseParams(command, args)));
+    logger.intr.error(err as any);
   }
 
   return async function (intr, cell, command) {

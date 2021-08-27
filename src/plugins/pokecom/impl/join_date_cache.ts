@@ -1,7 +1,7 @@
 import { Guild, GuildMember, Snowflake } from 'discord.js';
 import { eachMember } from 'plugins/_shared/each_member';
 import { db } from 'porygon/core';
-import { bugLogger } from 'porygon/logger';
+import { logger } from 'porygon/logger';
 
 const TABLE = db.plugPokecom_JoinDateCache;
 
@@ -15,17 +15,15 @@ export async function cacheJoinDate({ id: userId, user, joinedAt }: GuildMember)
       where: { userId },
       update: { joinedAt },
       create: { userId, joinedAt },
-    })
-      .then(() => console.log(`Cached ${user.username}`))
-      .catch((error) => {
-        bugLogger.error(`Failed to cache join date for ${user.username}: ${error}`);
-      });
+    }).catch((error) => {
+      logger.bug.error(`Failed to cache join date for ${user.username}: ${error}`);
+    });
   }
 }
 
 export function uncacheJoinDate(userId: Snowflake) {
   TABLE.delete({ where: { userId } }).catch((error) => {
-    bugLogger.error(`Failed to uncache join date for user with ID: ${userId}: ${error}`);
+    logger.bug.error(`Failed to uncache join date for user with ID: ${userId}: ${error}`);
   });
 }
 

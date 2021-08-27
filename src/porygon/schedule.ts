@@ -1,10 +1,7 @@
 import cron from 'node-cron';
-import { createLogger } from './logger';
-import { red } from 'colors';
-
-const logger = createLogger('task', red);
+import { logger } from './logger';
 
 export function schedule(name: string, time: string, fn: () => void) {
-  logger.info(`Task scheduled: ${name} at ${time}`);
+  logger.task.info(`Task scheduled: ${name} at ${time}`);
   cron.schedule(time, fn);
 }

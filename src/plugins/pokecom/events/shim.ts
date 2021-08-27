@@ -2,7 +2,7 @@ import { Message, TextChannel } from 'discord.js';
 import { config } from 'porygon/config';
 import { Embed } from 'porygon/embed';
 import { createLang } from 'porygon/lang';
-import { bugLogger } from 'porygon/logger';
+import { logger } from 'porygon/logger';
 import { EventFactory } from 'porygon/plugin';
 import { getLegacyCommandShim } from '../impl/shim_commands';
 
@@ -26,7 +26,7 @@ function handle(message: Message) {
   const command = extractCommand(message);
   if (!command) return;
 
-  bugLogger.warn(
+  logger.bug.warn(
     lang('log', {
       command,
       user: message.author.username,
