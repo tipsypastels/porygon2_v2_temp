@@ -114,7 +114,7 @@ const lang = createLang(<const>{
     ok: '{author} used %{cmd}% in {loc}.',
     builtinErr:
       '{author} misused %{cmd}% in {loc} and encountered error: %{codeDomain}.{code}%.',
-    unkErr: '{author} encountered a crash using %{cmd}% in {loc}. More details follow.',
+    unkErr: '{author} encountered a crash using %{cmd}% in {loc}.',
   },
   embed: {
     unk: {
