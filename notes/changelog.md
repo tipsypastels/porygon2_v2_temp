@@ -42,7 +42,7 @@ Some commands may also have changed their semantics, see the next section.
 
 | Command | Public | Ephemeral | Description |
 |---------|--------|-----------|-------------|
-| `/calc` | Yes | No* | Does math problems. |
+| `/calc` | Yes | Yes | Does math problems. |
 | `/flip` | Yes | No* | Flips a coin. |
 | `/help` | Yes | Yes | Shows help information. |
 | `/ping` | Yes | Yes | Shows status information. |
