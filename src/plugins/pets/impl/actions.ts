@@ -66,8 +66,6 @@ async function find(member: GuildMember, channel: CommandChannel): Promise<Found
       continue;
     }
 
-    console.log(message.content);
-
     const attachment = message.attachments.first();
 
     if (!attachment || !attachment.url) {
