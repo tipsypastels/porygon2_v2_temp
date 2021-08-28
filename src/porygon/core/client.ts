@@ -23,7 +23,7 @@ const options: ClientOptions = {
   partials: ['USER', 'GUILD_MEMBER', 'MESSAGE', 'CHANNEL', 'REACTION'],
   makeCache: Options.cacheWithLimits({
     MessageManager: 800,
-    GuildMemberManager: 200,
+    GuildMemberManager: 400,
   }),
 };
 

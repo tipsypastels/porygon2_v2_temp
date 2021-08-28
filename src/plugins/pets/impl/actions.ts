@@ -18,6 +18,9 @@ export async function petAdd(member: GuildMember, channel: CommandChannel) {
 
   const [message, url] = await find(member, channel);
   const path = petExtractPath(url);
+
+  await assertUniquePet(path, member);
+
   const data = { path, userId: member.id };
   const pet = await table.create({ data });
 
@@ -57,13 +60,13 @@ type Found = [Message, string];
 async function find(member: GuildMember, channel: CommandChannel): Promise<Found> {
   const messages = [...(await channel.messages.fetch({ limit: LIMIT })).values()];
 
-  // more likely to be recent
-  for (let i = LIMIT - 1; i >= 0; i--) {
-    const message = messages[i] as Message | undefined;
-
+  // returned latest first
+  for (const message of messages) {
     if (!message || message.author.id !== member.id) {
       continue;
     }
+
+    console.log(message.content);
 
     const attachment = message.attachments.first();
 
@@ -83,6 +86,14 @@ async function assertChannel(channel: CommandChannel) {
   }
 }
 
+async function assertUniquePet(path: string, member: GuildMember) {
+  const count = await table.count({ where: { userId: member.id, path } });
+
+  if (count > 0) {
+    throw error('existing');
+  }
+}
+
 const lang = createLang(<const>{
   wrongChannel: {
     title: "You're in the wrong place!",
@@ -96,6 +107,10 @@ const lang = createLang(<const>{
   maliciousRem: {
     title: "You can't remove that pet!",
     desc: "You may only remove pets that you've uploaded.",
+  },
+  existing: {
+    title: 'Not to worry, that image is already saved in my databases.',
+    desc: 'But thanks for stopping by! :blush:',
   },
   added: {
     title: 'Pet added!',
@@ -122,5 +137,8 @@ const error = createBuiltinErrors({
     e.poryErr('danger')
       .setTitle(lang('maliciousRem.title'))
       .setDescription(lang('maliciousRem.desc'));
+  },
+  existing(e) {
+    e.poryColor('warning').poryThumb('smile').assign(lang('existing'));
   },
 });
