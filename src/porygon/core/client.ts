@@ -3,10 +3,11 @@ import { Client, ClientOptions, Options } from 'discord.js';
 import { setupPlugins } from 'porygon/plugin/setup';
 import { handleInteraction } from 'porygon/interaction';
 import { setupAssets } from 'porygon/asset/setup';
-import { uptime } from 'porygon/stats';
 import { setupActivityMessages } from './activity';
-import '../logger';
 import { logger } from '../logger';
+import { TimeDifferenceStat } from 'porygon/stats';
+
+export const uptime = new TimeDifferenceStat();
 
 const INVITE =
   'https://discord.com/oauth2/authorize?client_id={CLIENT_ID}&scope=bot+applications.commands&permissions=470019135';

@@ -2,14 +2,13 @@ import { TextChannel } from 'discord.js';
 import { DEV } from 'porygon/dev';
 import { CommandFn, commandGroups } from 'porygon/interaction';
 import { assertOwner } from 'porygon/owner';
-import { joinDateSource, uptime } from 'porygon/stats';
 import * as Assets from 'porygon/assets';
 import { Plugin } from 'porygon/plugin';
 import { previewAssets } from 'porygon/asset/preview';
 import { Task } from 'porygon/schedule';
-import { createLang } from 'porygon/lang';
-import { db } from 'porygon/core';
 import { Embed } from 'porygon/embed';
+import { getJoinDateStatsString } from 'plugins/_shared/event_logging';
+import { uptime } from 'porygon/core';
 
 type SayOpts = { message: string; channel?: TextChannel };
 type PreviewAssetOpts = { asset: string };
@@ -38,7 +37,7 @@ const stats: CommandFn = async ({ embed, intr, client, author }) => {
   assertOwner(author);
 
   const taskString = Task.ALL.map((task) => task.toEmbedString()).join('\n\n');
-  const joinDatesString = await getJoinDateStats();
+  const joinDatesString = await getJoinDateStatsString();
 
   embed
     .poryThumb('speech')
@@ -142,14 +141,3 @@ function fetchAsset(name: string) {
 
   return Assets[name as keyof typeof Assets];
 }
-
-async function getJoinDateStats() {
-  const cached = await db.plugPokecom_JoinDateCache.count();
-  const params = { ...joinDateSource.flatten(), cached };
-  return lang('joinDateStats', params);
-}
-
-const lang = createLang(<const>{
-  joinDateStats:
-    '**Table Size:** {cached}\n**Sources:**\n```\nMember: {member}\nDatabase: {database}\nMissing: {missing}```',
-});

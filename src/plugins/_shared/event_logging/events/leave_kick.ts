@@ -8,11 +8,11 @@ import {
 } from 'discord.js';
 import { logger } from 'porygon/logger';
 import { EventProxy } from 'porygon/plugin';
-import { joinDateSource } from 'porygon/stats';
 import { Nullish } from 'support/object';
 import { codeBlock } from 'support/string';
 import { formatTime } from 'support/time';
 import { getKickLog } from '../audit';
+import { joinDateSource } from '../join_date_cache';
 import { LogConfig, LogConfigFallbackJoinDate, LogEmbed } from '../config';
 import { outputLogs } from '../output_channel';
 
@@ -65,7 +65,7 @@ export function logLeavesKicks(
   function incrementJdStat(stat: 'member' | 'database' | 'missing') {
     // only increment stats if we got this function, otherwise it doesn't matter
     if (jdFallback) {
-      joinDateSource.increment(stat);
+      joinDateSource[stat].increment();
     }
   }
 

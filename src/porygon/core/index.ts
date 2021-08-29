@@ -1,2 +1,2 @@
-export { Porygon } from './client';
+export { Porygon, uptime } from './client';
 export { db } from './db';

@@ -1,7 +1,7 @@
 import { logEvents } from 'plugins/_shared/event_logging';
 import { config } from 'porygon/config';
 import { EventFactory } from 'porygon/plugin';
-import { getJoinDateFromCache } from '../impl/join_date_cache';
+import { getJoinDateFromCache } from '../../_shared/event_logging/join_date_cache';
 
 type Kind = typeof import('../$plugin').default;
 

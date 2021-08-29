@@ -2,11 +2,14 @@ import { PlugPokecom_JoinDateCache } from '.prisma/client';
 import { Guild, GuildMember, Snowflake } from 'discord.js';
 import { noop } from 'lodash';
 import { eachMemberBatch } from 'plugins/_shared/each_member';
-import { db } from 'porygon/core';
+import { db, Porygon } from 'porygon/core';
 import { createLang } from 'porygon/lang';
 import { logger } from 'porygon/logger';
+import { CounterStat } from 'porygon/stats';
 
 const TABLE = db.plugPokecom_JoinDateCache;
+
+export const joinDateSource = CounterStat.table(['missing', 'member', 'database']);
 
 export async function cacheJoinDateForMembers(guild: Guild) {
   let newInserts = 0;
@@ -63,9 +66,17 @@ export function getJoinDateFromCache(userId: Snowflake) {
   return TABLE.findFirst({ where: { userId } }).then((x) => x?.joinedAt);
 }
 
+// exported cross-plugin, used by /op stats
+export async function getJoinDateStatsString() {
+  const count = await TABLE.count();
+  const params = { ...joinDateSource, count };
+  return lang('embed', params);
+}
+
 const lang = createLang(<const>{
   batchError: 'Failed to cache join dates for %batch {batch}%: {error}',
   cacheError: 'Failed to cache join date for %{user}%: {error}',
   cacheNone: 'Could not cache join date for %{user}%, no join date provided.',
   uncacheError: 'Failed to uncache join date for user with ID: %{userId}%: {error}',
+  embed: '**Sources:** `😇 {member} 💽 {database} ❓ {missing}`\n**Table size**: {count}',
 });

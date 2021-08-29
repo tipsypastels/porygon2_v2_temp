@@ -1,5 +1,5 @@
 import { Command } from 'porygon/interaction';
-import { uptime } from 'porygon/stats';
+import { uptime } from 'porygon/core';
 
 const ping: Command = async ({ intr, embed, client }) => {
   embed

@@ -5,6 +5,7 @@ import { logDeletions } from './events/deletion';
 import { logJoins } from './events/join';
 import { logLeavesKicks } from './events/leave_kick';
 
+export * from './join_date_cache';
 export function logEvents(events: EventProxy, cfg: LogEventsConfig) {
   const { joins, leaves, kicks, bans, unbans, deletions } = cfg.log;
 

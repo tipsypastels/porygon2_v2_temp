@@ -7,7 +7,7 @@ import { schedule, at } from 'porygon/schedule';
 import { TimeDifferenceStat } from 'porygon/stats';
 import { sleep } from 'support/async';
 import { Seconds } from 'support/time';
-import * as Cache from '../impl/join_date_cache';
+import * as Cache from '../../_shared/event_logging';
 
 type Kind = typeof import('../$plugin').default;
 
