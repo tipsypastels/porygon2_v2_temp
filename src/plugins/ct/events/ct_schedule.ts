@@ -6,7 +6,7 @@ type Kind = typeof import('../$plugin').default;
 
 const TICK_FREQ = at.every(12).hours();
 const CYCLE_FREQ = at.everyWeek();
-const ACTIVE = () => !CtConfig.enabled;
+const ACTIVE = () => CtConfig.enabled;
 
 export const CT_TICK_TASK = new Task({
   name: 'cooltrainer.tick',
