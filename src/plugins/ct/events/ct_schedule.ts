@@ -1,4 +1,3 @@
-import { Guild } from 'discord.js';
 import { EventFactory } from 'porygon/plugin';
 import { Task, at } from 'porygon/schedule';
 import { CtConfig, ctHandleMessage, ctRunCycle, ctRunTick } from '../impl';
@@ -12,13 +11,13 @@ const ACTIVE = () => !CtConfig.enabled;
 export const CT_TICK_TASK = new Task({
   name: 'cooltrainer.tick',
   active: ACTIVE,
-  do: (guild: Guild) => ctRunTick(guild),
+  do: ctRunTick,
 });
 
 export const CT_CYCLE_TASK = new Task({
   name: 'cooltrainer.cycle',
   active: ACTIVE,
-  do: () => ctRunCycle(),
+  do: ctRunCycle,
 });
 
 const ctSchedule: EventFactory<Kind> = ({ events, kind, client }) => {
