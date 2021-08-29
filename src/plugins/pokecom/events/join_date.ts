@@ -3,13 +3,18 @@ import { DEV } from 'porygon/dev';
 import { createLang } from 'porygon/lang';
 import { logger } from 'porygon/logger';
 import { EventFactory } from 'porygon/plugin';
-import { schedule, at } from 'porygon/schedule';
+import { Task, at } from 'porygon/schedule';
 import { TimeDifferenceStat } from 'porygon/stats';
 import { sleep } from 'support/async';
 import { Seconds } from 'support/time';
 import * as Cache from '../../_shared/event_logging';
 
 type Kind = typeof import('../$plugin').default;
+
+const CLEAR_TASK = new Task({
+  name: 'pokecom.clearJoinDates',
+  do: Cache.clearAndReloadAllJoinDates,
+});
 
 const handler: EventFactory<Kind> = ({ events, kind, client }) => {
   const guild = kind.guild(client);
@@ -20,9 +25,7 @@ const handler: EventFactory<Kind> = ({ events, kind, client }) => {
     events.on('guildMemberAdd', Cache.cacheJoinDate);
     events.on('guildMemberRemove', Cache.uncacheJoinDate);
 
-    schedule('pokecom.clearJoinDates', at.everyWeek(), () =>
-      Cache.clearAndReloadAllJoinDates(guild),
-    );
+    CLEAR_TASK.schedule(at.everyWeek(), guild);
   }
 };
 

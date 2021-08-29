@@ -1,16 +1,22 @@
 import { config } from 'porygon/config';
-import { schedule, at } from 'porygon/schedule';
+import { Task, at } from 'porygon/schedule';
 import { random } from 'support/array';
 import { Porygon } from './client';
 
 const MESSAGES = config('activityMessages');
 
+const TASK = new Task({
+  name: 'pory.activity',
+  silent: true,
+  do: set,
+});
+
 export function setupActivityMessages(client: Porygon) {
   set(client);
-  schedule('pory.activity', at.every(30).minutes(), () => set(client)).silent();
+  TASK.schedule(at.every(30).minutes(), client);
 }
 
-function set(client: Porygon) {
+async function set(client: Porygon) {
   const { user } = client;
 
   if (!user) {

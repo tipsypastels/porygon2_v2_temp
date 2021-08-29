@@ -2,7 +2,7 @@ import { PlugPokecom_JoinDateCache } from '.prisma/client';
 import { Guild, GuildMember, Snowflake } from 'discord.js';
 import { noop } from 'lodash';
 import { eachMemberBatch } from 'plugins/_shared/each_member';
-import { db, Porygon } from 'porygon/core';
+import { db } from 'porygon/core';
 import { createLang } from 'porygon/lang';
 import { logger } from 'porygon/logger';
 import { CounterStat } from 'porygon/stats';
