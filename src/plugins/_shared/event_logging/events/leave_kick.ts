@@ -43,9 +43,6 @@ export function logLeavesKicks(
   async function resolve(member: GuildMember | PartialGuildMember): TryMemberlike {
     const { id, guild, client } = member;
 
-    // @ts-expect-error xxx
-    member = { partial: true };
-
     if (member.partial) {
       const [user, joinedAt] = await Promise.all([
         client.users.fetch(id).catch(() => undefined),
