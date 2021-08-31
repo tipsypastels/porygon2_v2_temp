@@ -1,4 +1,4 @@
-import { format, formatDistance } from 'date-fns';
+import { format, formatDistance, isToday } from 'date-fns';
 
 export const Milliseconds = (time: number) => time;
 export const Seconds = (time: number) => time * 1000;
@@ -11,6 +11,10 @@ export function timeAgoInWords(date: Date) {
   return formatDistance(date, new Date());
 }
 
-export function formatTime(date: Date) {
-  return format(date, 'hh:mm:ss b');
+const FORMAT_FULL_DATE = "yyyy'/'MM'/'dd hh:mm b";
+const FORMAT_TODAY_TIME = 'hh:mm b';
+
+export function formatEventTime(date: Date) {
+  const code = isToday(date) ? FORMAT_TODAY_TIME : FORMAT_FULL_DATE;
+  return format(date, code);
 }

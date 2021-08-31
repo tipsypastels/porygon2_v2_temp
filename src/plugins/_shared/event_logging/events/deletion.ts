@@ -1,7 +1,7 @@
 import { Message, PartialMessage } from 'discord.js';
 import { EventProxy } from 'porygon/plugin';
 import { codeBlock } from 'support/string';
-import { formatTime } from 'support/time';
+import { formatEventTime } from 'support/time';
 import { LogConfig, LogEmbed } from '../config';
 import { outputLogs } from '../output_channel';
 
@@ -28,7 +28,7 @@ export function logDeletions(events: EventProxy, cfg: DeletionsLogConfig) {
         e.addInlineField('Channel', message.channel.toString());
       })
       .detail('sentAt', (e) => {
-        e.addInlineField('Sent At', formatTime(message.createdAt));
+        e.addInlineField('Sent At', formatEventTime(message.createdAt));
       })
       .detail('msgId', (e) => {
         e.addField('Message ID', codeBlock(message.id));

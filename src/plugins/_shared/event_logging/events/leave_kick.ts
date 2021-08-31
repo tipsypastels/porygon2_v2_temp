@@ -10,7 +10,7 @@ import { logger } from 'porygon/logger';
 import { EventProxy } from 'porygon/plugin';
 import { Nullish } from 'support/object';
 import { codeBlock } from 'support/string';
-import { formatTime } from 'support/time';
+import { formatEventTime } from 'support/time';
 import { getKickLog } from '../audit';
 import { joinDateSource } from '../join_date_cache';
 import { LogConfig, LogConfigFallbackJoinDate, LogEmbed } from '../config';
@@ -70,7 +70,7 @@ export function logLeavesKicks(
     embed
       .detail('joinedAt', (e) => {
         const { joinedAt } = member;
-        e.addField('Joined At', joinedAt ? formatTime(joinedAt) : 'Unknown');
+        e.addField('Joined At', joinedAt ? formatEventTime(joinedAt) : 'Unknown');
       })
       .detail('userId', (e) => {
         e.addField('User ID', codeBlock(member.id));
