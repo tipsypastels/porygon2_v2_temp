@@ -11,10 +11,12 @@ export function timeAgoInWords(date: Date) {
   return formatDistance(date, new Date());
 }
 
-const FORMAT_FULL_DATE = "yyyy'/'MM'/'dd hh:mm b";
-const FORMAT_TODAY_TIME = 'hh:mm b';
+const FMT = {
+  full: "yyyy'/'MM'/'dd hh:mm b",
+  today: 'hh:mm b',
+};
 
 export function formatEventTime(date: Date) {
-  const code = isToday(date) ? FORMAT_TODAY_TIME : FORMAT_FULL_DATE;
+  const code = FMT[isToday(date) ? 'today' : 'full'];
   return format(date, code);
 }
