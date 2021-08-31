@@ -18,6 +18,6 @@ enum Fmt {
 
 export function formatEventTime(date: Date) {
   const today = isToday(date);
-  const code = Fmt[today ? 'Full' : 'Today'];
+  const code = Fmt[today ? 'Today' : 'Full'];
   return format(date, code);
 }
