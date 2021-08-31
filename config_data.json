@@ -1,9 +1,17 @@
 {
   "guilds": {
-    "pokecom": { "id": "157983957902819328" },
-    "pokecomstaf": { "id": "193103073210662914" },
-    "duck": { "id": "322199235825238017" },
-    "dev": { "id": "746219046374080532" }
+    "pokecom": {
+      "id": "157983957902819328"
+    },
+    "pokecomstaf": {
+      "id": "193103073210662914"
+    },
+    "duck": {
+      "id": "322199235825238017"
+    },
+    "dev": {
+      "id": "746219046374080532"
+    }
   },
   "assets": {
     "uploadDump": {
@@ -65,7 +73,12 @@
   ],
   "plug": {
     "role": {
-      "staffRoles": ["owner", "admin", "moderator", "moderoid"]
+      "staffRoles": [
+        "owner",
+        "admin",
+        "moderator",
+        "moderoid"
+      ]
     },
     "duck": {
       "joins": {
@@ -112,7 +125,8 @@
           "When I was a young boy, my father took me into the city, to see a marching band. He said, \"Son, when you grow up, would you be the savior of the broken, the beaten, and the damned?\" He said, \"Will you defeat them, your demons, and all the non-believers? The plans that they have made? Because one day, I'll leave you, a phantom to lead you in the summer... To join the black parade.\"",
           "pleading is the most fun an inky can have without taking his clothes off",
           "periodt",
-          "PB is my bwestest fwend uwu"
+          "PB is my bwestest fwend uwu",
+          "when pb sends their bimonthly message it warms my cold little heart"
         ]
       },
       "nudge": {
