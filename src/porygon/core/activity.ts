@@ -1,9 +1,11 @@
 import { config } from 'porygon/config';
+import { DEV } from 'porygon/dev';
 import { Task, at } from 'porygon/schedule';
 import { random } from 'support/array';
 import { Porygon } from './client';
 
 const MESSAGES = config('activityMessages');
+const FREQ = at.every(DEV ? 1 : 30).minutes();
 
 const TASK = new Task({
   name: 'pory.activity',
@@ -13,7 +15,7 @@ const TASK = new Task({
 
 export function setupActivityMessages(client: Porygon) {
   set(client);
-  TASK.schedule(at.every(30).minutes(), client);
+  TASK.schedule(FREQ, client);
 }
 
 async function set(client: Porygon) {

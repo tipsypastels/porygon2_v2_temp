@@ -15,6 +15,10 @@ export class CounterStat {
     return this._value;
   }
 
+  get touched() {
+    return this._value > 0;
+  }
+
   increment(by = 1) {
     this._value += by;
   }

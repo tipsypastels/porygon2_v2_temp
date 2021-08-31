@@ -27,8 +27,7 @@ export type TaskRun<R> =
 export class Task<T extends any[], R> {
   static ALL = new Collection<string, Task<unknown[], unknown>>();
 
-  private results = CounterStat.table(RESULTS);
-  private lastResult?: Result;
+  private results = new ResultCollector();
   private cronTime?: string; // only for toEmbedString
 
   constructor(private opts: TaskOpts<T, R>) {
@@ -63,9 +62,7 @@ export class Task<T extends any[], R> {
     const params = { name: this.name };
 
     this[method](lang(`log.${result}`, params), error);
-
-    this.lastResult = result;
-    this.results[result].increment();
+    this.results.increment(result);
   }
 
   private logMessage(message: string) {
@@ -85,15 +82,11 @@ export class Task<T extends any[], R> {
   }
 
   toEmbedString() {
-    const { name, lastResult: last } = this;
-    const params = {
-      name,
-      last: last ? lang('embed.last', { last: symbols[last] }) : '',
+    return lang('embed', {
+      name: this.name,
+      results: this.results,
       nextRun: this.nextRun(),
-      ...this.results,
-    };
-
-    return lang('embed.base', params);
+    });
   }
 
   private nextRun() {
@@ -103,6 +96,33 @@ export class Task<T extends any[], R> {
     }
 
     return 'Never';
+  }
+}
+
+class ResultCollector {
+  private results = CounterStat.table(RESULTS);
+  private lastResult?: Result;
+
+  increment(result: Result) {
+    this.results[result].increment();
+    this.lastResult = result;
+  }
+
+  toString() {
+    return lang('results.list', { ...this.results, last: this.lastText() });
+  }
+
+  private lastText() {
+    if (this.lastResult && !this.resultsAreAllOfOneKind()) {
+      return lang('results.last', { last: symbols[this.lastResult] });
+    }
+
+    return '';
+  }
+
+  // if we've always succeeded/failed/skipped, no need to list the latest
+  private resultsAreAllOfOneKind() {
+    return Object.values(this.results).filter((x) => x.touched).length === 1;
   }
 }
 
@@ -120,8 +140,9 @@ const lang = createLang(<const>{
     failure: 'Task failed: %{name}%.',
     skipped: 'Task skipped: %{name}%.',
   },
-  embed: {
-    base: '`{name}`\n**Status:** `✅ {success} ❌ {failure} ↩️ {skipped}`{last}\n**Runs in:** {nextRun}',
+  embed: '`{name}`\n**Status:** {results}\n**Runs in:** {nextRun}',
+  results: {
+    list: '`✅ {success} ❌ {failure} ↩️ {skipped}`{last}',
     last: ' (last was `{last}`) ',
   },
 });
