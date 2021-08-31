@@ -3,9 +3,8 @@ import get from 'lodash.get';
 import set from 'lodash.set';
 import has from 'lodash.has';
 import { Path, PathValue } from 'support/path';
-import configData from '../../config_data.json';
+import configData from './config_data.json';
 import { writeFile } from 'fs/promises';
-import { logger } from './logger';
 
 type ConfigData = typeof configData;
 type Value<P extends Path<ConfigData>> = EnvUnwrapped<PathValue<ConfigData, P>>;
@@ -32,10 +31,8 @@ function assertConfigExists(key: string) {
 }
 
 function overwriteConfigFile() {
-  const file = 'config_data.json';
+  const file = `${__dirname}/config_data.json`;
   const json = JSON.stringify(configData, null, 2);
 
-  writeFile(file, json).catch((error) => {
-    logger.bug.error(`Failed to apply changes to config file: ${error}.`);
-  });
+  writeFile(file, json); // fire-and-forget
 }
