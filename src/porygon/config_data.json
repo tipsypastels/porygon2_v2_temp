@@ -213,7 +213,7 @@
           "dev": "878552829181194260"
         }
       },
-      "shimLegacyCommands": false
+      "shimLegacyCommands": true
     },
     "pokecomstaf": {
       "logChannel": {
