@@ -26,7 +26,10 @@ function handle(message: Message) {
   const command = extractCommand(message);
   if (!command) return;
 
-  logger.bug.warn(
+  const shim = getLegacyCommandShim(command);
+  if (!shim) return;
+
+  logger.intr.warn(
     lang('log', {
       command,
       user: message.author.username,
@@ -34,11 +37,10 @@ function handle(message: Message) {
     }),
   );
 
-  const rec = getLegacyCommandShim(command);
   const embed = new Embed();
 
   embed.poryColor('danger').poryThumb('speech').assign(lang('embed'));
-  if (rec) embed.addField(lang('rec', { command }), rec);
+  if (shim) embed.addField(lang('shim', { command }), shim);
 
   message.channel.send({ embeds: [embed] });
 }
@@ -61,5 +63,5 @@ const lang = createLang(<const>{
     title: "Porygon's command handling has changed.",
     desc: "Porygon now uses Discord's shiny new *\\*~slash commands~\\** system. Slash commands start with a `/` and are displayed in the UI. Because of this, some old commands have been renamed or tweaked.",
   },
-  rec: 'As for !{command}...',
+  shim: 'As for !{command}...',
 });
