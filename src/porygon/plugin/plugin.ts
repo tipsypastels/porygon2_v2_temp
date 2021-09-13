@@ -102,7 +102,8 @@ export class Plugin {
       );
     }
 
-    const data = this.unsavedCommands.map((c) => c.data);
+    const map = createCommandToDataMapper(this.kind, this.client);
+    const data = this.unsavedCommands.map(map);
     const apis = await this.kind.upload(data, this.client);
 
     for (const [command, api] of zip(this.unsavedCommands, apis)) {
@@ -134,5 +135,14 @@ function createPluginChildren(kinds: PluginKind[], client: Porygon) {
     for (const kind of kinds) {
       yield Plugin.init(kind, client);
     }
+  };
+}
+
+function createCommandToDataMapper(kind: PluginKind, client: Porygon) {
+  return function (command: BaseCommand) {
+    const { data, patchBeforeUpload } = command;
+    patchBeforeUpload && patchBeforeUpload(data, { kind, client });
+
+    return data;
   };
 }

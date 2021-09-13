@@ -10,7 +10,7 @@ import { CreateBaseCommand } from './types';
 // it wants those to be assignable to the *implementing* types which have more
 // properties. Possibly just an inference failure for this kind of factory type?
 // It's annoying.
-type Create = CreateBaseCommand<any, any>;
+type Create = CreateBaseCommand<any, any, any>;
 
 interface Opts<C extends Create> {
   createArgs(...call: C['CallFnArgs']): C['Args'] | undefined;

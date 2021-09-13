@@ -1,4 +1,11 @@
-import { ContextMenuInteraction, Guild, GuildMember, Message } from 'discord.js';
+import {
+  ContextMenuInteraction,
+  Guild,
+  GuildMember,
+  Message,
+  MessageApplicationCommandData,
+  UserApplicationCommandData,
+} from 'discord.js';
 import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
 import { logger } from 'porygon/logger';
@@ -24,9 +31,21 @@ interface MsgArgs extends UserArgs {
   message: Message;
 }
 
-type Create = CreateBaseCommand<BaseArgs, ContextMenuInteraction>;
-type CreateUser = CreateBaseCommand<UserArgs, ContextMenuInteraction>;
-type CreateMsg = CreateBaseCommand<MsgArgs, ContextMenuInteraction>;
+type Create = CreateBaseCommand<
+  BaseArgs,
+  ContextMenuInteraction,
+  UserApplicationCommandData | MessageApplicationCommandData
+>;
+type CreateUser = CreateBaseCommand<
+  UserArgs,
+  ContextMenuInteraction,
+  UserApplicationCommandData
+>;
+type CreateMsg = CreateBaseCommand<
+  MsgArgs,
+  ContextMenuInteraction,
+  MessageApplicationCommandData
+>;
 
 export type UserContextMenu = CreateUser['Command'];
 export type MsgContextMenu = CreateMsg['Command'];

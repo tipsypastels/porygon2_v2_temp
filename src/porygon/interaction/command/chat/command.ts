@@ -1,4 +1,5 @@
 import {
+  ChatInputApplicationCommandData,
   CommandInteraction,
   Guild,
   GuildMember,
@@ -15,7 +16,11 @@ import { CommandOptions } from './options';
 
 export type CommandChannel = TextChannel | ThreadChannel;
 
-type CreateCommand<Opts = unknown> = CreateBaseCommand<Args<Opts>, CommandInteraction>;
+type CreateCommand<Opts = unknown> = CreateBaseCommand<
+  Args<Opts>,
+  CommandInteraction,
+  ChatInputApplicationCommandData
+>;
 
 interface Args<Opts = unknown> {
   client: Porygon;

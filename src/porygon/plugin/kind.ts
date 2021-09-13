@@ -2,6 +2,7 @@ import {
   ApplicationCommand as Api,
   ApplicationCommandData as Data,
   Collection,
+  Guild,
   Snowflake,
 } from 'discord.js';
 import { Porygon } from 'porygon/core';
@@ -38,9 +39,14 @@ export interface PluginKind {
   getChildKinds?(): PluginKind[];
 }
 
+export interface PluginKindGuilded extends PluginKind {
+  guildId: Snowflake;
+  guild(client: Porygon): Guild | undefined;
+}
+
 export type PluginKindOrDev<T extends PluginKind> = T | PluginDev;
 
-export class PluginDev implements PluginKind {
+export class PluginDev implements PluginKindGuilded {
   private static MEMO = new Singleton(() => new PluginDev());
 
   static init() {
@@ -57,6 +63,10 @@ export class PluginDev implements PluginKind {
 
   get tag() {
     return 'Dev';
+  }
+
+  get guildId() {
+    return DEV_SERVER.value;
   }
 
   guild(client: Porygon) {
@@ -96,7 +106,7 @@ export class PluginGlobal implements PluginKind {
   }
 }
 
-export class PluginGuild implements PluginKind {
+export class PluginGuild implements PluginKindGuilded {
   private static ALL = new Cache((name: GuildConfigName) => {
     return new PluginGuild(name);
   });
@@ -105,7 +115,7 @@ export class PluginGuild implements PluginKind {
     return this.ALL.get(name);
   }
 
-  private guildId: string;
+  readonly guildId: string;
 
   private constructor(private name: GuildConfigName) {
     this.guildId = config(`guilds.${name}.id`).value;
@@ -157,6 +167,10 @@ export class PluginGuilds implements PluginKind {
   getChildKinds() {
     return this.plugins;
   }
+}
+
+export function isGuildedKind(kind: PluginKind): kind is PluginKindGuilded {
+  return typeof (kind as PluginKindGuilded).guild === 'function';
 }
 
 function toArray<V>(collection: Collection<unknown, V> | undefined): V[] {

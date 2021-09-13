@@ -20,3 +20,8 @@ export function clamp(num: number, min: number, max: number) {
   if (num > max) return max;
   return num;
 }
+
+/**
+ * Sums two numbers. Useful in `reduce`.
+ */
+export const sum = (a: number, b: number) => a + b;
