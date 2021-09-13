@@ -25,7 +25,7 @@ export function getFaqQuestionsForGuild(id: Snowflake) {
 }
 
 export function getGuildNamesWithFaqEntries() {
-  const ids = new Set(...FAQ.outerKeys());
+  const ids = new Set(FAQ.outerKeys());
   const guilds = config('guilds').value;
   const out: GuildConfigName[] = [];
 
