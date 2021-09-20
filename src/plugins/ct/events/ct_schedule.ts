@@ -1,6 +1,12 @@
 import { EventFactory } from 'porygon/plugin';
 import { Task, at } from 'porygon/schedule';
-import { CtConfig, ctHandleMessage, ctRunCycle, ctRunTick } from '../impl';
+import {
+  CtConfig,
+  ctHandleMessage,
+  ctRunCycle,
+  ctRunTick,
+  ctTickProvider,
+} from '../impl';
 
 type Kind = typeof import('../$plugin').default;
 
@@ -26,7 +32,7 @@ const ctSchedule: EventFactory<Kind> = ({ events, kind, client }) => {
   if (guild) {
     events.on('messageCreate', ctHandleMessage);
 
-    CT_TICK_TASK.schedule(TICK_FREQ, guild);
+    CT_TICK_TASK.schedule(TICK_FREQ, guild, ctTickProvider);
     CT_CYCLE_TASK.schedule(CYCLE_FREQ);
   }
 };

@@ -1,21 +1,28 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '.prisma/client';
 import { Guild, GuildMember, Snowflake } from 'discord.js';
 import { db } from 'porygon/core';
 import { logger } from 'porygon/logger';
-import { CtConfig } from './shared';
+import { CtConfig } from '../shared';
+import { CtTickProviderLike } from './provider';
 
 type Where = 'above' | 'below';
 type Each = (member: GuildMember) => void;
+
+// this exists because task arguments are provided up front, which would result
+// in the stats from all runs being shared. instead, just pass an array
+type ToProvider = () => CtTickProviderLike;
 
 interface Entry {
   userId: Snowflake;
 }
 
-export async function ctRunTick(guild: Guild) {
+export async function ctRunTick(guild: Guild, toProvider: ToProvider) {
+  const provider = toProvider();
   const role = await guild.roles.fetch(CtConfig.roleId);
+  const trash: Snowflake[] = [];
 
   if (!role) {
-    return logger.bug.error('Cooltrainer role not found. Aborting tick.');
+    throw new Error('COOLTRAINER role not found. Aborting tick.');
   }
 
   const has = (member: GuildMember) => {
@@ -25,7 +32,7 @@ export async function ctRunTick(guild: Guild) {
   const give = () => {
     return eachMember('above', async (member) => {
       if (has(member)) return;
-      await member.roles.add(role);
+      await provider.add(member, role);
 
       log(member, 'earned');
     });
@@ -34,7 +41,7 @@ export async function ctRunTick(guild: Guild) {
   const take = () => {
     return eachMember('below', async (member) => {
       if (!has(member)) return;
-      await member.roles.remove(role);
+      await provider.remove(member, role);
 
       log(member, 'lost');
     });
@@ -47,6 +54,8 @@ export async function ctRunTick(guild: Guild) {
 
       if (member) {
         await each(member);
+      } else {
+        trash.push(userId);
       }
     });
 
@@ -58,6 +67,9 @@ export async function ctRunTick(guild: Guild) {
   }
 
   await Promise.all([give(), take()]);
+  await provider.trash(trash);
+
+  return provider.toJSON();
 }
 
 function query(where: Where) {

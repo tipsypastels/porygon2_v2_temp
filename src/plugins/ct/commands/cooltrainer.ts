@@ -3,10 +3,12 @@ import { DEV } from 'porygon/dev';
 import { Embed } from 'porygon/embed';
 import { CommandFn, commandGroups } from 'porygon/interaction';
 import { createLang } from 'porygon/lang';
+import { codeBlock } from 'support/string';
 import { CT_CYCLE_TASK, CT_TICK_TASK } from '../events/ct_schedule';
 import * as Ct from '../impl';
 
 type ShowOpts = { member: GuildMember };
+type TickOpts = { mock?: boolean };
 
 const scoreboard: CommandFn = async ({ embed, intr, guild }) => {
   const scoreboard = Ct.ctCreateScoreboard(guild);
@@ -19,14 +21,24 @@ const scoreboard: CommandFn = async ({ embed, intr, guild }) => {
   await intr.reply({ embeds: [embed] });
 };
 
-const tick: CommandFn = async ({ embed, intr, guild }) => {
+const tick: CommandFn<TickOpts> = async ({ embed, intr, guild, opts }) => {
   await intr.deferReply({ ephemeral: true });
 
-  const { result } = await CT_TICK_TASK.run(guild);
+  const mock = opts.try('mock') ?? false;
+  const provider = mock ? Ct.ctTickMockProvider : Ct.ctTickProvider;
+  const run = await CT_TICK_TASK.run(guild, provider);
 
   embed
-    .poryColor(lang(`task.${result}.color`) as 'ok')
-    .setTitle(lang(`task.${result}.title`, { task: 'tick' }));
+    .poryColor(lang(`task.${run.result}.color`) as 'ok')
+    .setTitle(lang(`task.${run.result}.title`, { task: 'tick' }));
+
+  if (run.result === 'success') {
+    embed.setDescription(codeBlock(run.value));
+  }
+
+  if (mock) {
+    embed.setFooter(lang('mockTick'));
+  }
 
   await intr.editReply({ embeds: [embed] });
 };
@@ -93,6 +105,15 @@ cooltrainer.data = {
       type: 'SUB_COMMAND',
       description:
         "[UNSAFE] Manually runs a COOLTRAINER tick, recalculating everyone's roles accordingly.",
+      options: [
+        {
+          name: 'mock',
+          type: 'BOOLEAN',
+          description:
+            'Whether to run the command as a mock, which does not actually affect roles.',
+          required: false,
+        },
+      ],
     },
     {
       name: 'cycle',
@@ -131,4 +152,5 @@ const lang = createLang(<const>{
     score: 'Score',
     has: 'Has COOLTRAINER',
   },
+  mockTick: 'This was a mock tick. No actual changes were made.',
 });
