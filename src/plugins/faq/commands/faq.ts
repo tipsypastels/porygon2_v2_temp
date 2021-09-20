@@ -17,7 +17,7 @@ const faq: Command<Opts> = async ({ opts, intr, embed, guild }) => {
     throw error('unknown', question, guild.id);
   }
 
-  embed.merge(faq);
+  embed.poryColor('info').merge(faq);
   await intr.reply({ embeds: [embed] });
 };
 

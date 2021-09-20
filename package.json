@@ -13,6 +13,7 @@
     "run:import": "node -r dotenv/config ./scripts/import.js"
   },
   "devDependencies": {
+    "@types/common-tags": "^1.8.1",
     "@types/jest": "^26.0.24",
     "@types/lodash.get": "^4.4.6",
     "@types/lodash.has": "^4.5.6",
@@ -37,6 +38,7 @@
   "dependencies": {
     "@prisma/client": "^2.28.0",
     "colors": "^1.4.0",
+    "common-tags": "^1.8.0",
     "cron-parser": "^3.5.0",
     "cron-time-generator": "^1.2.0",
     "date-fns": "^2.23.0",
