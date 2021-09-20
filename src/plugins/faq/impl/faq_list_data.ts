@@ -1,8 +1,9 @@
-import { withConfig } from 'porygon/config';
+import { config, withConfig } from 'porygon/config';
 import { addFaq } from './faq_list';
 import * as PC_URL from 'plugins/_shared/pc_url';
 import { stripIndent } from 'common-tags';
 
+const ROLELIST = config('plug.pokecom.roleListUrl');
 const SELFPROMO = '<#843868495565029416>';
 const MODEROID = '<@&157985920912588800>';
 const COOLTRAINER = withConfig('plug.ct.role', (r) => `<@&${r}>`);
@@ -23,7 +24,7 @@ addFaq('pokecom', 'How do I post in #self-promo?', (e) => {
 
 addFaq('pokecom', 'How do I get a role colour?', (e) => {
   e.setTitle('Role colours').setDescription(
-    "PokéCommunity has a large list of requestable roles you can use to colour yourself however you like. [Click here to view the list of available roles](https://pokecommunity.com/about/discordroles). Once you've found one that strikes your fancy, use `/role add` to get it!",
+    `PokéCommunity has a large list of requestable roles you can use to colour yourself however you like. [Click here to view the list of available roles](${ROLELIST.value}). Once you've found one that strikes your fancy, use \`/role add\` to get it!`,
   );
 });
 
