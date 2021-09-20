@@ -7,12 +7,22 @@ import configData from './config_data.json';
 import { writeFile } from 'fs/promises';
 
 type ConfigData = typeof configData;
+type ConfigPath = Path<ConfigData>;
 type Value<P extends Path<ConfigData>> = EnvUnwrapped<PathValue<ConfigData, P>>;
+type With<P extends ConfigPath, R> = (value: Value<P>) => R;
 
-export function config<P extends Path<ConfigData>>(path: P) {
+export function config<P extends ConfigPath>(path: P) {
   return {
     get value(): Value<P> {
       return unwrapEnv(get(configData, path));
+    },
+  };
+}
+
+export function withConfig<P extends ConfigPath, R>(path: P, fn: With<P, R>) {
+  return {
+    get value(): R {
+      return fn(unwrapEnv(get(configData, path)));
     },
   };
 }

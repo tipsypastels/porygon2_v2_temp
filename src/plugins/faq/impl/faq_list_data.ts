@@ -1,11 +1,11 @@
-import { config } from 'porygon/config';
+import { withConfig } from 'porygon/config';
 import { addFaq } from './faq_list';
 import * as PC_URL from 'plugins/_shared/pc_url';
 import { stripIndent } from 'common-tags';
 
 const SELFPROMO = '<#843868495565029416>';
 const MODEROID = '<@&157985920912588800>';
-const COOLTRAINER = `<@&${config('plug.ct.role').value}>`;
+const COOLTRAINER = withConfig('plug.ct.role', (r) => `<@&${r}>`);
 
 const PATCHING_TUT = PC_URL.thread(458595);
 
@@ -29,7 +29,7 @@ addFaq('pokecom', 'How do I get a role colour?', (e) => {
 
 addFaq('pokecom', 'How do I get the COOLTRAINER role?', (e) => {
   e.setTitle('COOLTRAINER').setDescription(
-    `${COOLTRAINER} is a special role given to our most active members over a period of time. It cannot be requested, and is always given out (and taken away) automagically by Porygon. If you want the role, try jumping in and chatting and you'll likely find yourself in the COOLTRAINER list before too long!`,
+    `${COOLTRAINER.value} is a special role given to our most active members over a period of time. It cannot be requested, and is always given out (and taken away) automagically by Porygon. If you want the role, try jumping in and chatting and you'll likely find yourself in the COOLTRAINER list before too long!`,
   );
 });
 
