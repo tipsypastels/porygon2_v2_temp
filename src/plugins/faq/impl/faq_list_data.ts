@@ -42,7 +42,7 @@ addFaq('pokecom', 'How do I get a ROM?', (e) => {
 
 addFaq('pokecom', 'How do I patch a ROM?', (e) => {
   e.setTitle('Patching ROMs').setDescription(
-    `Once you've obtained your ROM (see the previous question), [you can follow this guide](${PATCHING_TUT}) to patch it!`,
+    `Once you've obtained your ROM (see \`/faq How do I get a ROM?\`), [you can follow this guide](${PATCHING_TUT}) to patch it!`,
   );
 });
 
