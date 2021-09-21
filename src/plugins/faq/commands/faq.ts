@@ -23,7 +23,7 @@ const faq: Command<Opts> = async ({ opts, intr, embed, guild }) => {
 
 faq.data = {
   name: 'faq',
-  description: 'TODO: write a description',
+  description: 'Looks up a frequently asked question.',
   options: [
     {
       name: 'question',
