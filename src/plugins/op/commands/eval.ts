@@ -7,6 +7,8 @@ import { codeBlock } from 'support/string';
 import { Plugin as PluginImport } from 'porygon/plugin';
 import { DEV } from 'porygon/dev';
 import { CLEAR_POKECOM_JOIN_CACHE_TASK } from 'plugins/pokecom/events/join_date';
+import { sleep } from 'support/async';
+import { Seconds } from 'support/time';
 
 interface Opts {
   code: string;
@@ -57,47 +59,20 @@ const eval_: Command<Opts> = async (args) => {
         stats.failure++;
       }
 
-      await new Promise((r) => setTimeout(r, 2000));
+      await sleep(Seconds(2));
     }
 
     return stats;
   }
 
-  async function testIterateMembers() {
-    intr.reply({ content: 'Starting...', ephemeral });
-
-    let after: string | undefined;
-    let count = 0;
-    let batches = 0;
-
-    for (;;) {
-      const members = await guild.members.list({ limit: 1000, after });
-
-      if (members.size === 0) {
-        console.log('done');
-        break;
-      }
-
-      batches++;
-      console.log(`Batch ${batches}`);
-
-      const promises = members.map(async (member) => {
-        console.log(member.user.username);
-      });
-
-      await Promise.all(promises);
-
-      after = members.last()!.id;
-      count += members.size;
-    }
-
-    return { count, batches };
-  }
-
-  // note: unsafe if not run on pc discord in production
   async function rebuildPokecomJoinCache() {
     intr.reply({ content: 'Starting...', ephemeral });
     return await CLEAR_POKECOM_JOIN_CACHE_TASK.run(guild);
+  }
+
+  async function lag() {
+    await sleep(Seconds(5));
+    return 'lagging...';
   }
 
   embed

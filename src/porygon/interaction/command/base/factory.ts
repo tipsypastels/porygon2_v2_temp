@@ -49,16 +49,17 @@ export function createBaseCommandCall<C extends Create>(opts: Opts<C>): C['CallF
     logger.intr.info(lang('log.ok', getLoggerBaseParams(command, args)));
   }
 
-  function onError(err: any, command: C['Command'], args: C['Args']) {
-    return isBuiltinError(err)
-      ? onBuiltinError(err, command, args)
-      : onUnknownErr(err, command, args);
+  async function onError(err: any, command: C['Command'], args: C['Args']) {
+    try {
+      await (isBuiltinError(err)
+        ? onBuiltinError(err, command, args)
+        : onUnknownErr(err, command, args));
+    } catch (e) {
+      logger.intr.error(lang('log.handlerErr'));
+    }
   }
 
   function onBuiltinError(err: BuiltinError, command: C['Command'], args: C['Args']) {
-    const embed = new Embed().mergeWith(err, command.data.name);
-    args.intr.reply({ embeds: [embed], ephemeral: err.ephemeral });
-
     const params = {
       ...getLoggerBaseParams(command, args),
       codeDomain: command.data.name,
@@ -66,19 +67,22 @@ export function createBaseCommandCall<C extends Create>(opts: Opts<C>): C['CallF
     };
 
     logger.intr.warn(lang('log.builtinErr', params));
+
+    const embed = new Embed().mergeWith(err, command.data.name);
+    return args.intr.reply({ embeds: [embed], ephemeral: err.ephemeral });
   }
 
   function onUnknownErr(err: unknown, command: C['Command'], args: C['Args']) {
+    logger.intr.error(lang('log.unkErr', getLoggerBaseParams(command, args)));
+    logger.intr.error(err as any);
+
     const ephemeral = getUnknownErrorEphemerality(command, args);
     const embed = new Embed()
       .poryErr('error')
       .setTitle(lang('embed.unk.title'))
       .setDescription(getErrorMsg(err));
 
-    args.intr.reply({ embeds: [embed], ephemeral });
-
-    logger.intr.error(lang('log.unkErr', getLoggerBaseParams(command, args)));
-    logger.intr.error(err as any);
+    return args.intr.reply({ embeds: [embed], ephemeral });
   }
 
   return async function (intr, cell, command) {
@@ -115,6 +119,7 @@ const lang = createLang(<const>{
     builtinErr:
       '{author} misused %{cmd}% in {loc} and encountered error: %{codeDomain}.{code}%.',
     unkErr: '{author} encountered a crash using %{cmd}% in {loc}.',
+    handlerErr: 'The above error could not be reported via interaction.',
   },
   embed: {
     unk: {
