@@ -6,6 +6,7 @@ import { assertOwner } from 'porygon/owner';
 import { codeBlock } from 'support/string';
 import { Plugin as PluginImport } from 'porygon/plugin';
 import { DEV } from 'porygon/dev';
+import { CLEAR_POKECOM_JOIN_CACHE_TASK } from 'plugins/pokecom/events/join_date';
 
 interface Opts {
   code: string;
@@ -91,6 +92,12 @@ const eval_: Command<Opts> = async (args) => {
     }
 
     return { count, batches };
+  }
+
+  // note: unsafe if not run on pc discord in production
+  async function rebuildPokecomJoinCache() {
+    intr.reply({ content: 'Starting...', ephemeral });
+    return await CLEAR_POKECOM_JOIN_CACHE_TASK.run(guild);
   }
 
   embed

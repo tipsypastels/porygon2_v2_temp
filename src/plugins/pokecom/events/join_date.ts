@@ -11,7 +11,7 @@ import * as Cache from '../../_shared/event_logging';
 
 type Kind = typeof import('../$plugin').default;
 
-const CLEAR_TASK = new Task({
+export const CLEAR_POKECOM_JOIN_CACHE_TASK = new Task({
   name: 'pokecom.clearJoinDates',
   do: Cache.clearAndReloadAllJoinDates,
 });
@@ -25,7 +25,7 @@ const handler: EventFactory<Kind> = ({ events, kind, client }) => {
     events.on('guildMemberAdd', Cache.cacheJoinDate);
     events.on('guildMemberRemove', Cache.uncacheJoinDate);
 
-    CLEAR_TASK.schedule(at.everyWeek(), guild);
+    CLEAR_POKECOM_JOIN_CACHE_TASK.schedule(at.everyWeek(), guild);
   }
 };
 
