@@ -9,6 +9,9 @@ import { DEV } from 'porygon/dev';
 import { CLEAR_POKECOM_JOIN_CACHE_TASK } from 'plugins/pokecom/events/join_date';
 import { sleep } from 'support/async';
 import { Seconds } from 'support/time';
+import { config } from 'porygon/config';
+import { Embed } from 'porygon/embed';
+import { logger } from 'porygon/logger';
 
 interface Opts {
   code: string;
@@ -18,7 +21,7 @@ interface Opts {
 const eval_: Command<Opts> = async (args) => {
   assertOwner(args.author);
 
-  const { intr, author, guild, embed, client, opts, cell } = args;
+  const { intr, author, guild, embed, client, opts, cell, channel } = args;
   const code = opts.get('code');
   const ephemeral = !opts.try('loud');
   const { plugin } = cell;
@@ -73,6 +76,27 @@ const eval_: Command<Opts> = async (args) => {
   async function lag() {
     await sleep(Seconds(5));
     return 'lagging...';
+  }
+
+  function testVibePhrases() {
+    logger.bug.debug('Running a %vibe grammar test%, console with get busy!');
+
+    const template = <const>[
+      ['is', 'negative'],
+      ['but makes up for it by being', 'positive'],
+    ];
+
+    for (const [prefix, trait] of template) {
+      logger.bug.debug(`- Trait: %${trait}% -`);
+
+      const strings = config(`plug.duck.vibe.${trait}Traits`).value;
+
+      for (const string of strings) {
+        logger.bug.debug(`${prefix} ${string}`);
+      }
+    }
+
+    return 'Please check the console for output.';
   }
 
   embed
