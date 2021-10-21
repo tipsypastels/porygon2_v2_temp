@@ -1,6 +1,6 @@
 import { GuildMember } from 'discord.js';
-import { Command, CommandFn, commandGroups } from 'porygon/interaction';
-import { getPatGif, incrementPatCount, patLeaderboard } from '../pats';
+import { CommandFn, commandGroups } from 'porygon/interaction';
+import { getPatGif, incrementPatCount, patLeaderboard } from '../impl/pats';
 
 type MemberOpts = { member: GuildMember };
 

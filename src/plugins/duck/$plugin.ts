@@ -10,3 +10,4 @@ export { default as COMMAND_duck_thanos } from './commands/thanos';
 export { default as COMMAND_duck_vibe } from './commands/vibe';
 export { default as COMMAND_duck_experiment } from './commands/experiment';
 export { default as EVENT_duck_joinMessage } from './events/join_message';
+export { default as EVENT_duck_camelReact } from './events/camel_react';

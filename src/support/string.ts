@@ -35,11 +35,21 @@ export function bold(message: string) {
   return `**${message}**`;
 }
 
+const SPACE = / /g;
+const WHITESPACE = /\s/g;
+
 /**
  * Removes all spaces from `input`.
  */
 export function stripSpaces(input: string) {
-  return input.replace(/ /g, '');
+  return input.replace(SPACE, '');
+}
+
+/**
+ * Removes all whitespace from `input`.
+ */
+export function stripWhitespace(input: string) {
+  return input.replace(WHITESPACE, '');
 }
 
 export const ELLIPSIS = '…';
