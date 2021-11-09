@@ -3,7 +3,6 @@ import { BuiltinError, isBuiltinError } from 'porygon/error';
 import { createLang } from 'porygon/lang';
 import { logger } from 'porygon/logger';
 import { codeBlock } from 'support/string';
-import { MIDDLEWARE_BREAK } from '.';
 import { Ambience, Executor, Outcome } from '../base';
 
 export abstract class CommandResultLogger<M extends Ambience> {
@@ -22,7 +21,6 @@ export abstract class CommandResultLogger<M extends Ambience> {
   async after(outcome: Outcome) {
     if (!outcome.ok) {
       await this.logErr(outcome.error);
-      return MIDDLEWARE_BREAK;
     }
 
     this.logOk();
