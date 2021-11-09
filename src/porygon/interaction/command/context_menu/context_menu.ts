@@ -1,70 +1,44 @@
-import {
-  ContextMenuInteraction,
-  Guild,
-  GuildMember,
-  Message,
-  MessageApplicationCommandData,
-  UserApplicationCommandData,
-} from 'discord.js';
-import { Porygon } from 'porygon/core';
+import { GuildMember, Message, ContextMenuInteraction as Intr } from 'discord.js';
 import { Embed } from 'porygon/embed';
+import { createLang } from 'porygon/lang';
 import { logger } from 'porygon/logger';
-import { onDMCommand } from '../../dm';
-import { CreateBaseCommand } from '../base';
-import { createBaseCommandCall } from '../base/factory';
-import { Cell } from '../cell';
+import { BaseArgs, Executor, BaseCommandFn, BaseCommand } from '../base';
 
-interface BaseArgs {
-  client: Porygon;
-  guild: Guild;
-  author: GuildMember;
-  embed: Embed;
-  intr: ContextMenuInteraction;
-  cell: Cell;
-}
-
-interface UserArgs extends BaseArgs {
-  member: GuildMember;
-}
-
-interface MsgArgs extends UserArgs {
+interface MsgArgs extends BaseArgs<Intr> {
   message: Message;
 }
 
-type Create = CreateBaseCommand<
-  BaseArgs,
-  ContextMenuInteraction,
-  UserApplicationCommandData | MessageApplicationCommandData
->;
-type CreateUser = CreateBaseCommand<
-  UserArgs,
-  ContextMenuInteraction,
-  UserApplicationCommandData
->;
-type CreateMsg = CreateBaseCommand<
-  MsgArgs,
-  ContextMenuInteraction,
-  MessageApplicationCommandData
->;
+interface UserArgs extends BaseArgs<Intr> {
+  member: GuildMember;
+}
 
-export type UserContextMenu = CreateUser['Command'];
-export type MsgContextMenu = CreateMsg['Command'];
-export type ContextMenu = Create['Command'];
+export type UserContextMenuFn = BaseCommandFn<ToAmbience<UserArgs>>;
+export type UserContextMenu = BaseCommand<ToAmbience<UserArgs>>;
 
-export const callContextMenu = createBaseCommandCall<Create>({
-  createArgs(intr, cell) {
-    const client = cell.client;
+export type MsgContextMenuFn = BaseCommandFn<ToAmbience<MsgArgs>>;
+export type MsgContextMenu = BaseCommand<ToAmbience<MsgArgs>>;
+
+export type ContextMenuFn = BaseCommandFn<Ambience>;
+export type ContextMenu = BaseCommand<Ambience>;
+
+type Args = BaseArgs<Intr> & Partial<MsgArgs & UserArgs>;
+
+type ToAmbience<A> = { Intr: Intr; Args: A };
+type Ambience = ToAmbience<Args>;
+
+export class ContextMenuExecutor extends Executor<Ambience> {
+  // TODO: once you actually make any of these
+  readonly middleware = [];
+
+  protected getArgs(): Args | undefined {
+    const { cell, intr, client } = this;
     const { guild, member: author } = intr;
+
+    if (!guild || !(author instanceof GuildMember)) {
+      return;
+    }
+
     const embed = new Embed();
-
-    if (!guild) {
-      onDMCommand(client, intr);
-      return;
-    }
-
-    if (!(author instanceof GuildMember)) {
-      return;
-    }
 
     return merge({
       client,
@@ -74,34 +48,31 @@ export const callContextMenu = createBaseCommandCall<Create>({
       intr,
       cell,
     });
-  },
+  }
+}
 
-  getLoggerCommandName(command) {
-    const type = (command.data.type as string).toLowerCase();
-    return `${type} menu ${command.data.name}`;
-  },
-});
-
-function merge(args: Create['Args']): Create['Args'] | undefined {
+function merge(args: Args) {
   if (args.intr.targetType === 'MESSAGE') {
-    const message = args.intr.options.getMessage('message', true);
+    const message = args.intr.options.getMessage('message');
 
     if (!(message instanceof Message)) {
-      logger.intr.debug('MsgContextMenu received an invalid message, aborting...');
+      logger.bug.warn(lang('wrongType', { type: 'message' }));
       return;
     }
 
-    (args as CreateMsg['Args']).message = message;
-  } else {
-    const member = args.intr.options.getMember('user', true);
-
-    if (!(member instanceof GuildMember)) {
-      logger.intr.debug('MsgContextMenu received an invalid member, aborting...');
-      return;
-    }
-
-    (args as CreateUser['Args']).member = member;
+    return { ...args, message };
   }
 
-  return args;
+  const member = args.intr.options.getMember('user');
+
+  if (!(member instanceof GuildMember)) {
+    logger.bug.warn(lang('wrongType', { type: 'user' }));
+    return;
+  }
+
+  return { ...args, member };
 }
+
+const lang = createLang(<const>{
+  wrongType: 'Got mismatched types for context menu (expected %{type}%). Skipping...',
+});

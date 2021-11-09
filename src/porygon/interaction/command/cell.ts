@@ -9,8 +9,8 @@ import {
   Snowflake,
   Guild,
 } from 'discord.js';
-import { ContextMenu, callContextMenu } from './context_menu/context_menu';
-import { Command, callCommand } from './chat';
+import { ContextMenu, ContextMenuExecutor } from './context_menu';
+import { Command, CommandExecutor } from './chat';
 import { resolveSnowflake, SnowflakeLike } from 'support/snowflake';
 import { searchCommands } from 'porygon/commands';
 import { isCellUsableBy } from './usable';
@@ -76,11 +76,11 @@ export class Cell {
 
   call(intr: BaseCommandInteraction): void {
     if (intr.isCommand()) {
-      return callCommand(intr, this, this.cmd as Command);
+      new CommandExecutor(intr, this, this.cmd as Command).exec();
     }
 
     if (intr.isContextMenu()) {
-      return callContextMenu(intr, this, this.cmd as ContextMenu);
+      new ContextMenuExecutor(intr, this, this.cmd as ContextMenu).exec();
     }
   }
 

@@ -23,4 +23,8 @@ export class TimeDifferenceStat {
   get currentTime() {
     return new Date();
   }
+
+  get difference() {
+    return +this.currentTime - +this.startTime;
+  }
 }

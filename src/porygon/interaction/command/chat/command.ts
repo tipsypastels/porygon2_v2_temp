@@ -1,85 +1,90 @@
 import {
-  ChatInputApplicationCommandData,
-  CommandInteraction,
-  Guild,
+  ChatInputApplicationCommandData as Data,
+  CommandInteraction as Intr,
   GuildMember,
-  TextChannel,
-  ThreadChannel,
 } from 'discord.js';
-import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
-import { onDMCommand } from '../../dm';
-import { CreateBaseCommand } from '../base';
-import { createBaseCommandCall } from '../base/factory';
-import { Cell } from '../cell';
+import { onDMCommand } from 'porygon/interaction/dm';
+import { logger } from 'porygon/logger';
+import { TimeDifferenceStat } from 'porygon/stats';
+import { noop } from 'support/fn';
+import { Seconds } from 'support/time';
+import { BaseArgs, BaseCommand, BaseCommandFn, Executor } from '../base';
+import { CommandResultLogger } from '../middleware/result_logger';
+import { CommandChannel, isCommandChannel } from './channel';
 import { CommandOptions } from './options';
 
-export type CommandChannel = TextChannel | ThreadChannel;
-
-type CreateCommand<Opts = unknown> = CreateBaseCommand<
-  Args<Opts>,
-  CommandInteraction,
-  ChatInputApplicationCommandData
->;
-
-interface Args<Opts = unknown> {
-  client: Porygon;
-  opts: CommandOptions<Opts>;
-  guild: Guild;
-  author: GuildMember;
+interface Args<O> extends BaseArgs<Intr> {
   channel: CommandChannel;
-  embed: Embed;
-  intr: CommandInteraction;
-  cell: Cell;
+  opts: CommandOptions<O>;
 }
 
-export type CommandFn<Opts = unknown> = CreateCommand<Opts>['Fn'];
-export type Command<Opts = unknown> = CreateCommand<Opts>['Command'];
+export type CommandFn<O = unknown> = BaseCommandFn<ToAmbience<O>>;
+export type Command<O = unknown> = BaseCommand<ToAmbience<O>, Data>;
 
-export const callCommand = createBaseCommandCall<CreateCommand>({
-  createArgs(intr, cell) {
-    const guild = intr.guild;
-    const channel = intr.channel;
+type ToAmbience<O> = { Args: Args<O>; Intr: Intr };
+
+export class CommandExecutor<O> extends Executor<ToAmbience<O>> {
+  readonly middleware = [Logger, SlowTiming];
+
+  protected getArgs(): Args<O> | undefined {
+    const { cell, intr, client } = this;
+    const { guild, channel, member: author } = intr;
 
     if (!guild) {
-      onDMCommand(cell.client, intr);
+      onDMCommand(client, intr).catch(noop);
       return;
     }
 
-    if (!isCommandChannel(channel)) {
+    if (!isCommandChannel(channel) || !(author instanceof GuildMember)) {
       return;
     }
 
-    const client = cell.client;
-    const author = intr.member as GuildMember;
     const embed = new Embed();
-    const opts = new CommandOptions(intr.options);
+    const opts = new CommandOptions<O>(intr.options);
 
     return {
       client,
-      guild,
-      channel,
       author,
-      embed,
-      intr,
-      opts,
+      guild,
       cell,
+      intr,
+      channel,
+      embed,
+      opts,
     };
-  },
+  }
+}
 
-  getLoggerCommandName(command) {
-    return `/${command.data.name}`;
-  },
+class Logger extends CommandResultLogger<ToAmbience<any>> {
+  protected getCommandName() {
+    return `/${this.exec.command.data.name}`;
+  }
 
-  getLoggerCommandOptions(args) {
-    return args.opts.getSerializedOptionsString();
-  },
+  protected override getCommandOptions() {
+    return this.args.opts.getSerializedOptionsString();
+  }
 
-  getLoggerLocationContext({ channel, guild }) {
-    return `${channel.name}, ${guild.name}`;
-  },
-});
+  protected override getLocation() {
+    return `${this.args.channel.name}, ${this.args.guild.name}`;
+  }
+}
 
-export function isCommandChannel(ch: unknown): ch is CommandChannel {
-  return !!ch && (ch instanceof TextChannel || ch instanceof ThreadChannel);
+class SlowTiming<M extends ToAmbience<any>> {
+  private time = new TimeDifferenceStat();
+
+  constructor(protected exec: Executor<M>, protected args: M['Args']) {}
+
+  async before() {
+    this.time.startTiming();
+  }
+
+  async after() {
+    const difference = this.time.difference;
+
+    if (difference > Seconds(2)) {
+      const seconds = Math.ceil(difference / 1000);
+      logger.intr.warn(`Command %/${this.exec.cell.name}% took %${seconds}s% to finish!`);
+    }
+  }
 }
