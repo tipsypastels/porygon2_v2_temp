@@ -21,9 +21,9 @@ export abstract class CommandResultLogger<M extends Ambience> {
   async after(outcome: Outcome) {
     if (!outcome.ok) {
       await this.logErr(outcome.error);
+    } else {
+      this.logOk();
     }
-
-    this.logOk();
   }
 
   private logOk() {
