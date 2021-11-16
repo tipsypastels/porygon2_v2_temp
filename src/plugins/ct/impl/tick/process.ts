@@ -67,9 +67,16 @@ export async function ctRunTick(guild: Guild, toProvider: ToProvider) {
   }
 
   await Promise.all([give(), take()]);
+
+  logger.ct.info('Trashing old COOLTRAINER rows...');
+
   await provider.trash(trash);
 
-  return provider.toJSON();
+  const stats = provider.toJSON();
+
+  logger.ct.info(`Results of COOLTRAINER:\n${stats}`);
+
+  return stats;
 }
 
 function query(where: Where) {
