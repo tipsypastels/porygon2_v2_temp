@@ -25,7 +25,7 @@ const tick: CommandFn<TickOpts> = async ({ embed, intr, guild, opts }) => {
   await intr.deferReply({ ephemeral: true });
 
   const mock = opts.try('mock') ?? false;
-  const provider = mock ? Ct.ctTickMockProvider : Ct.ctTickProvider;
+  const provider = Ct.ctCreateTickProvider({ mock });
   const run = await CT_TICK_TASK.run(guild, provider);
 
   embed

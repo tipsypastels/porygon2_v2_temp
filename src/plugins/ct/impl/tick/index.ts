@@ -1,2 +1,2 @@
 export { ctRunTick } from './process';
-export { ctTickProvider, ctTickMockProvider } from './provider';
+export { ctCreateTickProvider } from './provider';

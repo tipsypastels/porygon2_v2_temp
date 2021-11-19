@@ -4,9 +4,12 @@ import { db } from 'porygon/core';
 const TABLE = db.plugCt_Score;
 const toUsername = (m: GuildMember) => m.user.username;
 
-// see ./process.ts note on ToProvider
-export const ctTickProvider = () => new CtTickProvider();
-export const ctTickMockProvider = () => new CtTickMockProvider();
+export function ctCreateTickProvider({ mock }: { mock: boolean }) {
+  // see ./process.ts note on ToProvider for why this is an inner function
+  return function (): CtTickProviderLike {
+    return mock ? new CtTickMockProvider() : new CtTickProvider();
+  };
+}
 
 export abstract class CtTickProviderLike {
   added: GuildMember[] = [];
