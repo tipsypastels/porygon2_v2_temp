@@ -19,7 +19,6 @@ interface Entry {
 export async function ctRunTick(guild: Guild, toProvider: ToProvider) {
   const provider = toProvider();
   const role = await guild.roles.fetch(CtConfig.roleId);
-  const trash: Snowflake[] = [];
 
   if (!role) {
     throw new Error('COOLTRAINER role not found. Aborting tick.');
@@ -55,7 +54,7 @@ export async function ctRunTick(guild: Guild, toProvider: ToProvider) {
       if (member) {
         await each(member);
       } else {
-        trash.push(userId);
+        provider.trash(userId);
       }
     });
 
@@ -70,9 +69,9 @@ export async function ctRunTick(guild: Guild, toProvider: ToProvider) {
 
   logger.ct.info('Trashing old COOLTRAINER rows...');
 
-  await provider.trash(trash);
+  await provider.clearTrash();
 
-  if (provider.trashed > 0) {
+  if (provider.trashed.length > 0) {
     logger.ct.info(`Trashed entries: %${provider.trashed}%.`);
   }
 

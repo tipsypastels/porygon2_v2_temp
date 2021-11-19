@@ -14,11 +14,12 @@ export function ctCreateTickProvider({ mock }: { mock: boolean }) {
 export abstract class CtTickProviderLike {
   added: GuildMember[] = [];
   removed: GuildMember[] = [];
-  trashed = 0;
+  trashed: Snowflake[] = [];
 
   protected abstract addImpl(member: GuildMember, role: Role): Promise<GuildMember>;
   protected abstract removeImpl(member: GuildMember, role: Role): Promise<GuildMember>;
-  protected abstract trashImpl(userIds: Snowflake[]): Promise<void>;
+
+  abstract clearTrash(): Promise<void>;
 
   add(member: GuildMember, role: Role) {
     this.added.push(member);
@@ -30,9 +31,8 @@ export abstract class CtTickProviderLike {
     return this.removeImpl(member, role);
   }
 
-  trash(userIds: Snowflake[]) {
-    this.trashed += userIds.length;
-    return this.trashImpl(userIds);
+  trash(userId: Snowflake) {
+    this.trashed.push(userId);
   }
 
   toJSON() {
@@ -53,8 +53,8 @@ export class CtTickProvider extends CtTickProviderLike {
     return member.roles.remove(role);
   }
 
-  protected async trashImpl(userIds: Snowflake[]) {
-    await trash(userIds);
+  async clearTrash() {
+    await trash(this.trashed);
   }
 }
 
@@ -67,7 +67,7 @@ export class CtTickMockProvider extends CtTickProviderLike {
     return member;
   }
 
-  protected async trashImpl() {
+  async clearTrash() {
     // nothing to see here
   }
 }
