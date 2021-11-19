@@ -9,9 +9,9 @@ export const ctTickProvider = () => new CtTickProvider();
 export const ctTickMockProvider = () => new CtTickMockProvider();
 
 export abstract class CtTickProviderLike {
-  protected added: GuildMember[] = [];
-  protected removed: GuildMember[] = [];
-  protected trashed = 0;
+  added: GuildMember[] = [];
+  removed: GuildMember[] = [];
+  trashed = 0;
 
   protected abstract addImpl(member: GuildMember, role: Role): Promise<GuildMember>;
   protected abstract removeImpl(member: GuildMember, role: Role): Promise<GuildMember>;

@@ -72,9 +72,11 @@ export async function ctRunTick(guild: Guild, toProvider: ToProvider) {
 
   await provider.trash(trash);
 
-  const stats = provider.toJSON();
+  if (provider.trashed > 0) {
+    logger.ct.info(`Trashed entries: %${provider.trashed}%.`);
+  }
 
-  logger.ct.info(`Results of COOLTRAINER:\n${stats}`);
+  const stats = provider.toJSON();
 
   return stats;
 }
