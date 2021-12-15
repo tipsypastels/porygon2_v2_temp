@@ -23,6 +23,7 @@ export interface BaseArgs<I extends BaseIntr> {
 interface PatchCtx {
   kind: PluginKind;
   client: Porygon;
+  clone: <T>(value: T) => T;
 }
 
 export interface BaseCommandFn<M extends Ambience = Ambience> {
@@ -33,7 +34,7 @@ export interface BaseCommand<M extends Ambience = Ambience, D extends BaseData =
   extends BaseCommandFn<M> {
   data: D;
 
-  patchBeforeUpload?(data: any, ctx: PatchCtx): void;
+  patchBeforeUpload?(data: any, ctx: PatchCtx): any; // new data
   unknownErrorEphemerality?(args: M['Args']): boolean;
 }
 

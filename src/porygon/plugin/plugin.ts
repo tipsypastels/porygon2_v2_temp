@@ -1,3 +1,4 @@
+import clone from 'deepcopy';
 import { Collection } from 'discord.js';
 import { Porygon } from 'porygon/core';
 import { Embed } from 'porygon/embed';
@@ -141,7 +142,10 @@ function createPluginChildren(kinds: PluginKind[], client: Porygon) {
 function createCommandToDataMapper(kind: PluginKind, client: Porygon) {
   return function (command: BaseCommand) {
     const { data, patchBeforeUpload } = command;
-    patchBeforeUpload && patchBeforeUpload(data, { kind, client });
+
+    if (patchBeforeUpload) {
+      return patchBeforeUpload(data, { kind, client, clone }) ?? data;
+    }
 
     return data;
   };

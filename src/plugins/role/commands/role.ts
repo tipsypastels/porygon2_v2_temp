@@ -72,11 +72,13 @@ role.data = {
 
 // `custom` command is pc-exclusive, but we don't want to
 // make it into a totally different subcommand
-role.patchBeforeUpload = (data, { kind }) => {
+role.patchBeforeUpload = (data, { kind, clone }) => {
   const isPC = isGuildedKind(kind) && kind.guildId === config('guilds.pokecom.id').value;
 
   if (DEV || isPC) {
-    data.options.push({
+    const newData = clone(data);
+
+    newData.options.push({
       name: 'custom',
       description: 'Sets the colour or name of your custom role.',
       type: 'SUB_COMMAND',
@@ -95,6 +97,8 @@ role.patchBeforeUpload = (data, { kind }) => {
         },
       ],
     });
+
+    return newData;
   }
 };
 

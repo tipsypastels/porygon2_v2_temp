@@ -36,12 +36,16 @@ faq.data = {
 
 // TODO: better way to type data. should it know the data type of a command
 // as a const? maybe overkill
-faq.patchBeforeUpload = (data: any, { kind }) => {
+faq.patchBeforeUpload = (data: any, { kind, clone }) => {
   if (isGuildedKind(kind) && Faq.shouldFaqUseChoices(kind.guildId)) {
-    data.options[0].choices = Faq.getFaqQuestionsForGuild(kind.guildId).map((x) => ({
+    const newData = clone(data);
+
+    newData.options[0].choices = Faq.getFaqQuestionsForGuild(kind.guildId).map((x) => ({
       name: x,
       value: x,
     }));
+
+    return newData;
   }
 };
 
