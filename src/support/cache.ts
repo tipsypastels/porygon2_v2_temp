@@ -69,6 +69,19 @@ export class Singleton<T> {
   }
 }
 
+export class AsyncSingleton<T> {
+  private value: T | typeof UNSET_SENTINEL = UNSET_SENTINEL;
+  constructor(private _default: () => T | Promise<T>) {}
+
+  async get() {
+    if (this.value === UNSET_SENTINEL) {
+      this.value = await this._default();
+    }
+
+    return this.value;
+  }
+}
+
 export class CacheTable<T, K> {
   private map = new Cache<K, T[]>(() => []);
 

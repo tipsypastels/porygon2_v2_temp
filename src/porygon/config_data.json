@@ -63,7 +63,23 @@
   ],
   "plug": {
     "role": {
-      "staffRoles": ["owner", "admin", "moderator", "moderoid"]
+      "staffRoles": ["owner", "admin", "moderator", "moderoid"],
+      "custom": {
+        "canCreateCustomRole": {
+          "prod": "585528961749090345",
+          "dev": "920097383092719646"
+        },
+        "roleRange": {
+          "start": {
+            "prod": "636599510398664714",
+            "dev": "920096999775293490"
+          },
+          "end": {
+            "prod": "388818211489185792",
+            "dev": "920097038174138368"
+          }
+        }
+      }
     },
     "duck": {
       "joins": {

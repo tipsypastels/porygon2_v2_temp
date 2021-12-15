@@ -1,8 +1,13 @@
 import { Role } from 'discord.js';
+import { config } from 'porygon/config';
+import { DEV } from 'porygon/dev';
 import { CommandFn, commandGroups } from 'porygon/interaction';
+import { isGuildedKind } from 'porygon/plugin';
 import { assertHasRole, assertLacksRole, assertRoleRequestable } from '../impl';
+import * as Custom from '../impl/role_custom';
 
 type Opts = { role: Role };
+type CustomOpts = { color?: string; name?: string };
 
 const add: CommandFn<Opts> = async ({ opts, intr, embed, author }) => {
   const role = opts.get('role');
@@ -26,7 +31,16 @@ const remove: CommandFn<Opts> = async ({ opts, intr, embed, author }) => {
   await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
-const role = commandGroups({ add, remove });
+const custom: CommandFn<CustomOpts> = async ({ opts, intr, embed, author }) => {
+  const name = opts.try('name');
+  const color = opts.try('color');
+  const message = await Custom.applyCustomRole(author, { name, color });
+
+  embed.poryColor('ok').setTitle(message);
+  await intr.reply({ embeds: [embed], ephemeral: true });
+};
+
+const role = commandGroups({ add, remove, custom });
 
 function ROLE(verb: string) {
   return <const>{
@@ -54,6 +68,34 @@ role.data = {
       options: [ROLE('remove')],
     },
   ],
+};
+
+// `custom` command is pc-exclusive, but we don't want to
+// make it into a totally different subcommand
+role.patchBeforeUpload = (data, { kind }) => {
+  const isPC = isGuildedKind(kind) && kind.guildId === config('guilds.pokecom.id').value;
+
+  if (DEV || isPC) {
+    data.options.push({
+      name: 'custom',
+      description: 'Sets the colour or name of your custom role.',
+      type: 'SUB_COMMAND',
+      options: [
+        {
+          name: 'color',
+          type: 'STRING',
+          description: 'Colour to set the role to.',
+          required: false,
+        },
+        {
+          name: 'name',
+          type: 'STRING',
+          description: 'Name to rename the role to.',
+          required: false,
+        },
+      ],
+    });
+  }
 };
 
 export default role;
