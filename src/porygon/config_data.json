@@ -246,7 +246,17 @@
           "dev": "878552829181194260"
         }
       },
-      "shimLegacyCommands": true
+      "shimLegacyCommands": true,
+      "annivTeamRoles": {
+        "scarlet": {
+          "prod": "TODO",
+          "dev": "950948943326502943"
+        },
+        "violet": {
+          "prod": "TODO",
+          "dev": "950948979795984434"
+        }
+      }
     },
     "pokecomstaf": {
       "logChannel": {
