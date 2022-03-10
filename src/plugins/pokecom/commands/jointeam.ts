@@ -28,7 +28,7 @@ const jointeam: Command = async ({ intr, author, guild, embed }) => {
 
   await author.roles.add(role);
 
-  embed.setColor(role.color).setTitle(`You joined ${role.name}!`);
+  embed.setColor(role.color).setTitle(`You joined team ${role.name}!`);
   await intr.reply({ embeds: [embed], ephemeral: true });
 };
 
@@ -48,6 +48,6 @@ const error = createBuiltinErrors({
   },
 
   alreadyAssigned(e, role: Role) {
-    e.poryErr('danger').setTitle(`You're already on ${role.name}!`);
+    e.poryErr('danger').setTitle(`You're already on team ${role.name}!`);
   },
 });
