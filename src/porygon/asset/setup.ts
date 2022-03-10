@@ -25,6 +25,10 @@ export async function setupAssets(client: Porygon) {
     fetchUploadChannel(client),
   ]);
 
+  if (!channel) {
+    return;
+  }
+
   const lastRun = cache?.lastRun ?? 0;
 
   let shouldCreateNextUploadCache = !cache;
@@ -55,8 +59,8 @@ export async function setupAssets(client: Porygon) {
 }
 
 export function fetchUploadChannel(client: Porygon) {
-  const guild = client.guilds.cache.get(UPLOAD_GUILD.value)!;
-  return guild.channels.cache.get(UPLOAD_CHANNEL.value) as TextChannel;
+  const guild = client.guilds.cache.get(UPLOAD_GUILD.value);
+  return guild?.channels.cache.get(UPLOAD_CHANNEL.value) as TextChannel | null;
 }
 
 function fetchUploadCache(): Promise<UploadCache | null> {
